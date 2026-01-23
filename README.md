@@ -1,9 +1,12 @@
-# Construct-X Template Repository
+# Construct-X Policy Hub
 
-Template repository for Construct-X.
+> [!WARNING]  
+> This repository is currently under heavy development and is not intended for productive use.
+
+An open source implementation of a Policy Hub for the Construct-X project.
 
 ## About
-Use this template during repository creation to include relevant files and a default configuration. For your project, please add a description with additional details about your project here.
+TBD
 
 ## Documentation
 This documentation is located in the `/docs` folder.
@@ -13,23 +16,19 @@ Relevant prerequisites and installation instructions are introduced.
 
 ### Prerequisites
 To run and work with this project, the following prerequisites are needed:
-- Tool 1
-- Tool 2
+- TBD
 
 ### Installation
 To run this project, execute the following steps:
 1. Clone this repository
    ```sh
-   git clone https://github.com/Projekt-Construct-X/XXX.git
+   git clone https://github.com/project-construct-x/policy-hub.git
    ```
 2. Do this
    ```sh
-   cd XXX
+   cd policy-hub
    ```
-3. Do that
-   ```sh
-   docker compose up
-   ```
+3. TBD
 
 ## License
 All code files are distributed under the Apache 2.0 license. See [LICENSE](./LICENSE) for more information.
