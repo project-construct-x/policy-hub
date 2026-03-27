@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: policy-hub-backend
+  profiles:
+    default: dev
