@@ -51,6 +51,11 @@ Beispiel mit curl:
 curl -u admin:admin http://localhost:8080/api/v1/policies
 ```
 
+## Swagger UI (Dev)
+
+- URL: http://localhost:8080/swagger-ui.html
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+
 ## H2-Konsole (Dev)
 
 - URL: http://localhost:8080/h2-console
