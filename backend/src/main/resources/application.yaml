@@ -2,4 +2,4 @@ spring:
   application:
     name: policy-hub-backend
   profiles:
-    active: dev
+    default: dev
