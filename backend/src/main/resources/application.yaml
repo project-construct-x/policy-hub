@@ -1,3 +1,5 @@
 spring:
   application:
-    name: backend
+    name: policy-hub-backend
+  profiles:
+    active: dev
