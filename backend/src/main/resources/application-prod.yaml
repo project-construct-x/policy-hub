@@ -1,0 +1,32 @@
+# Production profile — configure with real database credentials
+# Uncomment and adjust when the persistence decision is finalized
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/policyhub
+#    driver-class-name: org.postgresql.Driver
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate
+#    show-sql: false
+#  flyway:
+#    enabled: true
+#  h2:
+#    console:
+#      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    org.constructx.policyhub: INFO
+    org.springframework.security: WARN
