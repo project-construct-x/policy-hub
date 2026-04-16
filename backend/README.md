@@ -129,7 +129,16 @@ Migrationen liegen unter `src/main/resources/db/migration/`:
 | `prod` | PostgreSQL (via Env-Vars) | Produktionsumgebung |
 
 Für `prod` müssen folgende Umgebungsvariablen gesetzt sein:
-`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`
+
+| Variable | Beschreibung |
+|---|---|
+| `DB_HOST` | Datenbankhost (default: `localhost`) |
+| `DB_PORT` | Datenbankport (default: `5432`) |
+| `DB_NAME` | Datenbankname (default: `policyhub`) |
+| `DB_USERNAME` | Datenbankbenutzer |
+| `DB_PASSWORD` | Datenbankpasswort |
+| `SPRING_SECURITY_USER_NAME` | HTTP Basic Auth Benutzername |
+| `SPRING_SECURITY_USER_PASSWORD` | HTTP Basic Auth Passwort |
 
 ## Technologie-Stack
 
