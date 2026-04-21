@@ -5,7 +5,39 @@ Spring Boot Backend für die Policy Hub Anwendung.
 ## Voraussetzungen
 
 - **Java 21** (JDK)
+- **Docker** (für PostgreSQL via Docker Compose)
 - **Gradle 8.14+** (wird über den Gradle Wrapper bereitgestellt)
+
+## Lokale Datenbank starten
+
+Im **backend/**-Verzeichnis:
+
+```bash
+docker compose up -d
+```
+
+Stoppt die Datenbank (ohne Datenverlust):
+
+```bash
+docker compose stop
+```
+
+Vollständig aufräumen inkl. Volumes:
+
+```bash
+docker compose down -v
+```
+
+### Verbindungsdaten (Dev)
+
+| Parameter | Wert |
+|---|---|
+| Host | `localhost` |
+| Port | `5432` |
+| Datenbank | `policyhub` |
+| Benutzername | `policyhub` |
+| Passwort | `policyhub` |
+| JDBC URL | `jdbc:postgresql://localhost:5432/policyhub` |
 
 ## Projekt bauen
 
@@ -19,24 +51,28 @@ Auf Windows:
 gradlew.bat clean build
 ```
 
+> **Hinweis:** Der Build führt Integrationstests mit Testcontainers aus — Docker muss laufen.
+
 ## Anwendung starten (Dev-Profil)
+
+1. Zuerst Docker Compose starten (siehe oben)
+2. Dann:
 
 ```bash
 ./gradlew bootRun
 ```
 
-Die Anwendung startet standardmäßig mit dem `dev`-Profil und nutzt eine **H2 in-memory Datenbank**.
+Die Anwendung startet mit dem `dev`-Profil, verbindet sich mit der PostgreSQL-Datenbank und führt Flyway-Migrationen automatisch aus.
 
 ## Verfügbare Endpunkte (Dev)
 
 | Endpunkt | Beschreibung | Auth |
 |---|---|---|
-| `GET /api/v1/policies` | Beispiel-Endpunkt (Alive-Nachweis) | Basic Auth |
+| `GET /api/v1/policies` | Alle Policies abrufen | Basic Auth |
 | `GET /actuator/health` | Health-Check | Frei |
 | `GET /actuator/info` | App-Info | Frei |
 | `GET /swagger-ui.html` | Swagger UI (API-Dokumentation) | Frei |
 | `GET /v3/api-docs` | OpenAPI-Spezifikation (JSON) | Frei |
-| `GET /h2-console` | H2 Datenbank-Konsole | Frei |
 
 ## Authentifizierung (Dev)
 
@@ -56,13 +92,6 @@ curl -u admin:admin http://localhost:8080/api/v1/policies
 - URL: http://localhost:8080/swagger-ui.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 
-## H2-Konsole (Dev)
-
-- URL: http://localhost:8080/h2-console
-- JDBC URL: `jdbc:h2:mem:policyhub`
-- User: `sa`
-- Passwort: *(leer)*
-
 ## Projektstruktur
 
 ```
@@ -80,16 +109,36 @@ src/main/java/org/constructx/policyhub/
 │   ├── api/                           # REST-Controller + DTOs
 │   ├── application/                   # Anwendungslogik (Services)
 │   ├── domain/                        # Fachliche Modelle & Regeln
-│   └── infrastructure/                # JPA, Repositories, Mapper
+│   └── infrastructure/                # JPA-Entity, Repository, Mapper
 └── shared/                            # Modulübergreifende Typen
 ```
+
+## Datenbank-Migrationen (Flyway)
+
+Migrationen liegen unter `src/main/resources/db/migration/`:
+
+| Migration | Inhalt |
+|---|---|
+| `V1__create_policy_tables.sql` | `policies`-Tabelle mit UUID, Status, JSONB-Inhalt, Timestamps |
 
 ## Profile
 
 | Profil | Datenbank | Beschreibung |
 |---|---|---|
-| `dev` (Standard) | H2 in-memory | Lokale Entwicklung |
-| `prod` | Platzhalter (PostgreSQL o.ä.) | Produktionsumgebung |
+| `dev` (Standard) | PostgreSQL (Docker Compose) | Lokale Entwicklung |
+| `prod` | PostgreSQL (via Env-Vars) | Produktionsumgebung |
+
+Für `prod` müssen folgende Umgebungsvariablen gesetzt sein:
+
+| Variable | Beschreibung |
+|---|---|
+| `DB_HOST` | Datenbankhost (default: `localhost`) |
+| `DB_PORT` | Datenbankport (default: `5432`) |
+| `DB_NAME` | Datenbankname (default: `policyhub`) |
+| `DB_USERNAME` | Datenbankbenutzer |
+| `DB_PASSWORD` | Datenbankpasswort |
+| `SPRING_SECURITY_USER_NAME` | HTTP Basic Auth Benutzername |
+| `SPRING_SECURITY_USER_PASSWORD` | HTTP Basic Auth Passwort |
 
 ## Technologie-Stack
 
@@ -98,6 +147,7 @@ src/main/java/org/constructx/policyhub/
 - **Build:** Gradle (Kotlin DSL)
 - **Security:** Spring Security (Basic Auth)
 - **API-Doku:** SpringDoc OpenAPI / Swagger UI
-- **Persistenz (Dev):** H2 in-memory
-- **Migration:** Flyway (derzeit deaktiviert)
+- **Persistenz:** PostgreSQL 16 + Spring Data JPA / Hibernate
+- **Migration:** Flyway
+- **Tests:** JUnit 5 + Testcontainers (PostgreSQL)
 - **Logging:** SLF4J + Logback (strukturiert)
