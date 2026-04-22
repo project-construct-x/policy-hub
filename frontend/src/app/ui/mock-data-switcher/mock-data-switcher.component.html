@@ -1,0 +1,37 @@
+<div class="mock-switcher" [class.expanded]="isExpanded">
+  <button class="toggle-bar" (click)="toggleExpanded()">
+    <span class="toggle-icon">🛠️</span>
+    <span class="toggle-label">Entwicklermenü</span>
+    <span class="toggle-arrow">{{ isExpanded ? '▼' : '▲' }}</span>
+  </button>
+
+  @if (isExpanded) {
+    <div class="panel">
+      @if (currentModes$ | async; as modes) {
+        @for (category of categories; track category.id) {
+          <div class="category">
+            <button class="category-header" (click)="toggleCategory(category.id)">
+              <span>{{ category.icon }} {{ category.label }}</span>
+              <span class="current-mode">
+                {{ getCurrentModeLabel(category) | async }}
+              </span>
+            </button>
+            @if (isCategoryExpanded(category.id)) {
+              <div class="category-modes">
+                @for (mode of category.modes; track mode.value) {
+                  <button
+                    class="mode-btn"
+                    [class.active]="modes.get(category.id) === mode.value"
+                    (click)="switchMode(category, mode)"
+                  >
+                    {{ mode.icon }} {{ mode.label }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

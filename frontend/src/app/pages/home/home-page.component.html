@@ -1,0 +1,46 @@
+<div class="home-page" *transloco="let t">
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">{{ t('home.title') }}</h1>
+      <p class="hero-subtitle">
+        {{ t('home.subtitle') }}
+      </p>
+      <a mat-flat-button routerLink="/policies" class="hero-cta">
+        <span class="material-icons">description</span>
+        {{ t('home.cta') }}
+      </a>
+    </div>
+  </section>
+
+  <section class="features">
+    <mat-card class="feature-card" appearance="outlined">
+      <mat-card-header>
+        <span class="material-icons feature-icon">add_circle_outline</span>
+        <mat-card-title>{{ t('home.features.create.title') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ t('home.features.create.description') }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="feature-card" appearance="outlined">
+      <mat-card-header>
+        <span class="material-icons feature-icon">visibility</span>
+        <mat-card-title>{{ t('home.features.overview.title') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ t('home.features.overview.description') }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="feature-card" appearance="outlined">
+      <mat-card-header>
+        <span class="material-icons feature-icon">edit</span>
+        <mat-card-title>{{ t('home.features.manage.title') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ t('home.features.manage.description') }}</p>
+      </mat-card-content>
+    </mat-card>
+  </section>
+</div>

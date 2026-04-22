@@ -1,0 +1,16 @@
+<mat-toolbar class="cx-header" *transloco="let t">
+  <a routerLink="/" class="logo-link">
+    <img src="assets/images/CX-BWM-quer-RGB.jpg" alt="Construct-X" class="logo" />
+  </a>
+
+  <nav class="nav-links">
+    <a mat-button routerLink="/policies" routerLinkActive="active" class="nav-link">
+      <span class="material-icons nav-icon">description</span>
+      {{ t('header.policies') }}
+    </a>
+  </nav>
+
+  <span class="spacer"></span>
+
+  <span class="app-title">{{ t('header.appTitle') }}</span>
+</mat-toolbar>

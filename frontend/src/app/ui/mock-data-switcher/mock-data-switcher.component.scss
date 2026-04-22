@@ -1,0 +1,101 @@
+.mock-switcher {
+  position: fixed;
+  bottom: 0;
+  right: 16px;
+  z-index: 10000;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+}
+
+.toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #0a3b93, #3455a1);
+  color: #fff;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+
+  &:hover {
+    background: linear-gradient(135deg, #3455a1, #0a3b93);
+  }
+}
+
+.toggle-arrow {
+  font-size: 10px;
+}
+
+.panel {
+  background: #1a1a2e;
+  border-radius: 8px 0 0 0;
+  padding: 12px;
+  min-width: 280px;
+  max-height: 400px;
+  overflow-y: auto;
+  color: #e0e0e0;
+}
+
+.category {
+  margin-bottom: 8px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 6px;
+  color: #e0e0e0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+.current-mode {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.category-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0 0 12px;
+}
+
+.mode-btn {
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #ccc;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+
+  &.active {
+    background: #3455a1;
+    border-color: #3455a1;
+    color: #fff;
+    font-weight: 600;
+  }
+}

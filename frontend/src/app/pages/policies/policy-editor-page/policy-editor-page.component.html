@@ -1,0 +1,102 @@
+<div class="policy-editor" *transloco="let t">
+  <a [routerLink]="isEditMode() ? ['/policies', policyId()] : ['/policies']" class="back-link">
+    <span class="material-icons">arrow_back</span>
+    {{ isEditMode() ? t('policyEditor.backToPolicy') : t('policyEditor.backToOverview') }}
+  </a>
+
+  <h1>{{ isEditMode() ? t('policyEditor.titleEdit') : t('policyEditor.titleCreate') }}</h1>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-card appearance="outlined" class="editor-card">
+        <mat-card-content>
+          <h2 class="section-title">{{ t('policyEditor.sections.general') }}</h2>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('policyEditor.fields.name') }}</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              [placeholder]="t('policyEditor.fields.namePlaceholder')"
+            />
+            <mat-error>{{ t('policyEditor.fields.nameRequired') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('policyEditor.fields.description') }}</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              rows="3"
+              [placeholder]="t('policyEditor.fields.descriptionPlaceholder')"
+            ></textarea>
+          </mat-form-field>
+
+          @if (isEditMode()) {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ t('policyEditor.fields.status') }}</mat-label>
+              <mat-select formControlName="status">
+                @for (s of statuses; track s.value) {
+                  <mat-option [value]="s.value">{{ t('status.' + s.value) }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="editor-card">
+        <mat-card-content>
+          <h2 class="section-title">{{ t('policyEditor.sections.content') }}</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('policyEditor.fields.odrlJsonLd') }}</mat-label>
+            <textarea
+              matInput
+              formControlName="content"
+              rows="12"
+              class="monospace-input"
+              [placeholder]="t('policyEditor.fields.odrlPlaceholder')"
+            ></textarea>
+            <mat-hint>{{ t('policyEditor.fields.odrlHint') }}</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="editor-card">
+        <mat-card-content>
+          <h2 class="section-title">{{ t('policyEditor.sections.legalText') }}</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t('policyEditor.fields.legalText') }}</mat-label>
+            <textarea
+              matInput
+              formControlName="legalText"
+              rows="10"
+              [placeholder]="t('policyEditor.fields.legalTextPlaceholder')"
+            ></textarea>
+            <mat-hint>{{ t('policyEditor.fields.legalTextHint') }}</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="cancel()">
+          {{ t('policyEditor.actions.cancel') }}
+        </button>
+        @if (saving()) {
+          <button mat-flat-button type="button" class="save-btn" disabled>
+            <mat-spinner diameter="20"></mat-spinner>
+          </button>
+        } @else {
+          <button mat-flat-button type="submit" class="save-btn">
+            <span class="material-icons">save</span>
+            {{ isEditMode() ? t('policyEditor.actions.save') : t('policyEditor.actions.create') }}
+          </button>
+        }
+      </div>
+    </form>
+  }
+</div>

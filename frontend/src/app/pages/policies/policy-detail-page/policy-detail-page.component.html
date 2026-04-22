@@ -1,0 +1,71 @@
+<div class="policy-detail" *transloco="let t">
+  <a routerLink="/policies" class="back-link">
+    <span class="material-icons">arrow_back</span>
+    {{ t('policyDetail.backToOverview') }}
+  </a>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else if (policy(); as p) {
+    <div class="detail-header">
+      <div class="header-info">
+        <h1>{{ p.name }}</h1>
+        <app-status-badge [status]="p.status" />
+      </div>
+      <div class="header-actions">
+        <a mat-stroked-button [routerLink]="['/policies', p.id, 'edit']">
+          <span class="material-icons">edit</span>
+          {{ t('policyDetail.edit') }}
+        </a>
+        <button mat-stroked-button color="warn" (click)="deletePolicy()">
+          <span class="material-icons">delete</span>
+          {{ t('policyDetail.delete') }}
+        </button>
+      </div>
+    </div>
+
+    <mat-card appearance="outlined" class="detail-card">
+      <mat-card-content>
+        <div class="detail-section">
+          <h3>{{ t('policyDetail.description') }}</h3>
+          <p class="description-text">{{ p.description || t('policyDetail.noDescription') }}</p>
+        </div>
+
+        <div class="detail-meta">
+          <div class="meta-item">
+            <span class="meta-label">{{ t('policyDetail.created') }}</span>
+            <span class="meta-value">{{ formatDate(p.createdAt) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">{{ t('policyDetail.lastChange') }}</span>
+            <span class="meta-value">{{ formatDate(p.updatedAt) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">{{ t('policyDetail.id') }}</span>
+            <span class="meta-value meta-id">{{ p.id }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (p.content) {
+      <div class="content-section">
+        <h2>{{ t('policyDetail.policyContent') }}</h2>
+        <app-json-viewer [json]="p.content" />
+      </div>
+    }
+
+    @if (p.legalText) {
+      <div class="content-section">
+        <h2>{{ t('policyDetail.legalText') }}</h2>
+        <mat-card appearance="outlined" class="legal-text-card">
+          <mat-card-content>
+            <pre class="legal-text">{{ p.legalText }}</pre>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  }
+</div>
