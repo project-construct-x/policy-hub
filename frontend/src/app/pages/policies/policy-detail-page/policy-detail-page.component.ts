@@ -1,31 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
-import { StatusBadgeComponent } from '@ui/status-badge/status-badge.component';
-import { JsonViewerComponent } from '@ui/json-viewer/json-viewer.component';
 import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-policy-detail-page',
-  imports: [
-    CommonModule,
-    RouterLink,
-    MatButtonModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    TranslocoDirective,
-    StatusBadgeComponent,
-    JsonViewerComponent,
-  ],
+  imports: [RouterLink, MatDialogModule, TranslocoDirective],
   templateUrl: './policy-detail-page.component.html',
   styleUrl: './policy-detail-page.component.scss',
 })
@@ -60,13 +44,18 @@ export class PolicyDetailPageComponent implements OnInit {
   }
 
   formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const date = new Date(iso);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    if (diff < oneDay && date.getDate() === now.getDate()) {
+      return `heute, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    if (diff < 2 * oneDay) {
+      return `gestern, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+    return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   deletePolicy(): void {

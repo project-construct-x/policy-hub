@@ -5,6 +5,10 @@ export interface Policy {
   name: string;
   description: string;
   status: PolicyStatus;
+  useCaseContext: string;
+  purpose: string;
+  permittedUsage: string;
+  restrictions: string;
   content: string | null;
   legalText: string | null;
   createdAt: string;
@@ -14,6 +18,10 @@ export interface Policy {
 export interface CreatePolicyRequest {
   name: string;
   description: string;
+  useCaseContext: string;
+  purpose: string;
+  permittedUsage: string;
+  restrictions: string;
   content: string | null;
   legalText: string | null;
 }
@@ -22,6 +30,10 @@ export interface UpdatePolicyRequest {
   name: string;
   description: string;
   status: PolicyStatus;
+  useCaseContext: string;
+  purpose: string;
+  permittedUsage: string;
+  restrictions: string;
   content: string | null;
   legalText: string | null;
 }

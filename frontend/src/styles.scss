@@ -2,7 +2,7 @@
 
 // ============================================================
 // Construct-X Design Tokens
-// Based on: Construct-X Styleguide (Farbigkeit + Typografie)
+// Source: Policy_hub.pen (Design-Variablen)
 // ============================================================
 :root {
   // Primary Colors
@@ -26,18 +26,27 @@
   --cx-white: #ffffff;
   --cx-black: #000000;
 
-  // Semantic
-  --cx-text-primary: #000000;
-  --cx-text-secondary: #818386;
+  // Text
+  --cx-text-primary: #111111;
+  --cx-text-secondary: #555555;
+  --cx-text-tertiary: #888888;
+
+  // Backgrounds
   --cx-bg-primary: #ffffff;
-  --cx-bg-secondary: #f4f3f3;
-  --cx-border-color: #c9d8e0;
+  --cx-bg-page: #fafafa;
+  --cx-bg-card: #ffffff;
+
+  // Borders
+  --cx-border-color: #e5e5e5;
+
+  // Accent
   --cx-accent: #e53d17;
 
-  // Status colors
-  --cx-status-draft: #ec9c49;
-  --cx-status-active: #3455a1;
-  --cx-status-archived: #818386;
+  // Semantic / Feedback
+  --cx-success: #2e7d32;
+  --cx-error: #d32f2f;
+  --cx-warning: #f08109;
+  --cx-info: #0a3b93;
 }
 
 // ============================================================
@@ -71,7 +80,7 @@ body {
 // Global Utility Styles
 // ============================================================
 a {
-  color: var(--cx-dark-blue);
+  color: var(--cx-orange);
   text-decoration: none;
 
   &:hover {

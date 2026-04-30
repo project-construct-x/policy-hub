@@ -1,32 +1,15 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
-import { Policy, PolicyStatus } from '@shared/types/policy.model';
+import { PolicyStatus } from '@shared/types/policy.model';
 
 @Component({
   selector: 'app-policy-editor-page',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    TranslocoDirective,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, TranslocoDirective],
   templateUrl: './policy-editor-page.component.html',
   styleUrl: './policy-editor-page.component.scss',
 })
@@ -42,19 +25,37 @@ export class PolicyEditorPageComponent implements OnInit {
   loading = signal(false);
   saving = signal(false);
   policyId = signal<string | null>(null);
+  currentStep = signal(0);
 
-  statuses: { value: PolicyStatus }[] = [
-    { value: 'DRAFT' },
-    { value: 'ACTIVE' },
-    { value: 'ARCHIVED' },
+  steps = ['grundlagen', 'useCase', 'nutzung', 'pruefen'] as const;
+
+  useCaseOptions = [
+    'Qualitätssicherung Bau',
+    'Planung und Koordination',
+    'Baustellenlogistik',
+    'Arbeitssicherheit',
+    'Datenfreigabe extern',
   ];
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(255)]],
     description: ['', [Validators.maxLength(2000)]],
-    status: ['DRAFT' as PolicyStatus],
-    content: [''],
+    useCaseContext: ['', [Validators.required]],
+    purpose: ['', [Validators.maxLength(2000)]],
+    permittedUsage: ['', [Validators.maxLength(2000)]],
+    restrictions: ['', [Validators.maxLength(2000)]],
     legalText: [''],
+    status: ['DRAFT' as PolicyStatus],
+  });
+
+  canProceed = computed(() => {
+    const step = this.currentStep();
+    if (step === 0) {
+      const name = this.form.get('name');
+      const ctx = this.form.get('useCaseContext');
+      return name?.valid && ctx?.valid;
+    }
+    return true;
   });
 
   ngOnInit(): void {
@@ -73,9 +74,12 @@ export class PolicyEditorPageComponent implements OnInit {
         this.form.patchValue({
           name: policy.name,
           description: policy.description,
-          status: policy.status,
-          content: policy.content ?? '',
+          useCaseContext: policy.useCaseContext,
+          purpose: policy.purpose,
+          permittedUsage: policy.permittedUsage,
+          restrictions: policy.restrictions,
           legalText: policy.legalText ?? '',
+          status: policy.status,
         });
         this.loading.set(false);
       },
@@ -86,24 +90,48 @@ export class PolicyEditorPageComponent implements OnInit {
     });
   }
 
+  nextStep(): void {
+    if (this.currentStep() < 3) {
+      this.currentStep.update((s) => s + 1);
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep() > 0) {
+      this.currentStep.update((s) => s - 1);
+    }
+  }
+
+  goToStep(index: number): void {
+    this.currentStep.set(index);
+  }
+
+  skipToReview(): void {
+    this.currentStep.set(3);
+  }
+
   save(): void {
-    if (this.form.invalid) {
+    if (this.form.get('name')?.invalid) {
+      this.currentStep.set(0);
       this.form.markAllAsTouched();
       return;
     }
 
     this.saving.set(true);
-    const formValue = this.form.getRawValue();
-    const content = formValue.content?.trim() || null;
-    const legalText = formValue.legalText?.trim() || null;
+    const v = this.form.getRawValue();
+    const legalText = v.legalText?.trim() || null;
 
     if (this.isEditMode()) {
       this.policyService
         .update(this.policyId()!, {
-          name: formValue.name!,
-          description: formValue.description ?? '',
-          status: formValue.status!,
-          content,
+          name: v.name!,
+          description: v.description ?? '',
+          status: v.status!,
+          useCaseContext: v.useCaseContext ?? '',
+          purpose: v.purpose ?? '',
+          permittedUsage: v.permittedUsage ?? '',
+          restrictions: v.restrictions ?? '',
+          content: null,
           legalText,
         })
         .subscribe({
@@ -124,9 +152,13 @@ export class PolicyEditorPageComponent implements OnInit {
     } else {
       this.policyService
         .create({
-          name: formValue.name!,
-          description: formValue.description ?? '',
-          content,
+          name: v.name!,
+          description: v.description ?? '',
+          useCaseContext: v.useCaseContext ?? '',
+          purpose: v.purpose ?? '',
+          permittedUsage: v.permittedUsage ?? '',
+          restrictions: v.restrictions ?? '',
+          content: null,
           legalText,
         })
         .subscribe({

@@ -1,0 +1,3610 @@
+{
+  "version": "2.11",
+  "children": [
+    {
+      "type": "frame",
+      "id": "tZH6s",
+      "x": 4920,
+      "y": 0,
+      "name": "Construct-X Guided Minimal",
+      "width": 1440,
+      "height": 7499,
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "Uv3za",
+          "x": 0,
+          "y": 0,
+          "name": "variantLabel",
+          "fill": "$cx-text-primary",
+          "content": "Construct-X Guided Minimal",
+          "fontFamily": "Montserrat",
+          "fontSize": 32,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "dQhXD",
+          "x": 0,
+          "y": 119,
+          "name": "Guided Minimal - Startseite",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "SVH0I",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h1"
+            },
+            {
+              "type": "frame",
+              "id": "YOIy3",
+              "name": "Main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 44,
+              "padding": [
+                56,
+                96
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gvR1g",
+                  "name": "intro",
+                  "width": "fill_container",
+                  "gap": 56,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "wfnEA",
+                      "name": "introText",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 18,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fuw8E",
+                          "name": "eyebrow",
+                          "fill": "$cx-orange",
+                          "content": "Construct-X Policy Hub",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "GjJQL",
+                          "name": "title",
+                          "fill": "$cx-text-primary",
+                          "content": "Richtlinien verständlich verwalten",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 34,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "m0nm6",
+                          "name": "desc",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Erstellen, prüfen und pflegen Sie Nutzungsbedingungen für Datenräume, Projekte und Partner. Der Policy Hub führt fachlich durch die wichtigsten Entscheidungen, ohne technische Details in den Vordergrund zu stellen.",
+                          "lineHeight": 1.6,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 15,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Kl4vL",
+                          "name": "actions",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "FoiAo",
+                              "name": "primary",
+                              "height": 42,
+                              "fill": "$cx-orange",
+                              "cornerRadius": 8,
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                22
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "m9G6s",
+                                  "name": "pi",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "plus",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-white"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "UQsuG",
+                                  "name": "pt",
+                                  "fill": "$cx-white",
+                                  "content": "Richtlinie erstellen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ekQcy",
+                              "name": "secondary",
+                              "height": 42,
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "padding": [
+                                0,
+                                18
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "eTOdD",
+                                  "name": "st",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "Richtlinien ansehen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "s7LQbl",
+                      "name": "Orientierung",
+                      "width": 420,
+                      "fill": "$cx-bg-page",
+                      "cornerRadius": 12,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 18,
+                      "padding": 28,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "L59GZe",
+                          "name": "pTitle",
+                          "fill": "$cx-text-primary",
+                          "content": "Ihr nächster sinnvoller Schritt",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yNUXA",
+                          "name": "pDesc",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Beginnen Sie mit einer neuen Richtlinie oder prüfen Sie bestehende Regeln, bevor Daten mit Partnern geteilt werden.",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "V7CGWS",
+                          "name": "step1",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Fm8UH",
+                              "name": "s1n",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$cx-light-orange",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "qHuua",
+                                  "name": "s1t",
+                                  "fill": "$cx-orange",
+                                  "content": "1",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 12,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Pt226",
+                              "name": "s1c",
+                              "fill": "$cx-text-primary",
+                              "content": "Zweck und Einsatzkontext klären",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "pefsr",
+                          "name": "step2",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "r0c6Qm",
+                              "name": "s2n",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$cx-light-gray",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "jRcwR",
+                                  "name": "s2t",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "2",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 12,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "BPXSs",
+                              "name": "s2c",
+                              "fill": "$cx-text-primary",
+                              "content": "Nutzungsbedingungen formulieren",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "OIgNv",
+                          "name": "step3",
+                          "width": "fill_container",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "zc7fL",
+                              "name": "s3n",
+                              "width": 28,
+                              "height": 28,
+                              "fill": "$cx-light-gray",
+                              "cornerRadius": 14,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "EqCfi",
+                                  "name": "s3t",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "3",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 12,
+                                  "fontWeight": "700"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "vk412",
+                              "name": "s3c",
+                              "fill": "$cx-text-primary",
+                              "content": "Prüfen und veröffentlichen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cGrfI",
+                  "name": "Start cards",
+                  "width": "fill_container",
+                  "height": 132,
+                  "gap": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "OYN5P",
+                      "name": "card1",
+                      "width": "fill_container",
+                      "height": 132,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 18,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "m9ZRZ",
+                          "fill": "$cx-text-secondary",
+                          "content": "Policies im Hub",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "dheW9",
+                          "fill": "$cx-text-primary",
+                          "content": "12",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 30,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Z1AMq",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Gesamtzahl der angelegten Policies",
+                          "lineHeight": 1.45,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "e64Bkw",
+                      "name": "card2",
+                      "width": "fill_container",
+                      "height": 132,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 18,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "CtkwB",
+                          "fill": "$cx-text-secondary",
+                          "content": "Anwendungsbereiche",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h0CY5u",
+                          "fill": "$cx-text-primary",
+                          "content": "4",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 30,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rqXwv",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Bereiche, für die Policies angelegt wurden",
+                          "lineHeight": 1.45,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "tKsFr",
+                      "name": "card3",
+                      "width": "fill_container",
+                      "height": 132,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 18,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "pgpz1",
+                          "fill": "$cx-text-secondary",
+                          "content": "Nutzungsregeln",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "z6mnOr",
+                          "fill": "$cx-text-primary",
+                          "content": "28",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 30,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h5TRYe",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fachliche Regeln, die in Policies beschrieben sind",
+                          "lineHeight": 1.45,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qHXGA",
+                  "name": "Kuerzlich bearbeitet",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "SmKkw",
+                      "name": "rh",
+                      "width": "fill_container",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "jeGZc",
+                          "name": "rht",
+                          "fill": "$cx-text-primary",
+                          "content": "Kürzlich bearbeitet",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 18,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Byaww",
+                          "name": "rsp",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "text",
+                          "id": "RPNPE",
+                          "name": "rhl",
+                          "fill": "$cx-orange",
+                          "content": "Alle Richtlinien anzeigen",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Gfmht",
+                      "name": "list",
+                      "width": "fill_container",
+                      "fill": "$cx-white",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Q1pUU",
+                          "name": "r1",
+                          "width": "fill_container",
+                          "height": 64,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": {
+                              "bottom": 1
+                            },
+                            "fill": "$cx-border"
+                          },
+                          "gap": 16,
+                          "padding": [
+                            0,
+                            20
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WPtcH",
+                              "name": "r1name",
+                              "fill": "$cx-text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 360,
+                              "content": "Baustellendaten für Qualitätsprüfungen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Jmmc8",
+                              "name": "r1ctx",
+                              "fill": "$cx-text-secondary",
+                              "content": "Qualitätssicherung",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hkniY",
+                              "name": "r1sp",
+                              "width": "fill_container",
+                              "height": 1
+                            },
+                            {
+                              "type": "text",
+                              "id": "qEJV4",
+                              "name": "r1date",
+                              "fill": "$cx-text-tertiary",
+                              "content": "Heute geändert",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FnjTs",
+                          "name": "r2",
+                          "width": "fill_container",
+                          "height": 64,
+                          "gap": 16,
+                          "padding": [
+                            0,
+                            20
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "V8UtU",
+                              "name": "r2name",
+                              "fill": "$cx-text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 360,
+                              "content": "BIM-Daten mit Planungspartnern teilen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "h35Bu",
+                              "name": "r2ctx",
+                              "fill": "$cx-text-secondary",
+                              "content": "Planung und Koordination",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "VSWbd",
+                              "name": "r2sp",
+                              "width": "fill_container",
+                              "height": 1
+                            },
+                            {
+                              "type": "text",
+                              "id": "S08GbU",
+                              "name": "r2date",
+                              "fill": "$cx-text-tertiary",
+                              "content": "Gestern geändert",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UKD6z",
+          "x": 0,
+          "y": 1099,
+          "name": "Guided Minimal - Policy Übersicht",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "p9qj2I",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h2"
+            },
+            {
+              "type": "frame",
+              "id": "KV9pv",
+              "name": "Main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                44,
+                96
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "PUdLa",
+                  "name": "top",
+                  "width": "fill_container",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gFZTL",
+                      "name": "tleft",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fuzJY",
+                          "name": "title",
+                          "fill": "$cx-text-primary",
+                          "content": "Richtlinienübersicht",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 26,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ApcKy",
+                          "name": "sub",
+                          "fill": "$cx-text-secondary",
+                          "content": "Alle Nutzungsbedingungen mit Use-Case-Kontext und letzter Änderung.",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W3dyU",
+                      "name": "btn",
+                      "height": 40,
+                      "fill": "$cx-orange",
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "TE34Z",
+                          "name": "bi",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "plus",
+                          "iconFontFamily": "lucide",
+                          "fill": "$cx-white"
+                        },
+                        {
+                          "type": "text",
+                          "id": "z8nggL",
+                          "name": "bt",
+                          "fill": "$cx-white",
+                          "content": "Richtlinie erstellen",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "y6er6",
+                  "name": "filters",
+                  "width": "fill_container",
+                  "height": 42,
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "xLwKr",
+                      "name": "search",
+                      "width": 720,
+                      "height": 42,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        14
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "PdMqI",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "search",
+                          "iconFontFamily": "lucide",
+                          "fill": "$cx-text-tertiary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "sn837",
+                          "fill": "$cx-text-tertiary",
+                          "content": "Nach Name oder Use-Case-Kontext suchen",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "djzU9",
+                      "name": "context",
+                      "width": 250,
+                      "height": 42,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "RijfS",
+                          "fill": "$cx-text-secondary",
+                          "content": "Use-Case-Kontext",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "f32z86",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "chevron-down",
+                          "iconFontFamily": "lucide",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QWxNh",
+                      "name": "dateFilter",
+                      "width": 130,
+                      "height": 42,
+                      "fill": "$cx-white",
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        16
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "nVq36",
+                          "fill": "$cx-text-secondary",
+                          "content": "Datum",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "u80TQe",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "chevron-down",
+                          "iconFontFamily": "lucide",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZDV0n",
+                  "name": "Policy Liste",
+                  "clip": true,
+                  "width": "fill_container",
+                  "fill": "$cx-white",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$cx-border"
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "eXwnI",
+                      "name": "head",
+                      "width": "fill_container",
+                      "height": 48,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "HfVR5",
+                          "name": "hName",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 470,
+                          "content": "Name",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "q2NA5",
+                          "name": "hCtx",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 280,
+                          "content": "Use-Case-Kontext",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ZZgba",
+                          "name": "hChange",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 180,
+                          "content": "Letzte Änderung",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 12,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Cx7xk",
+                          "name": "hSpacer",
+                          "width": "fill_container",
+                          "height": 1
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "hPtg2",
+                      "name": "row1",
+                      "width": "fill_container",
+                      "height": 74,
+                      "fill": "$cx-white",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "VKOfA",
+                          "name": "r1info",
+                          "width": 470,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JguuW",
+                              "name": "r1n",
+                              "fill": "$cx-text-primary",
+                              "content": "Baustellendaten für Qualitätsprüfungen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "AkYvE",
+                              "name": "r1d",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Regelt die Nutzung von Baustellendaten für interne Prüfungen.",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "w98owg",
+                          "name": "r1c",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": 280,
+                          "content": "Qualitätssicherung",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "CrO5H",
+                          "name": "r1m",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 180,
+                          "content": "Heute, 09:40",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "skXhO",
+                          "name": "r1sp",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "j5yIY",
+                          "name": "viewIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "visibility",
+                          "iconFontFamily": "Material Symbols Outlined",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "NU69P",
+                      "name": "row2",
+                      "width": "fill_container",
+                      "height": 74,
+                      "fill": "$cx-white",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "mYgAZ",
+                          "name": "r2info",
+                          "width": 470,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "lB09k",
+                              "name": "r2n",
+                              "fill": "$cx-text-primary",
+                              "content": "BIM-Daten mit Planungspartnern teilen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "kyGY9",
+                              "name": "r2d",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Definiert Bedingungen für Modell- und Planungsdaten.",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "g2FKbb",
+                          "name": "r2c",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": 280,
+                          "content": "Planung und Koordination",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "m9SbW5",
+                          "name": "r2m",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 180,
+                          "content": "Gestern, 16:10",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dYUFu",
+                          "name": "r2sp",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "ZS4Hj",
+                          "name": "viewIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "visibility",
+                          "iconFontFamily": "Material Symbols Outlined",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "X0LAY",
+                      "name": "row3",
+                      "width": "fill_container",
+                      "height": 74,
+                      "fill": "$cx-white",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Y8iI5",
+                          "name": "r3info",
+                          "width": 470,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dteU2",
+                              "name": "r3n",
+                              "fill": "$cx-text-primary",
+                              "content": "Materialprüfungen bereitstellen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "igxuJ",
+                              "name": "r3d",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Steuert Zugriff auf Prüfberichte und Materialdaten.",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "RwdMF",
+                          "name": "r3c",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": 280,
+                          "content": "Materialprüfung",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "WYDeR",
+                          "name": "r3m",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 180,
+                          "content": "24. April 2026",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "p8fRro",
+                          "name": "r3sp",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "y7r1Td",
+                          "name": "viewIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "visibility",
+                          "iconFontFamily": "Material Symbols Outlined",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lc0yX",
+                      "name": "row4",
+                      "width": "fill_container",
+                      "height": 74,
+                      "fill": "$cx-white",
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "gap": 18,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ZHOWu",
+                          "name": "r4info",
+                          "width": 470,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "XdfxN",
+                              "name": "r4n",
+                              "fill": "$cx-text-primary",
+                              "content": "Datenfreigabe an Nachunternehmer",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "VeDQv",
+                              "name": "r4d",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Beschreibt erlaubte Weitergabe und notwendige Freigaben.",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "TPrcs",
+                          "name": "r4c",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": 280,
+                          "content": "Partnerarbeit",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "aDReb",
+                          "name": "r4m",
+                          "fill": "$cx-text-tertiary",
+                          "textGrowth": "fixed-width",
+                          "width": 180,
+                          "content": "21. April 2026",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aeIQd",
+                          "name": "r4sp",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "mFF2f",
+                          "name": "viewIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "visibility",
+                          "iconFontFamily": "Material Symbols Outlined",
+                          "fill": "$cx-text-tertiary"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "N11h83",
+                  "name": "Pagination",
+                  "width": "fill_container",
+                  "height": 40,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "GqI5q",
+                      "x": 0,
+                      "y": 10,
+                      "name": "info",
+                      "fill": "$cx-text-tertiary",
+                      "content": "1–4 von 12 Richtlinien",
+                      "fontFamily": "Montserrat",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "WiZ14",
+                      "x": 148,
+                      "y": 20,
+                      "name": "sp",
+                      "width": 872,
+                      "height": 1,
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "uTW5W",
+                      "x": 1036,
+                      "y": 2,
+                      "name": "controls",
+                      "width": 212,
+                      "height": 36,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "K1LfUc",
+                          "x": 0,
+                          "y": 0,
+                          "name": "prev",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$cx-white",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "U1Gvm",
+                              "x": 10,
+                              "y": 10,
+                              "name": "prevIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "chevron-left",
+                              "iconFontFamily": "lucide",
+                              "fill": "$cx-text-tertiary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HbUCf",
+                          "x": 44,
+                          "y": 0,
+                          "name": "p1",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$cx-light-orange",
+                          "cornerRadius": 8,
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jthyW",
+                              "x": 15,
+                              "y": 9,
+                              "name": "p1t",
+                              "fill": "$cx-orange",
+                              "content": "1",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Mvvwp",
+                          "x": 88,
+                          "y": 0,
+                          "name": "p2",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$cx-white",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "M0pn0M",
+                              "x": 14,
+                              "y": 9,
+                              "name": "p2t",
+                              "fill": "$cx-text-secondary",
+                              "content": "2",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "V0xZ1e",
+                          "x": 132,
+                          "y": 0,
+                          "name": "p3",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$cx-white",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "iIVDS",
+                              "x": 14,
+                              "y": 9,
+                              "name": "p3t",
+                              "fill": "$cx-text-secondary",
+                              "content": "3",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JmZAl",
+                          "x": 176,
+                          "y": 0,
+                          "name": "next",
+                          "width": 36,
+                          "height": 36,
+                          "fill": "$cx-white",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "AD6rB",
+                              "x": 10,
+                              "y": 10,
+                              "name": "nextIcon",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "chevron-right",
+                              "iconFontFamily": "lucide",
+                              "fill": "$cx-text-secondary"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "uyZ0q",
+          "x": 0,
+          "y": 2079,
+          "name": "Guided Minimal - Policy Detail",
+          "clip": true,
+          "width": 1440,
+          "height": 1200,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "Ka32P",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h3"
+            },
+            {
+              "type": "frame",
+              "id": "f2Q9X",
+              "name": "Main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 32,
+              "padding": [
+                44,
+                96
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "lkc8b",
+                  "name": "hero",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 14,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "VmIkJ",
+                      "name": "Detail top actions",
+                      "width": "fill_container",
+                      "height": 40,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "w9MUnC",
+                          "height": 36,
+                          "fill": "$cx-white",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            14
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "njmFA",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "arrow-left",
+                              "iconFontFamily": "lucide",
+                              "fill": "$cx-orange"
+                            },
+                            {
+                              "type": "text",
+                              "id": "j2D4U3",
+                              "fill": "$cx-orange",
+                              "content": "Zurück zur Übersicht",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "NFYC5",
+                          "width": "fill_container",
+                          "height": 1
+                        },
+                        {
+                          "type": "frame",
+                          "id": "J6FZ3J",
+                          "height": 36,
+                          "fill": "$cx-orange",
+                          "cornerRadius": 8,
+                          "gap": 8,
+                          "padding": [
+                            0,
+                            16
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "I4LnW",
+                              "width": 15,
+                              "height": 15,
+                              "iconFontName": "pencil",
+                              "iconFontFamily": "lucide",
+                              "fill": "$cx-white"
+                            },
+                            {
+                              "type": "text",
+                              "id": "KrREu",
+                              "fill": "$cx-white",
+                              "content": "Bearbeiten",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "Z8R9GP",
+                      "name": "title",
+                      "fill": "$cx-text-primary",
+                      "content": "Baustellendaten für Qualitätsprüfungen",
+                      "fontFamily": "Montserrat",
+                      "fontSize": 30,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HZ6Wm",
+                      "name": "summary",
+                      "fill": "$cx-text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": 760,
+                      "content": "Diese Richtlinie beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen. Sie hilft Projektteams, Daten nachvollziehbar, zweckgebunden und regelkonform einzusetzen.",
+                      "lineHeight": 1.6,
+                      "fontFamily": "Montserrat",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Z8mppS",
+                      "name": "meta",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "iD2fV",
+                          "fill": "$cx-text-secondary",
+                          "content": "Use-Case-Kontext: Qualitätssicherung",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "EnTRR",
+                          "fill": "$cx-text-tertiary",
+                          "content": "Zuletzt geändert: heute, 09:40",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YfwWK",
+                  "name": "cols",
+                  "width": "fill_container",
+                  "gap": 28,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jHEuy",
+                      "name": "left",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 20,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "DgnHJ",
+                          "name": "purpose",
+                          "width": "fill_container",
+                          "fill": "$cx-white",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "HrQe4",
+                              "name": "ph",
+                              "fill": "$cx-text-primary",
+                              "content": "Zweck der Richtlinie",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 17,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "E87QQh",
+                              "name": "pd",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Die Richtlinie stellt sicher, dass Baustellendaten ausschließlich für interne Qualitätsprüfungen, Nachweise und Verbesserungen im Projektablauf genutzt werden.",
+                              "lineHeight": 1.6,
+                              "fontFamily": "Montserrat",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "m2vCsb",
+                          "name": "usage",
+                          "width": "fill_container",
+                          "fill": "$cx-white",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "vertical",
+                          "gap": 14,
+                          "padding": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "N0V4Tb",
+                              "name": "uh",
+                              "fill": "$cx-text-primary",
+                              "content": "Erlaubte Nutzung",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 17,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "XAxZ8",
+                              "name": "u1",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "gXllP",
+                                  "name": "u1i",
+                                  "width": 18,
+                                  "height": 18,
+                                  "iconFontName": "check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-success"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "r33Xvq",
+                                  "name": "u1t",
+                                  "fill": "$cx-text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Auswertung von Baustellendaten zur Qualitätsprüfung innerhalb des Projekts",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "ttTw9",
+                              "name": "u2",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "H9a79V",
+                                  "name": "u2i",
+                                  "width": 18,
+                                  "height": 18,
+                                  "iconFontName": "check",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-success"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ck2Jm",
+                                  "name": "u2t",
+                                  "fill": "$cx-text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Erstellung von Nachweisen für Bauleitung, Qualitätssicherung und interne Audits",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "tttGP",
+                          "name": "limits",
+                          "width": "fill_container",
+                          "fill": "$cx-white",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "vertical",
+                          "gap": 14,
+                          "padding": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "tXVfw",
+                              "name": "lh",
+                              "fill": "$cx-text-primary",
+                              "content": "Einschränkungen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 17,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "igLgo",
+                              "name": "l1",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "F52Or",
+                                  "name": "l1i",
+                                  "width": 18,
+                                  "height": 18,
+                                  "iconFontName": "circle-minus",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-warning"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "V2oXTH",
+                                  "name": "l1t",
+                                  "fill": "$cx-text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Eine Weitergabe an externe Dritte ist nur nach fachlicher Freigabe erlaubt.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "VQXAR",
+                              "name": "l2",
+                              "width": "fill_container",
+                              "gap": 10,
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "yXIB0",
+                                  "name": "l2i",
+                                  "width": 18,
+                                  "height": 18,
+                                  "iconFontName": "circle-minus",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-warning"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "TMdJL",
+                                  "name": "l2t",
+                                  "fill": "$cx-text-secondary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Daten dürfen nicht für andere Zwecke oder andere Projekte verwendet werden.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "f4mQk",
+                      "name": "right",
+                      "width": 340,
+                      "layout": "vertical",
+                      "gap": 20,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "T65Sw",
+                          "name": "card",
+                          "width": "fill_container",
+                          "fill": "$cx-bg-page",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "vertical",
+                          "gap": 14,
+                          "padding": 22,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Hqy78",
+                              "name": "ct",
+                              "fill": "$cx-text-primary",
+                              "content": "Einordnung",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "b6xNH",
+                              "name": "row1",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ME0BJ",
+                                  "name": "r1l",
+                                  "fill": "$cx-text-tertiary",
+                                  "content": "Verantwortlich",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 12,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "crNAd",
+                                  "name": "r1v",
+                                  "fill": "$cx-text-primary",
+                                  "content": "Qualitätssicherung Bau",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "Ah11j",
+                              "name": "row2",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 4,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "W6Y7Up",
+                                  "name": "r2l",
+                                  "fill": "$cx-text-tertiary",
+                                  "content": "Gilt für",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 12,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "Ct1u1",
+                                  "name": "r2v",
+                                  "fill": "$cx-text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Bauleitung, Prüfstellen, Projektteam",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "liAyE",
+                          "name": "legal",
+                          "width": "fill_container",
+                          "fill": "$cx-white",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "layout": "vertical",
+                          "gap": 12,
+                          "padding": 22,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "D9pXsV",
+                              "name": "lt",
+                              "fill": "$cx-text-primary",
+                              "content": "Rechtlicher Hinweis",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "tkBD3",
+                              "name": "ld",
+                              "fill": "$cx-text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Personenbezogene Daten dürfen nur auf Grundlage der freigegebenen Projektvereinbarung genutzt werden. Die Löschung oder Archivierung erfolgt nach Projektabschluss gemäß interner Vorgabe.",
+                              "lineHeight": 1.55,
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "x2ZdE",
+          "x": 0,
+          "y": 3359,
+          "name": "Guided Minimal - Policy erstellen",
+          "clip": true,
+          "width": 1440,
+          "height": 1200,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "DYDrh",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h4"
+            },
+            {
+              "type": "frame",
+              "id": "oJhBa",
+              "name": "Body",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-bg-page",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "N2Sxo",
+                  "layoutPosition": "absolute",
+                  "x": 96,
+                  "y": 40,
+                  "name": "Editor Inhalt",
+                  "width": 1040,
+                  "layout": "vertical",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "rLNED",
+                      "name": "head",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "PQqzG",
+                          "name": "Horizontal Stepper",
+                          "width": "fill_container",
+                          "height": 44,
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "mTodb",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$cx-light-orange",
+                              "cornerRadius": 8,
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "T7mWi3",
+                                  "width": 22,
+                                  "height": 22,
+                                  "fill": "$cx-orange",
+                                  "cornerRadius": 11,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ekLyt",
+                                      "fill": "$cx-white",
+                                      "content": "1",
+                                      "fontFamily": "Montserrat",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "TaPNe",
+                                  "fill": "$cx-orange",
+                                  "content": "Grundlagen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "q51fT",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$cx-white",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "E5g2K",
+                                  "width": 22,
+                                  "height": 22,
+                                  "cornerRadius": 11,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 2,
+                                    "fill": "$cx-border"
+                                  },
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "u20sTd",
+                                      "fill": "$cx-text-tertiary",
+                                      "content": "2",
+                                      "fontFamily": "Montserrat",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "L3h07W",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "Use-Case-Kontext",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "XjJIt",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$cx-white",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "Yy6Mz",
+                                  "width": 22,
+                                  "height": 22,
+                                  "cornerRadius": 11,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 2,
+                                    "fill": "$cx-border"
+                                  },
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "Tk8Ll",
+                                      "fill": "$cx-text-tertiary",
+                                      "content": "3",
+                                      "fontFamily": "Montserrat",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "tjyFM",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "Nutzung",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "hKn88",
+                              "width": "fill_container",
+                              "height": 38,
+                              "fill": "$cx-white",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                12
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "rYWaO",
+                                  "width": 22,
+                                  "height": 22,
+                                  "cornerRadius": 11,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 2,
+                                    "fill": "$cx-border"
+                                  },
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ffWwq",
+                                      "fill": "$cx-text-tertiary",
+                                      "content": "4",
+                                      "fontFamily": "Montserrat",
+                                      "fontSize": 11,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "arBrR",
+                                  "fill": "$cx-text-secondary",
+                                  "content": "Prüfen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "dGQ2s",
+                          "name": "Stepper Abstand",
+                          "width": "fill_container",
+                          "height": 24
+                        },
+                        {
+                          "type": "text",
+                          "id": "isCTw",
+                          "name": "h1",
+                          "fill": "$cx-text-primary",
+                          "content": "Grundlagen der Richtlinie",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 26,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "N6IXT0",
+                          "name": "hd",
+                          "fill": "$cx-text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": 720,
+                          "content": "Beschreiben Sie zuerst Zweck, Titel und Verantwortung. Diese Angaben helfen später beim Wiederfinden und bei der fachlichen Prüfung.",
+                          "lineHeight": 1.55,
+                          "fontFamily": "Montserrat",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "OrLS7",
+                      "name": "form",
+                      "width": "fill_container",
+                      "fill": "$cx-white",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 20,
+                      "padding": 28,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "HATki",
+                          "name": "f1",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "H16Jr",
+                              "name": "f1l",
+                              "fill": "$cx-text-primary",
+                              "content": "Name der Richtlinie",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "mlDrM",
+                              "name": "f1i",
+                              "width": "fill_container",
+                              "height": 46,
+                              "fill": "$cx-white",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "padding": [
+                                0,
+                                14
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "FTNvC",
+                                  "name": "f1t",
+                                  "fill": "$cx-text-primary",
+                                  "content": "Baustellendaten für Qualitätsprüfungen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "kOFEL",
+                          "name": "f2",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KZCQO",
+                              "name": "f2l",
+                              "fill": "$cx-text-primary",
+                              "content": "Kurzbeschreibung und Zweck",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "sxrsz",
+                              "name": "f2i",
+                              "width": "fill_container",
+                              "height": 104,
+                              "fill": "$cx-white",
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-border"
+                              },
+                              "layout": "vertical",
+                              "padding": 14,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "PBazR",
+                                  "name": "f2t",
+                                  "fill": "$cx-text-primary",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "Beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen.",
+                                  "lineHeight": 1.5,
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "brwhT",
+                          "name": "f3",
+                          "width": "fill_container",
+                          "gap": 18,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "iE4cC",
+                              "name": "f3a",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 8,
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "BnSqO",
+                                  "name": "f3al",
+                                  "fill": "$cx-text-primary",
+                                  "content": "Verantwortlicher Bereich",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "LaBYv",
+                                  "name": "f3ai",
+                                  "width": "fill_container",
+                                  "height": 46,
+                                  "cornerRadius": 8,
+                                  "stroke": {
+                                    "align": "inside",
+                                    "thickness": 1,
+                                    "fill": "$cx-border"
+                                  },
+                                  "padding": [
+                                    0,
+                                    14
+                                  ],
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ZCLPF",
+                                      "name": "f3at",
+                                      "fill": "$cx-text-primary",
+                                      "content": "Qualitätssicherung Bau",
+                                      "fontFamily": "Montserrat",
+                                      "fontSize": 14,
+                                      "fontWeight": "normal"
+                                    },
+                                    {
+                                      "type": "icon_font",
+                                      "id": "y7qsS8",
+                                      "name": "f3ac",
+                                      "width": 16,
+                                      "height": 16,
+                                      "iconFontName": "chevron-down",
+                                      "iconFontFamily": "lucide",
+                                      "fill": "$cx-text-tertiary"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XE8kH",
+                      "name": "Editor actions",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "IG7eX",
+                          "height": 42,
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "$cx-border"
+                          },
+                          "padding": [
+                            0,
+                            18
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ObqpG",
+                              "fill": "$cx-text-secondary",
+                              "content": "Abbrechen",
+                              "fontFamily": "Montserrat",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "h01VQo",
+                          "gap": 12,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "SE5Bd",
+                              "height": 42,
+                              "fill": "$cx-orange",
+                              "cornerRadius": 8,
+                              "gap": 8,
+                              "padding": [
+                                0,
+                                22
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "K7AI2f",
+                                  "fill": "$cx-white",
+                                  "content": "Weiter zum Use-Case-Kontext",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                },
+                                {
+                                  "type": "icon_font",
+                                  "id": "DN73e",
+                                  "width": 16,
+                                  "height": 16,
+                                  "iconFontName": "arrow-right",
+                                  "iconFontFamily": "lucide",
+                                  "fill": "$cx-white"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "bCdiG",
+                              "height": 42,
+                              "cornerRadius": 8,
+                              "stroke": {
+                                "align": "inside",
+                                "thickness": 1,
+                                "fill": "$cx-orange"
+                              },
+                              "padding": [
+                                0,
+                                18
+                              ],
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "uDaj7",
+                                  "fill": "$cx-orange",
+                                  "content": "Prüfen und erstellen",
+                                  "fontFamily": "Montserrat",
+                                  "fontSize": 13,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "hzC86",
+          "x": 0,
+          "y": 4639,
+          "name": "Guided Minimal - Empty State",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "AjnLc",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h5"
+            },
+            {
+              "type": "frame",
+              "id": "yy1ID",
+              "name": "main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 56,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "X5Jds",
+                  "name": "iconWrap",
+                  "width": 84,
+                  "height": 84,
+                  "fill": "$cx-light-orange",
+                  "cornerRadius": 42,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "qJZUx",
+                      "name": "icon",
+                      "width": 38,
+                      "height": 38,
+                      "iconFontName": "file-text",
+                      "iconFontFamily": "lucide",
+                      "fill": "$cx-orange"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "PbKlM",
+                  "name": "title",
+                  "fill": "$cx-text-primary",
+                  "content": "Noch keine Richtlinien vorhanden",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "EWFle",
+                  "name": "desc",
+                  "fill": "$cx-text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": 430,
+                  "content": "Erstellen Sie eine erste Nutzungsbedingung, um Datenfreigaben und Verwendungszwecke verständlich zu regeln.",
+                  "lineHeight": 1.55,
+                  "textAlign": "center",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "UNO2S",
+                  "name": "btn",
+                  "height": 42,
+                  "fill": "$cx-orange",
+                  "cornerRadius": 8,
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    24
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "v5VyM",
+                      "name": "bi",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "plus",
+                      "iconFontFamily": "lucide",
+                      "fill": "$cx-white"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dNfl1",
+                      "name": "bt",
+                      "fill": "$cx-white",
+                      "content": "Erste Richtlinie erstellen",
+                      "fontFamily": "Montserrat",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "D4P5iM",
+                  "name": "secondary",
+                  "fill": "$cx-text-tertiary",
+                  "content": "Oder später aus der Übersicht starten",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bv3WI",
+          "x": 0,
+          "y": 5619,
+          "name": "Guided Minimal - Loading State",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "TNHzQ",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h6"
+            },
+            {
+              "type": "frame",
+              "id": "LO7mr",
+              "name": "main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                56,
+                96
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "VMrPn",
+                  "name": "head",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 4,
+                      "id": "WlTxs",
+                      "name": "t1",
+                      "fill": "$cx-light-gray",
+                      "width": 280,
+                      "height": 24
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 4,
+                      "id": "Rr3kl",
+                      "name": "t2",
+                      "fill": "$cx-light-gray",
+                      "width": 520,
+                      "height": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "uAnU2",
+                  "name": "filter",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 8,
+                      "id": "gXLwk",
+                      "name": "f1",
+                      "fill": "$cx-light-gray",
+                      "width": "fill_container",
+                      "height": 42
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 8,
+                      "id": "V9Piz",
+                      "name": "f2",
+                      "fill": "$cx-light-gray",
+                      "width": 150,
+                      "height": 42
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "L3HL6e",
+                  "name": "list",
+                  "width": "fill_container",
+                  "fill": "$cx-white",
+                  "cornerRadius": 10,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "$cx-border"
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "IdrWR",
+                      "name": "r1",
+                      "width": "fill_container",
+                      "height": 78,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "iU3j9",
+                          "name": "r1a",
+                          "fill": "$cx-light-gray",
+                          "width": 360,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "OVBVh",
+                          "name": "r1b",
+                          "fill": "$cx-light-gray",
+                          "width": 520,
+                          "height": 12
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Q5PSIm",
+                      "name": "r2",
+                      "width": "fill_container",
+                      "height": 78,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": {
+                          "bottom": 1
+                        },
+                        "fill": "$cx-border"
+                      },
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "Wncvg",
+                          "name": "r2a",
+                          "fill": "$cx-light-gray",
+                          "width": 320,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "RCAFj",
+                          "name": "r2b",
+                          "fill": "$cx-light-gray",
+                          "width": 480,
+                          "height": 12
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kWf3T",
+                      "name": "r3",
+                      "width": "fill_container",
+                      "height": 78,
+                      "layout": "vertical",
+                      "gap": 10,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "WUu4i",
+                          "name": "r3a",
+                          "fill": "$cx-light-gray",
+                          "width": 340,
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 4,
+                          "id": "etkWr",
+                          "name": "r3b",
+                          "fill": "$cx-light-gray",
+                          "width": 450,
+                          "height": 12
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "K9X6o",
+                  "name": "msg",
+                  "fill": "$cx-text-tertiary",
+                  "content": "Richtlinien werden geladen …",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "rBgek",
+          "x": 0,
+          "y": 6599,
+          "name": "Guided Minimal - Error State",
+          "clip": true,
+          "width": 1440,
+          "height": 900,
+          "fill": "$cx-white",
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "X7GqU",
+              "type": "ref",
+              "ref": "laIBE",
+              "width": "fill_container",
+              "height": 64,
+              "name": "h7"
+            },
+            {
+              "type": "frame",
+              "id": "BpnG0",
+              "name": "main",
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": "$cx-white",
+              "layout": "vertical",
+              "gap": 22,
+              "padding": 56,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OCt0x",
+                  "name": "iconWrap",
+                  "width": 84,
+                  "height": 84,
+                  "fill": "$cx-light-yellow",
+                  "cornerRadius": 42,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "TwWnw",
+                      "name": "icon",
+                      "width": 38,
+                      "height": 38,
+                      "iconFontName": "circle-alert",
+                      "iconFontFamily": "lucide",
+                      "fill": "$cx-warning"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "IB7u1",
+                  "name": "title",
+                  "fill": "$cx-text-primary",
+                  "content": "Richtlinien konnten nicht geladen werden",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "brbNl",
+                  "name": "desc",
+                  "fill": "$cx-text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": 430,
+                  "content": "Die Übersicht ist im Moment nicht verfügbar. Versuchen Sie es erneut oder kehren Sie zur Startseite zurück.",
+                  "lineHeight": 1.55,
+                  "textAlign": "center",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "NRAwz",
+                  "name": "actions",
+                  "gap": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "a9tv8",
+                      "name": "retry",
+                      "height": 42,
+                      "fill": "$cx-orange",
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": [
+                        0,
+                        22
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "zMbDJ",
+                          "name": "ri",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "refresh-cw",
+                          "iconFontFamily": "lucide",
+                          "fill": "$cx-white"
+                        },
+                        {
+                          "type": "text",
+                          "id": "YQsrw",
+                          "name": "rt",
+                          "fill": "$cx-white",
+                          "content": "Erneut versuchen",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "unPWh",
+                      "name": "home",
+                      "height": 42,
+                      "cornerRadius": 8,
+                      "stroke": {
+                        "align": "inside",
+                        "thickness": 1,
+                        "fill": "$cx-border"
+                      },
+                      "padding": [
+                        0,
+                        18
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "F4E6ec",
+                          "name": "ht",
+                          "fill": "$cx-text-secondary",
+                          "content": "Zur Startseite",
+                          "fontFamily": "Montserrat",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "P70UA",
+                  "name": "hint",
+                  "fill": "$cx-text-tertiary",
+                  "content": "Keine technischen Fehlerdetails im Vordergrund",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "laIBE",
+      "x": 4920,
+      "y": -420,
+      "name": "Component / Global Header",
+      "reusable": true,
+      "width": 1440,
+      "height": 64,
+      "fill": "$cx-white",
+      "stroke": {
+        "align": "inside",
+        "thickness": {
+          "bottom": 1
+        },
+        "fill": "$cx-border"
+      },
+      "gap": 24,
+      "padding": [
+        0,
+        56
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "XFzaM",
+          "name": "logo",
+          "width": 158,
+          "height": 30,
+          "layout": "none",
+          "children": [
+            {
+              "type": "path",
+              "id": "MDeBX",
+              "x": 0,
+              "y": 1,
+              "geometry": "M10 0l10 0-10 14 10 14-10 0-10-14z",
+              "viewBox": [
+                0,
+                0,
+                42,
+                28
+              ],
+              "fill": "$cx-blue",
+              "width": 36,
+              "height": 28
+            },
+            {
+              "type": "path",
+              "id": "MWHbj",
+              "x": 0,
+              "y": 1,
+              "geometry": "M18 0l10 0 10 14-10 0z",
+              "viewBox": [
+                0,
+                0,
+                42,
+                28
+              ],
+              "fill": "$cx-orange",
+              "width": 36,
+              "height": 28
+            },
+            {
+              "type": "path",
+              "id": "mGoVI",
+              "x": 0,
+              "y": 1,
+              "geometry": "M32 0l10 0-12 14-10 0z",
+              "viewBox": [
+                0,
+                0,
+                42,
+                28
+              ],
+              "fill": "$cx-yellow",
+              "width": 36,
+              "height": 28
+            },
+            {
+              "type": "path",
+              "id": "zkaeB",
+              "x": 0,
+              "y": 1,
+              "geometry": "M28 14l10 0 4 14-10 0z",
+              "viewBox": [
+                0,
+                0,
+                42,
+                28
+              ],
+              "fill": "$cx-orange",
+              "width": 36,
+              "height": 28
+            },
+            {
+              "type": "path",
+              "id": "Vjglt",
+              "x": 0,
+              "y": 1,
+              "geometry": "M20 14l10 0-10 14-10 0z",
+              "viewBox": [
+                0,
+                0,
+                42,
+                28
+              ],
+              "fill": "$cx-yellow",
+              "width": 36,
+              "height": 28
+            },
+            {
+              "type": "text",
+              "id": "O5YJT",
+              "x": 44,
+              "y": 1,
+              "fill": "$cx-text-primary",
+              "content": "Construct-X",
+              "fontFamily": "Montserrat",
+              "fontSize": 18
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "cC9W0",
+          "name": "Logo divider",
+          "fill": "$cx-border",
+          "width": 1,
+          "height": 24
+        },
+        {
+          "type": "text",
+          "id": "hrQXj",
+          "name": "Product label",
+          "fill": "$cx-text-secondary",
+          "content": "Policy Hub",
+          "fontFamily": "Montserrat",
+          "fontSize": 14,
+          "fontWeight": "500"
+        },
+        {
+          "type": "frame",
+          "id": "Yy8WF",
+          "name": "sp",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "frame",
+          "id": "neYo4",
+          "name": "Global Navigation",
+          "gap": 28,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "pWY6m",
+              "name": "start",
+              "fill": "$cx-text-secondary",
+              "content": "Start",
+              "fontFamily": "Montserrat",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "dg7Hb",
+              "name": "pol",
+              "fill": "$cx-text-secondary",
+              "content": "Richtlinien",
+              "fontFamily": "Montserrat",
+              "fontSize": 13,
+              "fontWeight": "500"
+            },
+            {
+              "type": "frame",
+              "id": "qanHh",
+              "name": "Profil Avatar",
+              "width": 32,
+              "height": 32,
+              "fill": "$cx-light-blue",
+              "cornerRadius": 16,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "hokTD",
+                  "name": "avText",
+                  "fill": "$cx-dark-blue",
+                  "content": "MK",
+                  "fontFamily": "Montserrat",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "cx-bg-card": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "cx-bg-page": {
+      "type": "color",
+      "value": "#FAFAFA"
+    },
+    "cx-blue": {
+      "type": "color",
+      "value": "#0A3B93"
+    },
+    "cx-border": {
+      "type": "color",
+      "value": "#E5E5E5"
+    },
+    "cx-dark-blue": {
+      "type": "color",
+      "value": "#3455A1"
+    },
+    "cx-dark-gray": {
+      "type": "color",
+      "value": "#818386"
+    },
+    "cx-dark-orange": {
+      "type": "color",
+      "value": "#E05229"
+    },
+    "cx-dark-yellow": {
+      "type": "color",
+      "value": "#EC9C49"
+    },
+    "cx-error": {
+      "type": "color",
+      "value": "#D32F2F"
+    },
+    "cx-info": {
+      "type": "color",
+      "value": "#0A3B93"
+    },
+    "cx-light-blue": {
+      "type": "color",
+      "value": "#C9D8E0"
+    },
+    "cx-light-gray": {
+      "type": "color",
+      "value": "#F4F3F3"
+    },
+    "cx-light-orange": {
+      "type": "color",
+      "value": "#EBD8D0"
+    },
+    "cx-light-yellow": {
+      "type": "color",
+      "value": "#F4E7D4"
+    },
+    "cx-orange": {
+      "type": "color",
+      "value": "#E53D17"
+    },
+    "cx-success": {
+      "type": "color",
+      "value": "#2E7D32"
+    },
+    "cx-text-primary": {
+      "type": "color",
+      "value": "#111111"
+    },
+    "cx-text-secondary": {
+      "type": "color",
+      "value": "#555555"
+    },
+    "cx-text-tertiary": {
+      "type": "color",
+      "value": "#888888"
+    },
+    "cx-warning": {
+      "type": "color",
+      "value": "#F08109"
+    },
+    "cx-white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "cx-yellow": {
+      "type": "color",
+      "value": "#F08109"
+    }
+  }
+}

@@ -1,68 +1,137 @@
 <div class="policies-overview" *transloco="let t">
-  <div class="page-header">
-    <h1>{{ t('policies.title') }}</h1>
-    <a mat-flat-button routerLink="/policies/new" class="create-btn">
+  <div class="page-top">
+    <div class="page-top-left">
+      <h1>{{ t('policies.title') }}</h1>
+      <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
+    </div>
+    <a routerLink="/policies/new" class="btn-primary">
       <span class="material-icons">add</span>
-      {{ t('policies.newPolicy') }}
+      {{ t('policies.createNew') }}
     </a>
   </div>
 
-  @if (loading()) {
-    <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
+  <div class="filters">
+    <div class="search-field">
+      <span class="material-icons search-icon">search</span>
+      <input
+        type="text"
+        [placeholder]="t('policies.searchPlaceholder')"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearch($event)"
+      />
     </div>
-  } @else if (policies().length === 0) {
+    <div class="filter-dropdown">
+      <select [ngModel]="selectedContext()" (ngModelChange)="onContextFilter($event)">
+        <option value="">{{ t('policies.filters.context') }}</option>
+        @for (ctx of useCaseContexts(); track ctx) {
+          <option [value]="ctx">{{ ctx }}</option>
+        }
+      </select>
+      <span class="material-icons dropdown-icon">expand_more</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-list">
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title"></div>
+        <div class="skeleton-bar skeleton-desc"></div>
+      </div>
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title short"></div>
+        <div class="skeleton-bar skeleton-desc"></div>
+      </div>
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title"></div>
+        <div class="skeleton-bar skeleton-desc short"></div>
+      </div>
+    </div>
+    <span class="loading-hint">{{ t('policies.loadingHint') }}</span>
+  } @else if (error()) {
+    <div class="error-state">
+      <div class="error-icon-wrap">
+        <span class="material-icons">warning</span>
+      </div>
+      <h2>{{ t('policies.error.title') }}</h2>
+      <p>{{ t('policies.error.description') }}</p>
+      <div class="error-actions">
+        <button class="btn-primary" (click)="loadPolicies()">
+          <span class="material-icons">refresh</span>
+          {{ t('policies.error.retry') }}
+        </button>
+        <a routerLink="/" class="btn-secondary">{{ t('policies.error.home') }}</a>
+      </div>
+    </div>
+  } @else if (filteredPolicies().length === 0 && policies().length === 0) {
     <div class="empty-state">
-      <span class="material-icons empty-icon">inbox</span>
-      <p>{{ t('policies.emptyState') }}</p>
-      <a mat-flat-button routerLink="/policies/new" class="create-btn">
-        {{ t('policies.createFirst') }}
+      <div class="empty-icon-wrap">
+        <span class="material-icons">description</span>
+      </div>
+      <h2>{{ t('policies.empty.title') }}</h2>
+      <p>{{ t('policies.empty.description') }}</p>
+      <a routerLink="/policies/new" class="btn-primary">
+        <span class="material-icons">add</span>
+        {{ t('policies.empty.cta') }}
       </a>
+      <span class="empty-hint">{{ t('policies.empty.hint') }}</span>
+    </div>
+  } @else if (filteredPolicies().length === 0) {
+    <div class="empty-state">
+      <p>{{ t('policies.noResults') }}</p>
     </div>
   } @else {
-    <table mat-table [dataSource]="policies()" class="policies-table">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>{{ t('policies.table.name') }}</th>
-        <td mat-cell *matCellDef="let policy">
-          <div class="policy-name">{{ policy.name }}</div>
-          <div class="policy-description">{{ policy.description }}</div>
-        </td>
-      </ng-container>
+    <div class="policy-list">
+      <div class="list-header">
+        <span class="col-name">{{ t('policies.table.name') }}</span>
+        <span class="col-context">{{ t('policies.table.context') }}</span>
+        <span class="col-date">{{ t('policies.table.lastChange') }}</span>
+        <span class="col-action"></span>
+      </div>
+      @for (policy of paginatedPolicies(); track policy.id) {
+        <div class="list-row" (click)="openDetail(policy)">
+          <div class="col-name">
+            <span class="policy-name">{{ policy.name }}</span>
+            <span class="policy-desc">{{ policy.description }}</span>
+          </div>
+          <span class="col-context">{{ policy.useCaseContext }}</span>
+          <span class="col-date">{{ formatDate(policy.updatedAt) }}</span>
+          <span class="col-action">
+            <span class="material-icons view-icon">visibility</span>
+          </span>
+        </div>
+      }
+    </div>
 
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>{{ t('policies.table.status') }}</th>
-        <td mat-cell *matCellDef="let policy">
-          <app-status-badge [status]="policy.status" />
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="updatedAt">
-        <th mat-header-cell *matHeaderCellDef>{{ t('policies.table.lastChange') }}</th>
-        <td mat-cell *matCellDef="let policy">
-          {{ formatDate(policy.updatedAt) }}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let policy">
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <span class="pagination-info">{{ paginationInfo() }}</span>
+        <span class="pagination-spacer"></span>
+        <div class="pagination-controls">
           <button
-            mat-icon-button
-            (click)="openDetail(policy)"
-            [attr.aria-label]="t('policies.table.showDetails')"
+            class="page-btn"
+            [disabled]="currentPage() === 1"
+            (click)="goToPage(currentPage() - 1)"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+          @for (page of [].constructor(totalPages()); track $index) {
+            <button
+              class="page-btn"
+              [class.active]="currentPage() === $index + 1"
+              (click)="goToPage($index + 1)"
+            >
+              {{ $index + 1 }}
+            </button>
+          }
+          <button
+            class="page-btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="goToPage(currentPage() + 1)"
           >
             <span class="material-icons">chevron_right</span>
           </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        class="clickable-row"
-        (click)="openDetail(row)"
-      ></tr>
-    </table>
+        </div>
+      </div>
+    }
   }
 </div>

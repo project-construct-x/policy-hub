@@ -1,71 +1,91 @@
 <div class="policy-detail" *transloco="let t">
-  <a routerLink="/policies" class="back-link">
-    <span class="material-icons">arrow_back</span>
-    {{ t('policyDetail.backToOverview') }}
-  </a>
-
   @if (loading()) {
     <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
+      <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
+      <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
     </div>
   } @else if (policy(); as p) {
-    <div class="detail-header">
-      <div class="header-info">
-        <h1>{{ p.name }}</h1>
-        <app-status-badge [status]="p.status" />
-      </div>
-      <div class="header-actions">
-        <a mat-stroked-button [routerLink]="['/policies', p.id, 'edit']">
-          <span class="material-icons">edit</span>
-          {{ t('policyDetail.edit') }}
-        </a>
-        <button mat-stroked-button color="warn" (click)="deletePolicy()">
-          <span class="material-icons">delete</span>
-          {{ t('policyDetail.delete') }}
-        </button>
+    <div class="top-actions">
+      <a routerLink="/policies" class="btn-outline">
+        <span class="material-icons">arrow_back</span>
+        {{ t('policyDetail.backToOverview') }}
+      </a>
+      <span class="top-spacer"></span>
+      <button class="btn-outline btn-delete" (click)="deletePolicy()">
+        <span class="material-icons">delete</span>
+        {{ t('policyDetail.delete') }}
+      </button>
+      <a [routerLink]="['/policies', p.id, 'edit']" class="btn-primary">
+        <span class="material-icons">edit</span>
+        {{ t('policyDetail.edit') }}
+      </a>
+    </div>
+
+    <div class="hero">
+      <h1>{{ p.name }}</h1>
+      <p class="summary">{{ p.description }}</p>
+      <div class="meta">
+        <span class="meta-context"
+          >{{ t('policyDetail.useCaseContext') }}: {{ p.useCaseContext }}</span
+        >
+        <span class="meta-date"
+          >{{ t('policyDetail.lastChanged') }}: {{ formatDate(p.updatedAt) }}</span
+        >
       </div>
     </div>
 
-    <mat-card appearance="outlined" class="detail-card">
-      <mat-card-content>
-        <div class="detail-section">
-          <h3>{{ t('policyDetail.description') }}</h3>
-          <p class="description-text">{{ p.description || t('policyDetail.noDescription') }}</p>
+    <div class="columns">
+      <div class="col-left">
+        @if (p.purpose) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.purpose') }}</h3>
+            <p>{{ p.purpose }}</p>
+          </div>
+        }
+
+        @if (p.permittedUsage) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.permittedUsage') }}</h3>
+            <p>{{ p.permittedUsage }}</p>
+          </div>
+        }
+
+        @if (p.restrictions) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.restrictions') }}</h3>
+            <p>{{ p.restrictions }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="col-right">
+        <div class="info-card">
+          <h4>{{ t('policyDetail.infoCard.title') }}</h4>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.status') }}</span>
+            <span class="info-value">{{ t('status.' + p.status) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.context') }}</span>
+            <span class="info-value">{{ p.useCaseContext }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.created') }}</span>
+            <span class="info-value">{{ formatDate(p.createdAt) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.lastChange') }}</span>
+            <span class="info-value">{{ formatDate(p.updatedAt) }}</span>
+          </div>
         </div>
 
-        <div class="detail-meta">
-          <div class="meta-item">
-            <span class="meta-label">{{ t('policyDetail.created') }}</span>
-            <span class="meta-value">{{ formatDate(p.createdAt) }}</span>
+        @if (p.legalText) {
+          <div class="content-card legal-card">
+            <h3>{{ t('policyDetail.sections.legalText') }}</h3>
+            <p class="legal-text">{{ p.legalText }}</p>
           </div>
-          <div class="meta-item">
-            <span class="meta-label">{{ t('policyDetail.lastChange') }}</span>
-            <span class="meta-value">{{ formatDate(p.updatedAt) }}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">{{ t('policyDetail.id') }}</span>
-            <span class="meta-value meta-id">{{ p.id }}</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    @if (p.content) {
-      <div class="content-section">
-        <h2>{{ t('policyDetail.policyContent') }}</h2>
-        <app-json-viewer [json]="p.content" />
+        }
       </div>
-    }
-
-    @if (p.legalText) {
-      <div class="content-section">
-        <h2>{{ t('policyDetail.legalText') }}</h2>
-        <mat-card appearance="outlined" class="legal-text-card">
-          <mat-card-content>
-            <pre class="legal-text">{{ p.legalText }}</pre>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    }
+    </div>
   }
 </div>

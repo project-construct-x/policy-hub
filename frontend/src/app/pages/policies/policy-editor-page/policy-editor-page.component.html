@@ -1,99 +1,200 @@
 <div class="policy-editor" *transloco="let t">
-  <a [routerLink]="isEditMode() ? ['/policies', policyId()] : ['/policies']" class="back-link">
-    <span class="material-icons">arrow_back</span>
-    {{ isEditMode() ? t('policyEditor.backToPolicy') : t('policyEditor.backToOverview') }}
-  </a>
-
-  <h1>{{ isEditMode() ? t('policyEditor.titleEdit') : t('policyEditor.titleCreate') }}</h1>
-
   @if (loading()) {
     <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
+      <div class="skeleton-bar" style="width: 320px; height: 24px"></div>
+      <div class="skeleton-bar" style="width: 480px; height: 14px"></div>
     </div>
   } @else {
+    <!-- Stepper Tabs -->
+    <nav class="stepper">
+      @for (step of steps; track step; let i = $index) {
+        <button
+          class="step-tab"
+          [class.active]="currentStep() === i"
+          (click)="goToStep(i)"
+          type="button"
+        >
+          <span class="step-badge">{{ i + 1 }}</span>
+          {{ t('policyEditor.steps.' + step) }}
+        </button>
+      }
+    </nav>
+
     <form [formGroup]="form" (ngSubmit)="save()">
-      <mat-card appearance="outlined" class="editor-card">
-        <mat-card-content>
-          <h2 class="section-title">{{ t('policyEditor.sections.general') }}</h2>
+      <!-- Step 0: Grundlagen -->
+      @if (currentStep() === 0) {
+        <div class="step-content">
+          <h2>{{ t('policyEditor.stepTitles.grundlagen') }}</h2>
+          <p class="step-description">{{ t('policyEditor.stepDescriptions.grundlagen') }}</p>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t('policyEditor.fields.name') }}</mat-label>
-            <input
-              matInput
-              formControlName="name"
-              [placeholder]="t('policyEditor.fields.namePlaceholder')"
-            />
-            <mat-error>{{ t('policyEditor.fields.nameRequired') }}</mat-error>
-          </mat-form-field>
+          <div class="form-card">
+            <div class="field">
+              <label for="name">{{ t('policyEditor.fields.name') }}</label>
+              <input
+                id="name"
+                type="text"
+                formControlName="name"
+                [placeholder]="t('policyEditor.fields.namePlaceholder')"
+              />
+              @if (form.get('name')?.touched && form.get('name')?.hasError('required')) {
+                <span class="field-error">{{ t('policyEditor.fields.nameRequired') }}</span>
+              }
+            </div>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t('policyEditor.fields.description') }}</mat-label>
-            <textarea
-              matInput
-              formControlName="description"
-              rows="3"
-              [placeholder]="t('policyEditor.fields.descriptionPlaceholder')"
-            ></textarea>
-          </mat-form-field>
+            <div class="field">
+              <label for="description">{{ t('policyEditor.fields.description') }}</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                [placeholder]="t('policyEditor.fields.descriptionPlaceholder')"
+              ></textarea>
+            </div>
 
-          @if (isEditMode()) {
-            <mat-form-field appearance="outline">
-              <mat-label>{{ t('policyEditor.fields.status') }}</mat-label>
-              <mat-select formControlName="status">
-                @for (s of statuses; track s.value) {
-                  <mat-option [value]="s.value">{{ t('status.' + s.value) }}</mat-option>
+            <div class="field">
+              <label for="useCaseContext">{{ t('policyEditor.fields.useCaseContext') }}</label>
+              <select id="useCaseContext" formControlName="useCaseContext">
+                <option value="" disabled>
+                  {{ t('policyEditor.fields.useCaseContextPlaceholder') }}
+                </option>
+                @for (opt of useCaseOptions; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
                 }
-              </mat-select>
-            </mat-form-field>
-          }
-        </mat-card-content>
-      </mat-card>
+              </select>
+            </div>
+          </div>
+        </div>
+      }
 
-      <mat-card appearance="outlined" class="editor-card">
-        <mat-card-content>
-          <h2 class="section-title">{{ t('policyEditor.sections.content') }}</h2>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t('policyEditor.fields.odrlJsonLd') }}</mat-label>
-            <textarea
-              matInput
-              formControlName="content"
-              rows="12"
-              class="monospace-input"
-              [placeholder]="t('policyEditor.fields.odrlPlaceholder')"
-            ></textarea>
-            <mat-hint>{{ t('policyEditor.fields.odrlHint') }}</mat-hint>
-          </mat-form-field>
-        </mat-card-content>
-      </mat-card>
+      <!-- Step 1: Use-Case-Kontext -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <h2>{{ t('policyEditor.stepTitles.useCase') }}</h2>
+          <p class="step-description">{{ t('policyEditor.stepDescriptions.useCase') }}</p>
 
-      <mat-card appearance="outlined" class="editor-card">
-        <mat-card-content>
-          <h2 class="section-title">{{ t('policyEditor.sections.legalText') }}</h2>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t('policyEditor.fields.legalText') }}</mat-label>
-            <textarea
-              matInput
-              formControlName="legalText"
-              rows="10"
-              [placeholder]="t('policyEditor.fields.legalTextPlaceholder')"
-            ></textarea>
-            <mat-hint>{{ t('policyEditor.fields.legalTextHint') }}</mat-hint>
-          </mat-form-field>
-        </mat-card-content>
-      </mat-card>
+          <div class="form-card">
+            <div class="field">
+              <label for="purpose">{{ t('policyEditor.fields.purpose') }}</label>
+              <textarea
+                id="purpose"
+                formControlName="purpose"
+                rows="5"
+                [placeholder]="t('policyEditor.fields.purposePlaceholder')"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      }
 
-      <div class="form-actions">
-        <button mat-stroked-button type="button" (click)="cancel()">
+      <!-- Step 2: Nutzung -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <h2>{{ t('policyEditor.stepTitles.nutzung') }}</h2>
+          <p class="step-description">{{ t('policyEditor.stepDescriptions.nutzung') }}</p>
+
+          <div class="form-card">
+            <div class="field">
+              <label for="permittedUsage">{{ t('policyEditor.fields.permittedUsage') }}</label>
+              <textarea
+                id="permittedUsage"
+                formControlName="permittedUsage"
+                rows="5"
+                [placeholder]="t('policyEditor.fields.permittedUsagePlaceholder')"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label for="restrictions">{{ t('policyEditor.fields.restrictions') }}</label>
+              <textarea
+                id="restrictions"
+                formControlName="restrictions"
+                rows="5"
+                [placeholder]="t('policyEditor.fields.restrictionsPlaceholder')"
+              ></textarea>
+            </div>
+
+            <div class="field">
+              <label for="legalText">{{ t('policyEditor.fields.legalText') }}</label>
+              <textarea
+                id="legalText"
+                formControlName="legalText"
+                rows="4"
+                [placeholder]="t('policyEditor.fields.legalTextPlaceholder')"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Prüfen -->
+      @if (currentStep() === 3) {
+        <div class="step-content">
+          <h2>{{ t('policyEditor.stepTitles.pruefen') }}</h2>
+          <p class="step-description">{{ t('policyEditor.stepDescriptions.pruefen') }}</p>
+
+          <div class="review-card">
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.name') }}</h4>
+              <p>{{ form.get('name')?.value || '–' }}</p>
+            </div>
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.description') }}</h4>
+              <p>{{ form.get('description')?.value || '–' }}</p>
+            </div>
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.useCaseContext') }}</h4>
+              <p>{{ form.get('useCaseContext')?.value || '–' }}</p>
+            </div>
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.purpose') }}</h4>
+              <p>{{ form.get('purpose')?.value || '–' }}</p>
+            </div>
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.permittedUsage') }}</h4>
+              <p>{{ form.get('permittedUsage')?.value || '–' }}</p>
+            </div>
+            <div class="review-section">
+              <h4>{{ t('policyEditor.fields.restrictions') }}</h4>
+              <p>{{ form.get('restrictions')?.value || '–' }}</p>
+            </div>
+            @if (form.get('legalText')?.value) {
+              <div class="review-section">
+                <h4>{{ t('policyEditor.fields.legalText') }}</h4>
+                <p class="legal-text">{{ form.get('legalText')?.value }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="editor-actions">
+        <button type="button" class="btn-cancel" (click)="cancel()">
           {{ t('policyEditor.actions.cancel') }}
         </button>
-        @if (saving()) {
-          <button mat-flat-button type="button" class="save-btn" disabled>
-            <mat-spinner diameter="20"></mat-spinner>
+        <span class="action-spacer"></span>
+
+        @if (currentStep() < 3) {
+          <button type="button" class="btn-skip" (click)="skipToReview()">
+            {{ t('policyEditor.actions.skipToReview') }}
+          </button>
+          <button type="button" class="btn-next" (click)="nextStep()" [disabled]="!canProceed()">
+            {{ t('policyEditor.actions.next.' + steps[currentStep()]) }}
+            <span class="material-icons">arrow_forward</span>
           </button>
         } @else {
-          <button mat-flat-button type="submit" class="save-btn">
-            <span class="material-icons">save</span>
-            {{ isEditMode() ? t('policyEditor.actions.save') : t('policyEditor.actions.create') }}
+          @if (currentStep() > 0) {
+            <button type="button" class="btn-back" (click)="prevStep()">
+              <span class="material-icons">arrow_back</span>
+              {{ t('policyEditor.actions.back') }}
+            </button>
+          }
+          <button type="submit" class="btn-save" [disabled]="saving()">
+            @if (saving()) {
+              <span class="spinner"></span>
+            } @else {
+              {{ isEditMode() ? t('policyEditor.actions.save') : t('policyEditor.actions.create') }}
+            }
           </button>
         }
       </div>

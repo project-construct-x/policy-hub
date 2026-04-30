@@ -34,6 +34,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'profile',
+    loadComponent: () =>
+      import('@pages/profile/profile-page.component').then((m) => m.ProfilePageComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

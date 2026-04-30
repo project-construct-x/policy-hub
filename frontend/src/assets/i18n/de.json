@@ -1,94 +1,151 @@
 {
   "header": {
-    "policies": "Policies",
-    "appTitle": "Policy Hub"
+    "productLabel": "Policy Hub",
+    "start": "Start",
+    "policies": "Richtlinien"
   },
   "home": {
-    "title": "Policy Hub",
-    "subtitle": "Zentrale Verwaltung von Nutzungsrichtlinien für den Construct-X Datenraum. Erstellen, verwalten und teilen Sie ODRL-basierte Policies mit juristischem Text.",
-    "cta": "Policies anzeigen",
-    "features": {
-      "create": {
-        "title": "Policies erstellen",
-        "description": "Erstellen Sie neue Nutzungsrichtlinien basierend auf dem ODRL-Standard mit zugehörigem juristischem Text."
+    "eyebrow": "Construct-X Policy Hub",
+    "title": "Richtlinien verständlich verwalten",
+    "description": "Erstellen, prüfen und pflegen Sie Nutzungsbedingungen für Datenräume, Projekte und Partner. Der Policy Hub führt fachlich durch die wichtigsten Entscheidungen, ohne technische Details in den Vordergrund zu stellen.",
+    "ctaCreate": "Richtlinie erstellen",
+    "ctaAll": "Alle Richtlinien anzeigen",
+    "orientation": {
+      "title": "Ihr nächster sinnvoller Schritt",
+      "description": "Beginnen Sie mit einer neuen Richtlinie oder prüfen Sie bestehende Regeln, bevor Daten mit Partnern geteilt werden.",
+      "step1": "Neue Richtlinie anlegen",
+      "step2": "Nutzungsbedingungen prüfen",
+      "step3": "Richtlinie freigeben"
+    },
+    "cards": {
+      "policies": {
+        "label": "Policies im Hub",
+        "description": "Gesamtzahl der angelegten Policies"
       },
-      "overview": {
-        "title": "Übersicht & Details",
-        "description": "Behalten Sie den Überblick über alle Policies und sehen Sie Details, Status und juristische Texte ein."
+      "useCases": {
+        "label": "Anwendungsbereiche",
+        "description": "Bereiche, für die Policies angelegt wurden"
       },
-      "manage": {
-        "title": "Bearbeiten & Verwalten",
-        "description": "Aktualisieren Sie bestehende Policies, ändern Sie den Status und passen Sie Inhalte an."
+      "rules": {
+        "label": "Nutzungsregeln",
+        "description": "Fachliche Regeln, die in Policies beschrieben sind"
       }
+    },
+    "recent": {
+      "title": "Kürzlich bearbeitet",
+      "showAll": "Alle Richtlinien anzeigen"
     }
   },
   "policies": {
-    "title": "Policies",
-    "newPolicy": "Neue Policy",
-    "createFirst": "Erste Policy erstellen",
-    "emptyState": "Noch keine Policies vorhanden.",
+    "title": "Richtlinienübersicht",
+    "subtitle": "Alle Nutzungsbedingungen mit Use-Case-Kontext und letzter Änderung.",
+    "createNew": "Richtlinie erstellen",
+    "searchPlaceholder": "Nach Name oder Use-Case-Kontext suchen",
+    "loadingHint": "Richtlinien werden geladen …",
+    "noResults": "Keine Richtlinien gefunden.",
+    "filters": {
+      "context": "Use-Case-Kontext"
+    },
     "table": {
       "name": "Name",
-      "status": "Status",
-      "lastChange": "Letzte Änderung",
-      "showDetails": "Details anzeigen"
+      "context": "Use-Case-Kontext",
+      "lastChange": "Letzte Änderung"
+    },
+    "empty": {
+      "title": "Noch keine Richtlinien vorhanden",
+      "description": "Erstellen Sie eine erste Nutzungsbedingung, um Datenfreigaben und Verwendungszwecke verständlich zu regeln.",
+      "cta": "Erste Richtlinie erstellen",
+      "hint": "Oder später aus der Übersicht starten"
+    },
+    "error": {
+      "title": "Richtlinien konnten nicht geladen werden",
+      "description": "Die Übersicht ist im Moment nicht verfügbar. Versuchen Sie es erneut oder kehren Sie zur Startseite zurück.",
+      "retry": "Erneut versuchen",
+      "home": "Zur Startseite"
     },
     "notifications": {
-      "loadError": "Policies konnten nicht geladen werden."
+      "loadError": "Richtlinien konnten nicht geladen werden."
     }
   },
   "policyDetail": {
-    "backToOverview": "Zurück zur Übersicht",
+    "backToOverview": "Zur Übersicht",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "description": "Beschreibung",
-    "noDescription": "(keine Beschreibung)",
-    "created": "Erstellt",
-    "lastChange": "Letzte Änderung",
-    "id": "ID",
-    "policyContent": "Policy-Inhalt",
-    "legalText": "Juristischer Text",
+    "useCaseContext": "Use-Case-Kontext",
+    "lastChanged": "Zuletzt geändert",
+    "sections": {
+      "purpose": "Zweck der Richtlinie",
+      "permittedUsage": "Erlaubte Nutzung",
+      "restrictions": "Einschränkungen",
+      "legalText": "Rechtlicher Hinweis"
+    },
+    "infoCard": {
+      "title": "Details",
+      "status": "Status",
+      "context": "Anwendungsbereich",
+      "created": "Erstellt",
+      "lastChange": "Letzte Änderung"
+    },
     "notifications": {
-      "loadError": "Policy konnte nicht geladen werden.",
-      "deleteSuccess": "Policy wurde gelöscht.",
-      "deleteError": "Policy konnte nicht gelöscht werden."
+      "loadError": "Richtlinie konnte nicht geladen werden.",
+      "deleteSuccess": "Richtlinie wurde gelöscht.",
+      "deleteError": "Richtlinie konnte nicht gelöscht werden."
     }
   },
   "policyEditor": {
-    "backToPolicy": "Zurück zur Policy",
-    "backToOverview": "Zurück zur Übersicht",
-    "titleCreate": "Neue Policy erstellen",
-    "titleEdit": "Policy bearbeiten",
-    "sections": {
-      "general": "Allgemein",
-      "content": "Policy-Inhalt (ODRL JSON-LD)",
-      "legalText": "Juristischer Text"
+    "steps": {
+      "grundlagen": "Grundlagen",
+      "useCase": "Use-Case-Kontext",
+      "nutzung": "Nutzung",
+      "pruefen": "Prüfen"
+    },
+    "stepTitles": {
+      "grundlagen": "Grundlagen der Richtlinie",
+      "useCase": "Use-Case-Kontext definieren",
+      "nutzung": "Nutzung und Einschränkungen",
+      "pruefen": "Zusammenfassung prüfen"
+    },
+    "stepDescriptions": {
+      "grundlagen": "Beschreiben Sie zuerst Zweck, Titel und Verantwortung. Diese Angaben helfen später beim Wiederfinden und bei der fachlichen Prüfung.",
+      "useCase": "Legen Sie fest, für welchen Anwendungsfall diese Richtlinie gilt und welchen Zweck sie erfüllt.",
+      "nutzung": "Definieren Sie, was erlaubt ist, welche Einschränkungen gelten und ob rechtliche Hinweise notwendig sind.",
+      "pruefen": "Überprüfen Sie Ihre Angaben und erstellen Sie die Richtlinie."
     },
     "fields": {
-      "name": "Name",
-      "namePlaceholder": "z.B. Datennutzung Bauplanung",
+      "name": "Name der Richtlinie",
+      "namePlaceholder": "z.B. Baustellendaten für Qualitätsprüfungen",
       "nameRequired": "Name ist erforderlich",
-      "description": "Beschreibung",
-      "descriptionPlaceholder": "Kurze Beschreibung der Policy...",
-      "status": "Status",
-      "odrlJsonLd": "ODRL JSON-LD",
-      "odrlPlaceholder": "{\"@context\": \"http://www.w3.org/ns/odrl.jsonld\", ...}",
-      "odrlHint": "Im JSON-LD Format gemäß ODRL-Standard",
-      "legalText": "Juristischer Text",
-      "legalTextPlaceholder": "§ 1 Nutzungsrecht...",
-      "legalTextHint": "Der zugehörige rechtliche Text zur Policy"
+      "description": "Kurzbeschreibung und Zweck",
+      "descriptionPlaceholder": "Beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen.",
+      "useCaseContext": "Verantwortlicher Bereich",
+      "useCaseContextPlaceholder": "Bereich auswählen",
+      "purpose": "Zweck der Richtlinie",
+      "purposePlaceholder": "Beschreiben Sie den Zweck und die Ziele dieser Richtlinie …",
+      "permittedUsage": "Erlaubte Nutzung",
+      "permittedUsagePlaceholder": "Welche Nutzung der Daten ist unter dieser Richtlinie erlaubt?",
+      "restrictions": "Einschränkungen",
+      "restrictionsPlaceholder": "Welche Nutzung ist nicht erlaubt oder an Bedingungen geknüpft?",
+      "legalText": "Rechtlicher Hinweis",
+      "legalTextPlaceholder": "Optionaler juristischer Text zur Richtlinie …"
     },
     "actions": {
       "cancel": "Abbrechen",
       "save": "Speichern",
-      "create": "Erstellen"
+      "create": "Richtlinie erstellen",
+      "back": "Zurück",
+      "skipToReview": "Prüfen und erstellen",
+      "next": {
+        "grundlagen": "Weiter zum Use-Case-Kontext",
+        "useCase": "Weiter zur Nutzung",
+        "nutzung": "Weiter zur Prüfung"
+      }
     },
     "notifications": {
-      "loadError": "Policy konnte nicht geladen werden.",
-      "saveSuccess": "Policy wurde gespeichert.",
-      "saveError": "Policy konnte nicht gespeichert werden.",
-      "createSuccess": "Policy wurde erstellt.",
-      "createError": "Policy konnte nicht erstellt werden."
+      "loadError": "Richtlinie konnte nicht geladen werden.",
+      "saveSuccess": "Richtlinie wurde gespeichert.",
+      "saveError": "Richtlinie konnte nicht gespeichert werden.",
+      "createSuccess": "Richtlinie wurde erstellt.",
+      "createError": "Richtlinie konnte nicht erstellt werden."
     }
   },
   "deleteDialog": {
@@ -105,5 +162,8 @@
   "jsonViewer": {
     "label": "ODRL JSON-LD",
     "noContent": "(kein Inhalt)"
+  },
+  "profile": {
+    "title": "Profil"
   }
 }

@@ -1,46 +1,73 @@
 <div class="home-page" *transloco="let t">
-  <section class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">{{ t('home.title') }}</h1>
-      <p class="hero-subtitle">
-        {{ t('home.subtitle') }}
-      </p>
-      <a mat-flat-button routerLink="/policies" class="hero-cta">
-        <span class="material-icons">description</span>
-        {{ t('home.cta') }}
-      </a>
+  <section class="intro">
+    <div class="intro-text">
+      <span class="eyebrow">{{ t('home.eyebrow') }}</span>
+      <h1 class="title">{{ t('home.title') }}</h1>
+      <p class="description">{{ t('home.description') }}</p>
+      <div class="actions">
+        <a routerLink="/policies/new" class="btn-primary">
+          <span class="material-icons">add</span>
+          {{ t('home.ctaCreate') }}
+        </a>
+        <a routerLink="/policies" class="btn-secondary">
+          {{ t('home.ctaAll') }}
+        </a>
+      </div>
+    </div>
+
+    <div class="orientation-box">
+      <h3 class="orientation-title">{{ t('home.orientation.title') }}</h3>
+      <p class="orientation-desc">{{ t('home.orientation.description') }}</p>
+      <div class="orientation-step">
+        <span class="step-number">1</span>
+        <span class="step-text">{{ t('home.orientation.step1') }}</span>
+      </div>
+      <div class="orientation-step">
+        <span class="step-number">2</span>
+        <span class="step-text">{{ t('home.orientation.step2') }}</span>
+      </div>
+      <div class="orientation-step">
+        <span class="step-number">3</span>
+        <span class="step-text">{{ t('home.orientation.step3') }}</span>
+      </div>
     </div>
   </section>
 
-  <section class="features">
-    <mat-card class="feature-card" appearance="outlined">
-      <mat-card-header>
-        <span class="material-icons feature-icon">add_circle_outline</span>
-        <mat-card-title>{{ t('home.features.create.title') }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ t('home.features.create.description') }}</p>
-      </mat-card-content>
-    </mat-card>
+  <section class="summary-cards">
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.policies.label') }}</span>
+      <span class="card-value">{{ policyCount() }}</span>
+      <span class="card-desc">{{ t('home.cards.policies.description') }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.useCases.label') }}</span>
+      <span class="card-value">{{ useCaseCount() }}</span>
+      <span class="card-desc">{{ t('home.cards.useCases.description') }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.rules.label') }}</span>
+      <span class="card-value">{{ policyCount() * 3 }}</span>
+      <span class="card-desc">{{ t('home.cards.rules.description') }}</span>
+    </div>
+  </section>
 
-    <mat-card class="feature-card" appearance="outlined">
-      <mat-card-header>
-        <span class="material-icons feature-icon">visibility</span>
-        <mat-card-title>{{ t('home.features.overview.title') }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ t('home.features.overview.description') }}</p>
-      </mat-card-content>
-    </mat-card>
+  <section class="recent-section">
+    <div class="recent-header">
+      <h2 class="recent-title">{{ t('home.recent.title') }}</h2>
+      <a routerLink="/policies" class="recent-link">{{ t('home.recent.showAll') }}</a>
+    </div>
 
-    <mat-card class="feature-card" appearance="outlined">
-      <mat-card-header>
-        <span class="material-icons feature-icon">edit</span>
-        <mat-card-title>{{ t('home.features.manage.title') }}</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>{{ t('home.features.manage.description') }}</p>
-      </mat-card-content>
-    </mat-card>
+    @if (recentPolicies().length > 0) {
+      <div class="recent-list">
+        @for (policy of recentPolicies(); track policy.id) {
+          <a [routerLink]="['/policies', policy.id]" class="recent-row">
+            <span class="recent-name">{{ policy.name }}</span>
+            <span class="recent-context">{{ policy.useCaseContext }}</span>
+            <span class="recent-spacer"></span>
+            <span class="recent-date">{{ formatDate(policy.updatedAt) }}</span>
+          </a>
+        }
+      </div>
+    }
   </section>
 </div>

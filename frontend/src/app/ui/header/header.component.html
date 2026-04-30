@@ -1,16 +1,28 @@
-<mat-toolbar class="cx-header" *transloco="let t">
+<header class="cx-header" *transloco="let t">
   <a routerLink="/" class="logo-link">
     <img src="assets/images/CX-BWM-quer-RGB.jpg" alt="Construct-X" class="logo" />
   </a>
 
-  <nav class="nav-links">
-    <a mat-button routerLink="/policies" routerLinkActive="active" class="nav-link">
-      <span class="material-icons nav-icon">description</span>
-      {{ t('header.policies') }}
-    </a>
-  </nav>
+  <span class="divider"></span>
+
+  <span class="product-label">{{ t('header.productLabel') }}</span>
 
   <span class="spacer"></span>
 
-  <span class="app-title">{{ t('header.appTitle') }}</span>
-</mat-toolbar>
+  <nav class="global-nav">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      {{ t('header.start') }}
+    </a>
+    <a routerLink="/policies" routerLinkActive="active" class="nav-link">
+      {{ t('header.policies') }}
+    </a>
+    <a routerLink="/profile" class="profile-avatar">
+      <span class="avatar-text">MK</span>
+    </a>
+  </nav>
+</header>

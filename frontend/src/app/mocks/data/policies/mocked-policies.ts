@@ -103,35 +103,55 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
       return [
         {
           id: '00000000-0000-0000-0000-000000000001',
-          name: 'Datennutzung Bauplanung',
+          name: 'Baustellendaten für Qualitätsprüfungen',
           description:
-            'Erlaubt die Nutzung von BIM-Modelldaten ausschließlich für Bauplanungszwecke. Weitergabe an Dritte ist untersagt.',
+            'Diese Richtlinie beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen. Sie hilft Projektteams, Daten nachvollziehbar, zweckgebunden und regelkonform einzusetzen.',
           status: 'ACTIVE',
+          useCaseContext: 'Qualitätssicherung',
+          purpose: 'Sicherstellung der Datenqualität bei internen Prüfprozessen auf der Baustelle.',
+          permittedUsage:
+            'Interne Qualitätsprüfungen durch autorisierte Projektmitglieder. Nutzung ausschließlich im Rahmen des definierten Projektkontexts.',
+          restrictions:
+            'Keine Weitergabe an Dritte. Keine Verwendung außerhalb des Qualitätssicherungsprozesses. Daten dürfen nicht für kommerzielle Auswertungen genutzt werden.',
           content: sampleOdrlPolicy,
           legalText: sampleLegalText,
           createdAt: '2026-03-15T10:30:00Z',
-          updatedAt: '2026-04-01T14:20:00Z',
+          updatedAt: '2026-04-29T09:40:00Z',
         },
         {
           id: '00000000-0000-0000-0000-000000000002',
-          name: 'BIM-Viewer Zugriff',
-          description: 'Gewährt Projektmitgliedern lesenden Zugriff auf den BIM-Viewer.',
+          name: 'BIM-Koordinationsmodell Zugriff',
+          description:
+            'Regelt den Zugriff auf das BIM-Koordinationsmodell für alle beteiligten Planungspartner im Projekt.',
           status: 'DRAFT',
+          useCaseContext: 'Planung und Koordination',
+          purpose:
+            'Koordinierte Zusammenarbeit aller Planungsbeteiligten auf Basis eines gemeinsamen BIM-Modells.',
+          permittedUsage:
+            'Lesender und kommentierender Zugriff für Projektmitglieder mit der Rolle Planer oder Koordinator.',
+          restrictions:
+            'Kein Schreibzugriff ohne explizite Freigabe durch den BIM-Manager. Export nur in abgestimmten Formaten.',
           content: sampleOdrlAccess,
           legalText: sampleAccessLegalText,
           createdAt: '2026-04-10T08:00:00Z',
-          updatedAt: '2026-04-10T08:00:00Z',
+          updatedAt: '2026-04-28T16:10:00Z',
         },
         {
           id: '00000000-0000-0000-0000-000000000003',
-          name: 'Lieferketten-Daten (veraltet)',
+          name: 'Materialprüfung Laborergebnisse',
           description:
-            'Ehemalige Policy für den Austausch von Lieferkettendaten. Wurde durch eine aktualisierte Version ersetzt.',
-          status: 'ARCHIVED',
-          content: null,
-          legalText: null,
-          createdAt: '2025-12-01T09:00:00Z',
-          updatedAt: '2026-02-15T16:45:00Z',
+            'Richtlinie für die Nutzung und Weitergabe von Laborergebnissen aus der Materialprüfung.',
+          status: 'ACTIVE',
+          useCaseContext: 'Materialprüfung',
+          purpose: 'Nachvollziehbarkeit der Materialqualität und Einhaltung der Baustoffnormen.',
+          permittedUsage:
+            'Einsicht durch Bauleitung und Qualitätssicherung. Weitergabe an den Auftraggeber auf Anfrage.',
+          restrictions:
+            'Keine eigenständige Veröffentlichung der Ergebnisse. Nur im Zusammenhang mit dem zugehörigen Prüfauftrag nutzbar.',
+          content: sampleOdrlPolicy,
+          legalText: sampleLegalText,
+          createdAt: '2026-02-20T14:00:00Z',
+          updatedAt: '2026-04-24T11:30:00Z',
         },
       ];
     case 'many':
@@ -139,21 +159,34 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
         ...generatePolicies('few'),
         {
           id: '00000000-0000-0000-0000-000000000004',
-          name: 'Qualitätsdaten-Austausch',
+          name: 'Partnerverträge Datenaustausch',
           description:
-            'Regelt den Austausch von Qualitätsdaten zwischen Generalunternehmer und Nachunternehmern.',
+            'Regelt den Austausch von Vertragsdaten zwischen Generalunternehmer und Nachunternehmern.',
           status: 'ACTIVE',
+          useCaseContext: 'Partnerarbeit',
+          purpose:
+            'Transparenter und regelkonformer Austausch von Vertragsinformationen im Partnernetzwerk.',
+          permittedUsage:
+            'Einsicht durch berechtigte Vertragspartner. Automatisierte Synchronisation der Vertragsstände.',
+          restrictions:
+            'Keine Weitergabe an nicht beteiligte Dritte. Vertrauliche Konditionen sind ausgenommen.',
           content: sampleOdrlPolicy,
           legalText: sampleLegalText,
           createdAt: '2026-01-20T11:00:00Z',
-          updatedAt: '2026-03-10T09:30:00Z',
+          updatedAt: '2026-04-21T09:30:00Z',
         },
         {
           id: '00000000-0000-0000-0000-000000000005',
-          name: 'Zeiterfassungs-Policy',
+          name: 'Zeiterfassung Bauprojekt',
           description:
             'Policy für den kontrollierten Zugriff auf Zeiterfassungsdaten im Bauprojekt.',
           status: 'DRAFT',
+          useCaseContext: 'Projektsteuerung',
+          purpose:
+            'Nachvollziehbare Dokumentation der Arbeitszeiten für Abrechnung und Controlling.',
+          permittedUsage: 'Zugriff durch Projektleitung und Controlling-Abteilung.',
+          restrictions:
+            'Personenbezogene Daten nur aggregiert auswertbar. Keine Einzelauswertung ohne Zustimmung.',
           content: sampleOdrlAccess,
           legalText: sampleAccessLegalText,
           createdAt: '2026-04-18T07:00:00Z',
@@ -161,10 +194,16 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
         },
         {
           id: '00000000-0000-0000-0000-000000000006',
-          name: 'Geodaten-Nutzung',
+          name: 'Geodaten Vermessung',
           description:
             'Erlaubt die Nutzung von Geodaten für Vermessungszwecke innerhalb des Projekts.',
           status: 'ACTIVE',
+          useCaseContext: 'Vermessung',
+          purpose: 'Präzise Verortung von Baumaßnahmen und Abgleich mit amtlichen Geodaten.',
+          permittedUsage:
+            'Nutzung durch Vermessungsingenieure und Geoinformationssysteme des Projekts.',
+          restrictions:
+            'Keine kommerzielle Weiterverwertung. Amtliche Grenzdaten dürfen nicht verändert werden.',
           content: sampleOdrlPolicy,
           legalText: sampleLegalText,
           createdAt: '2026-02-05T13:15:00Z',
@@ -175,6 +214,12 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           name: 'IoT-Sensordaten Baustelle',
           description: 'Regelt die Erfassung und Weitergabe von IoT-Sensordaten der Baustelle.',
           status: 'DRAFT',
+          useCaseContext: 'Baustellenüberwachung',
+          purpose:
+            'Echtzeitüberwachung von Umgebungsbedingungen und Maschinenstatus auf der Baustelle.',
+          permittedUsage:
+            'Automatisierte Auswertung durch Monitoring-Systeme. Alarmierung bei Grenzwertüberschreitung.',
+          restrictions: 'Rohdaten werden nach 90 Tagen gelöscht. Keine Personenüberwachung.',
           content: sampleOdrlPolicy,
           legalText: sampleLegalText,
           createdAt: '2026-04-15T16:00:00Z',
@@ -186,6 +231,10 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           description:
             'Veraltete Policy für Materiallogistik. Ersetzt durch aktualisierte Version.',
           status: 'ARCHIVED',
+          useCaseContext: 'Logistik',
+          purpose: '',
+          permittedUsage: '',
+          restrictions: '',
           content: null,
           legalText: null,
           createdAt: '2025-10-01T08:00:00Z',
@@ -216,6 +265,10 @@ export function getMockedPolicyById(id: string): Policy | undefined {
 export function createMockedPolicy(data: {
   name: string;
   description: string;
+  useCaseContext?: string;
+  purpose?: string;
+  permittedUsage?: string;
+  restrictions?: string;
   content: string | null;
   legalText: string | null;
 }): Policy {
@@ -228,6 +281,10 @@ export function createMockedPolicy(data: {
     name: data.name,
     description: data.description,
     status: 'DRAFT',
+    useCaseContext: data.useCaseContext ?? '',
+    purpose: data.purpose ?? '',
+    permittedUsage: data.permittedUsage ?? '',
+    restrictions: data.restrictions ?? '',
     content: data.content,
     legalText: data.legalText,
     createdAt: now,
@@ -243,6 +300,10 @@ export function updateMockedPolicy(
     name: string;
     description: string;
     status: string;
+    useCaseContext?: string;
+    purpose?: string;
+    permittedUsage?: string;
+    restrictions?: string;
     content: string | null;
     legalText: string | null;
   },
@@ -258,6 +319,10 @@ export function updateMockedPolicy(
     name: data.name,
     description: data.description,
     status: data.status as Policy['status'],
+    useCaseContext: data.useCaseContext ?? policies[index].useCaseContext,
+    purpose: data.purpose ?? policies[index].purpose,
+    permittedUsage: data.permittedUsage ?? policies[index].permittedUsage,
+    restrictions: data.restrictions ?? policies[index].restrictions,
     content: data.content,
     legalText: data.legalText,
     updatedAt: new Date().toISOString(),
