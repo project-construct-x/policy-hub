@@ -1,0 +1,101 @@
+@use '@angular/material' as mat;
+@use './theme-colors' as cx;
+
+// ============================================================
+// Angular Material 3 Theme — Construct-X branded
+// Primary palette generated from #e53d17 (Construct-X Orange)
+// ============================================================
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: cx.$primary-palette,
+        tertiary: cx.$tertiary-palette,
+      ),
+      typography: Montserrat,
+      density: 0,
+    )
+  );
+
+  // ============================================================
+  // Button Overrides
+  // Shape: 8px border-radius for all button variants
+  // Color: Force Construct-X Orange as filled button color
+  // ============================================================
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 0.5rem,
+      filled-container-color: var(--cx-orange),
+      filled-label-text-color: #ffffff,
+      outlined-container-shape: 0.5rem,
+      text-container-shape: 0.5rem,
+      tonal-container-shape: 0.5rem,
+    )
+  );
+}
+
+// ============================================================
+// Context Themes — Semantic button variants
+// Usage: <button matButton="outlined" class="cx-neutral">
+// ============================================================
+
+// Neutral buttons (secondary / back actions)
+.cx-neutral {
+  @include mat.theme-overrides(
+    (
+      primary: #555555,
+    )
+  );
+}
+
+// Danger buttons (destructive actions)
+.cx-danger {
+  @include mat.theme-overrides(
+    (
+      primary: #d32f2f,
+    )
+  );
+}
+
+// ============================================================
+// Global Material Overrides
+// ============================================================
+
+// Prevent underline on Material button links
+a[matButton]:hover {
+  text-decoration: none;
+}
+
+// ============================================================
+// Snackbar Styles — Matches htx-portalui design
+// Colors: Success=#2ba958, Error=#d32f2f, Warning=#f08109, Info=#0a3b93
+// ============================================================
+.cx-snackbar-success .mdc-snackbar__surface {
+  background-color: var(--cx-success) !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-error .mdc-snackbar__surface {
+  background-color: #d32f2f !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-warning .mdc-snackbar__surface {
+  background-color: #b06000 !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-info .mdc-snackbar__surface {
+  background-color: var(--cx-info) !important;
+  color: #ffffff !important;
+}
+
+// Snackbar action button styling
+.cx-snackbar-success,
+.cx-snackbar-error,
+.cx-snackbar-warning,
+.cx-snackbar-info {
+  .mdc-snackbar__surface .mat-mdc-snack-bar-action {
+    color: #ffffff !important;
+  }
+}

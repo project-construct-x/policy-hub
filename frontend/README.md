@@ -39,8 +39,15 @@ Die Anwendung ist anschließend unter [http://localhost:4200] erreichbar und lä
 
 ### Entwicklung
 ```bash
-npm start              # Entwicklungsserver starten (ng serve)
-npm run watch         # Build im Watch-Modus mit Development-Config
+npm start              # Entwicklungsserver mit Mock-Daten (ng serve --configuration mocks)
+npm run start:dev      # Entwicklungsserver ohne Mocks (ng serve)
+npm run watch          # Build im Watch-Modus mit Development-Config
+```
+
+### Docker
+```bash
+npm run docker:mocks   # Docker-Container mit Mock-Konfiguration starten
+npm run docker:dev     # Docker-Container mit Development-Konfiguration starten
 ```
 
 ### Code-Qualität
@@ -91,22 +98,16 @@ frontend/
 │     │     └─ policy-editor-page/            # Policy bearbeiten/erstellen
 │     │
 │     ├─ ui/                                  # Wiederverwendbare UI-Komponenten
-│     │  ├─ atoms/                            # Basis-Komponenten (Button, Icon, Badge)
-│     │  ├─ form/                             # Form UI (FormField, Select, Validation)
-│     │  └─ dialog/                           # Dialog Shell & Dialogs
+│     │  ├─ header/                           # App-Header mit Navigation
+│     │  └─ mock-data-switcher/               # Entwicklermenü (Mock-Daten-Umschalter)
 │     │
 │     ├─ services/                            # Business Logic & API
-│     │  ├─ policies/                         # Policies-Service (API, Mapping, State/Facade)
-│     │  ├─ policy-builder/                   # Adapter/Wrapper zur Builder-Library
-│     │  └─ notification/                     # Notification-Service (MatSnackBar)
-│     │
-│     ├─ core/                                # App-weit Singular-Services
-│     │  ├─ guards/                           # Route Guards (Auth, etc.)
-│     │  ├─ interceptors/                     # HTTP Interceptors
-│     │  └─ config/                           # Globale Konfiguration
+│     │  ├─ policies/                         # PolicyService (CRUD API)
+│     │  └─ notification/                     # NotificationService (MatSnackBar)
 │     │
 │     └─ shared/                              # Gemeinsame Utilities & Types
-│        ├─ types/                            # Gemeinsame TypeScript Interfaces
+│        ├─ types/                            # TypeScript Interfaces (Policy, etc.)
+│        ├─ pipes/                            # Pipes (RelativeDatePipe, etc.)
 │        └─ utils/                            # Helper-Funktionen
 │
 ├─ angular.json                               # Angular CLI Konfiguration
@@ -178,9 +179,11 @@ cypress/
 
 - **Framework**: [Angular 21](https://angular.io/)
 - **Sprache**: [TypeScript 5.9](https://www.typescriptlang.org/)
-- **Styling**: [SCSS](https://sass-lang.com/)
-- **UI Components**: [Angular Material](https://material.angular.io/)
-- **State Management**: RxJS
+- **Styling**: [SCSS](https://sass-lang.com/) mit CSS Custom Properties
+- **UI Components**: [Angular Material 21](https://material.angular.io/) (M3 Theme)
+- **i18n**: [@jsverse/transloco](https://jsverse.github.io/transloco/) (Deutsch)
+- **Mock Server**: [MirageJS](https://miragejs.com/) (lokale API-Simulation)
+- **State Management**: Angular Signals + RxJS
 - **Routing**: Angular Router
 - **Linting**: [ESLint](https://eslint.org/) + [Angular ESLint](https://github.com/angular-eslint/angular-eslint)
 - **Formatierung**: [Prettier](https://prettier.io/)

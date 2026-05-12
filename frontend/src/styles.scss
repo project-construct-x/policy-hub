@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@use './material';
 
 // ============================================================
 // Construct-X Design Tokens
@@ -29,7 +29,7 @@
   // Text
   --cx-text-primary: #111111;
   --cx-text-secondary: #555555;
-  --cx-text-tertiary: #888888;
+  --cx-text-tertiary: #767676;
 
   // Backgrounds
   --cx-bg-primary: #ffffff;
@@ -49,21 +49,8 @@
   --cx-info: #0a3b93;
 }
 
-// ============================================================
-// Angular Material 3 Theme — Construct-X branded
-// ============================================================
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$blue-palette,
-        tertiary: mat.$orange-palette,
-      ),
-      typography: Montserrat,
-      density: 0,
-    )
-  );
 }
 
 body {
@@ -96,19 +83,4 @@ h1, h2, h3, h4, h5, h6 {
 
 strong, b {
   font-weight: 400;
-}
-
-// ============================================================
-// Snackbar Styles
-// ============================================================
-.cx-snackbar-success .mdc-snackbar__surface {
-  background-color: var(--cx-dark-blue) !important;
-}
-
-.cx-snackbar-error .mdc-snackbar__surface {
-  background-color: var(--cx-dark-orange) !important;
-}
-
-.cx-snackbar-info .mdc-snackbar__surface {
-  background-color: var(--cx-dark-blue) !important;
 }

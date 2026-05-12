@@ -4,8 +4,8 @@
       <h1>{{ t('policies.title') }}</h1>
       <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
     </div>
-    <a routerLink="/policies/new" class="btn-primary">
-      <span class="material-icons">add</span>
+    <a routerLink="/policies/new" matButton="filled">
+      <mat-icon>add</mat-icon>
       {{ t('policies.createNew') }}
     </a>
   </div>
@@ -55,52 +55,24 @@
       <h2>{{ t('policies.error.title') }}</h2>
       <p>{{ t('policies.error.description') }}</p>
       <div class="error-actions">
-        <button class="btn-primary" (click)="loadPolicies()">
-          <span class="material-icons">refresh</span>
+        <button matButton="filled" (click)="loadPolicies()">
+          <mat-icon>refresh</mat-icon>
           {{ t('policies.error.retry') }}
         </button>
-        <a routerLink="/" class="btn-secondary">{{ t('policies.error.home') }}</a>
+        <a routerLink="/" matButton="outlined" class="cx-neutral">{{ t('policies.error.home') }}</a>
       </div>
     </div>
   } @else if (filteredPolicies().length === 0 && policies().length === 0) {
-    <div class="empty-state">
-      <div class="empty-icon-wrap">
-        <span class="material-icons">description</span>
-      </div>
-      <h2>{{ t('policies.empty.title') }}</h2>
-      <p>{{ t('policies.empty.description') }}</p>
-      <a routerLink="/policies/new" class="btn-primary">
-        <span class="material-icons">add</span>
+    <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
+      <a routerLink="/policies/new" matButton="filled" cxCta>
+        <mat-icon>add</mat-icon>
         {{ t('policies.empty.cta') }}
       </a>
-      <span class="empty-hint">{{ t('policies.empty.hint') }}</span>
-    </div>
+    </app-cx-empty-state>
   } @else if (filteredPolicies().length === 0) {
-    <div class="empty-state">
-      <p>{{ t('policies.noResults') }}</p>
-    </div>
+    <app-cx-empty-state icon="search_off" [title]="t('policies.noResults')" />
   } @else {
-    <div class="policy-list">
-      <div class="list-header">
-        <span class="col-name">{{ t('policies.table.name') }}</span>
-        <span class="col-context">{{ t('policies.table.context') }}</span>
-        <span class="col-date">{{ t('policies.table.lastChange') }}</span>
-        <span class="col-action"></span>
-      </div>
-      @for (policy of paginatedPolicies(); track policy.id) {
-        <div class="list-row" (click)="openDetail(policy)">
-          <div class="col-name">
-            <span class="policy-name">{{ policy.name }}</span>
-            <span class="policy-desc">{{ policy.description }}</span>
-          </div>
-          <span class="col-context">{{ policy.useCaseContext }}</span>
-          <span class="col-date">{{ formatDate(policy.updatedAt) }}</span>
-          <span class="col-action">
-            <span class="material-icons view-icon">visibility</span>
-          </span>
-        </div>
-      }
-    </div>
+    <app-cx-policy-table [policies]="paginatedPolicies()" />
 
     @if (totalPages() > 1) {
       <div class="pagination">

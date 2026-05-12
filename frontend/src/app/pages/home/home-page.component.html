@@ -5,11 +5,11 @@
       <h1 class="title">{{ t('home.title') }}</h1>
       <p class="description">{{ t('home.description') }}</p>
       <div class="actions">
-        <a routerLink="/policies/new" class="btn-primary">
-          <span class="material-icons">add</span>
+        <a routerLink="/policies/new" matButton="filled">
+          <mat-icon>add</mat-icon>
           {{ t('home.ctaCreate') }}
         </a>
-        <a routerLink="/policies" class="btn-secondary">
+        <a routerLink="/policies" matButton="outlined" class="cx-neutral">
           {{ t('home.ctaAll') }}
         </a>
       </div>
@@ -58,16 +58,14 @@
     </div>
 
     @if (recentPolicies().length > 0) {
-      <div class="recent-list">
-        @for (policy of recentPolicies(); track policy.id) {
-          <a [routerLink]="['/policies', policy.id]" class="recent-row">
-            <span class="recent-name">{{ policy.name }}</span>
-            <span class="recent-context">{{ policy.useCaseContext }}</span>
-            <span class="recent-spacer"></span>
-            <span class="recent-date">{{ formatDate(policy.updatedAt) }}</span>
-          </a>
-        }
-      </div>
+      <app-cx-policy-table [policies]="recentPolicies()" [showDescription]="false" />
+    } @else {
+      <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
+        <a routerLink="/policies/new" matButton="filled" cxCta>
+          <mat-icon>add</mat-icon>
+          {{ t('policies.empty.cta') }}
+        </a>
+      </app-cx-empty-state>
     }
   </section>
 </div>

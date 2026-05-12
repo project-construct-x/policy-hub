@@ -1,0 +1,106 @@
+// ============================================================
+// Shared Policy Table — used in Overview + Home Page
+// ============================================================
+.cx-policy-table {
+  background: var(--cx-white);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  padding: 0 1.25rem;
+  border-bottom: 0.0625rem solid var(--cx-border-color);
+  gap: 1.125rem;
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--cx-text-tertiary);
+  }
+}
+
+.col-name {
+  width: 29.375rem;
+}
+
+.col-context {
+  width: 17.5rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+}
+
+.col-date {
+  width: 11.25rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-tertiary);
+}
+
+.col-action {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table-row {
+  display: flex;
+  align-items: center;
+  height: 4.625rem;
+  padding: 0 1.25rem;
+  gap: 1.125rem;
+  border-bottom: 0.0625rem solid var(--cx-border-color);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--cx-bg-page);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cx-orange);
+    outline-offset: -2px;
+  }
+
+  .col-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+.policy-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cx-text-primary);
+}
+
+.policy-desc {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 28.125rem;
+}
+
+.view-icon {
+  font-size: 1.25rem;
+  color: var(--cx-text-tertiary);
+  transition: color 0.15s;
+}
+
+.table-row:hover .view-icon {
+  color: var(--cx-orange);
+}

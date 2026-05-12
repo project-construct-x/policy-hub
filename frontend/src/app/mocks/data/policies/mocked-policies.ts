@@ -240,6 +240,144 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           createdAt: '2025-10-01T08:00:00Z',
           updatedAt: '2026-01-10T12:00:00Z',
         },
+        {
+          id: '00000000-0000-0000-0000-000000000009',
+          name: 'Abfallentsorgungsnachweis Digital',
+          description:
+            'Regelt die digitale Dokumentation und Weitergabe von Abfallentsorgungsnachweisen auf Baustellen.',
+          status: 'ACTIVE',
+          useCaseContext: 'Entsorgung',
+          purpose:
+            'Lückenlose Nachverfolgung der ordnungsgemäßen Entsorgung von Bauabfällen gemäß KrWG.',
+          permittedUsage:
+            'Einsicht durch Bauleitung, Umweltbeauftragte und zuständige Behörden auf Anfrage.',
+          restrictions:
+            'Entsorgungsnachweise dürfen nicht verändert werden. Archivierungspflicht von 5 Jahren.',
+          content: sampleOdrlPolicy,
+          legalText: sampleLegalText,
+          createdAt: '2026-03-01T09:00:00Z',
+          updatedAt: '2026-04-20T14:30:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000010',
+          name: 'Drohnenbefliegung Dokumentation',
+          description:
+            'Policy für die Nutzung von Drohnenaufnahmen zur Baufortschrittsdokumentation.',
+          status: 'ACTIVE',
+          useCaseContext: 'Dokumentation',
+          purpose: 'Regelmäßige visuelle Dokumentation des Baufortschritts aus der Luft.',
+          permittedUsage:
+            'Nutzung durch Projektleitung und Auftraggeber. Einbindung in Baufortschrittsberichte.',
+          restrictions:
+            'Keine Aufnahmen von Personen ohne Einwilligung. Flugverbotszonen sind einzuhalten.',
+          content: sampleOdrlAccess,
+          legalText: sampleAccessLegalText,
+          createdAt: '2026-02-15T10:00:00Z',
+          updatedAt: '2026-04-18T08:45:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000011',
+          name: 'Energieverbrauchsdaten Gebäudebetrieb',
+          description:
+            'Richtlinie zur Erfassung und Auswertung von Energieverbrauchsdaten im Gebäudebetrieb.',
+          status: 'DRAFT',
+          useCaseContext: 'Gebäudebetrieb',
+          purpose: 'Optimierung des Energieverbrauchs und Erfüllung von ESG-Berichtspflichten.',
+          permittedUsage: 'Auswertung durch Facility Management und Nachhaltigkeitsbeauftragte.',
+          restrictions: 'Keine Weitergabe an Dritte ohne Zustimmung des Gebäudeeigentümers.',
+          content: sampleOdrlPolicy,
+          legalText: sampleLegalText,
+          createdAt: '2026-04-01T07:30:00Z',
+          updatedAt: '2026-04-25T16:00:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000012',
+          name: 'Lieferantenbewertung Baustoffe',
+          description:
+            'Regelt den Zugriff auf Bewertungsdaten von Baustofflieferanten im Beschaffungsprozess.',
+          status: 'ACTIVE',
+          useCaseContext: 'Beschaffung',
+          purpose:
+            'Qualitätssicherung bei der Lieferantenauswahl durch transparente Bewertungskriterien.',
+          permittedUsage:
+            'Einsicht durch Einkauf und Bauleitung. Vergleichende Auswertungen für Vergabeentscheidungen.',
+          restrictions:
+            'Bewertungen sind vertraulich. Keine direkte Weitergabe an bewertete Lieferanten.',
+          content: sampleOdrlAccess,
+          legalText: sampleAccessLegalText,
+          createdAt: '2026-01-15T13:00:00Z',
+          updatedAt: '2026-03-30T09:15:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000013',
+          name: 'Arbeitsschutz Gefährdungsbeurteilung',
+          description:
+            'Policy für die digitale Verwaltung und Weitergabe von Gefährdungsbeurteilungen.',
+          status: 'ACTIVE',
+          useCaseContext: 'Arbeitsschutz',
+          purpose:
+            'Sicherstellung der Einhaltung von Arbeitsschutzvorschriften auf allen Baustellen.',
+          permittedUsage: 'Zugriff durch SiGeKo, Bauleitung und Fachkräfte für Arbeitssicherheit.',
+          restrictions:
+            'Personenbezogene Unfalldaten nur anonymisiert auswertbar. Löschfrist nach Projektende: 10 Jahre.',
+          content: sampleOdrlPolicy,
+          legalText: sampleLegalText,
+          createdAt: '2026-03-20T11:00:00Z',
+          updatedAt: '2026-04-22T15:30:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000014',
+          name: 'Bautagebuch Digital',
+          description:
+            'Regelt die Erfassung, Speicherung und Einsichtnahme des digitalen Bautagebuchs.',
+          status: 'DRAFT',
+          useCaseContext: 'Baudokumentation',
+          purpose:
+            'Tägliche Dokumentation des Baugeschehens als Nachweis- und Abrechnungsgrundlage.',
+          permittedUsage:
+            'Eintragung durch Bauleitung. Lesezugriff für Auftraggeber und Projektsteuerung.',
+          restrictions:
+            'Einträge dürfen nach Freigabe nicht mehr verändert werden. Nur Ergänzungen sind zulässig.',
+          content: sampleOdrlAccess,
+          legalText: sampleAccessLegalText,
+          createdAt: '2026-04-05T06:00:00Z',
+          updatedAt: '2026-04-28T17:00:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000015',
+          name: 'Nachunternehmer Leistungsverzeichnis',
+          description:
+            'Policy für den kontrollierten Zugriff auf Leistungsverzeichnisse von Nachunternehmern.',
+          status: 'ACTIVE',
+          useCaseContext: 'Vergabe',
+          purpose:
+            'Transparente Vergabeprozesse durch standardisierten Zugriff auf Leistungsbeschreibungen.',
+          permittedUsage:
+            'Einsicht durch Vergabestelle und Kalkulation. Export nur für interne Auswertung.',
+          restrictions:
+            'Preisblätter sind vertraulich und nur für berechtigte Vergabeteilnehmer sichtbar.',
+          content: sampleOdrlPolicy,
+          legalText: sampleLegalText,
+          createdAt: '2026-02-28T14:00:00Z',
+          updatedAt: '2026-04-10T10:45:00Z',
+        },
+        {
+          id: '00000000-0000-0000-0000-000000000016',
+          name: 'Bestandsmodell Sanierung',
+          description: 'Richtlinie für die Nutzung von Bestandsmodellen bei Sanierungsprojekten.',
+          status: 'DRAFT',
+          useCaseContext: 'Sanierung',
+          purpose:
+            'Bereitstellung aktueller Bestandsdaten als Planungsgrundlage für Sanierungsmaßnahmen.',
+          permittedUsage:
+            'Lesender Zugriff für Planer und Fachingenieure. Integration in Fachmodelle erlaubt.',
+          restrictions:
+            'Bestandsdaten dürfen nicht als Grundlage für statische Berechnungen ohne Vor-Ort-Überprüfung verwendet werden.',
+          content: sampleOdrlAccess,
+          legalText: sampleAccessLegalText,
+          createdAt: '2026-03-10T08:30:00Z',
+          updatedAt: '2026-04-30T12:00:00Z',
+        },
       ];
   }
 }

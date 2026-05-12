@@ -1,0 +1,17 @@
+# Use Node.js 22 (ships with npm 11)
+FROM node:22
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy package.json files and install dependencies
+COPY package*.json ./
+
+# Install dependencies locally
+# --legacy-peer-deps: needed because npm 10 in Docker is stricter than npm 11 on the host
+RUN npm install --legacy-peer-deps
+
+# Start the Angular development server with mock configuration
+# --host 0.0.0.0 makes it accessible outside the container
+# --poll=2000 ensures hot reload works with mounted volumes
+CMD npx ng serve --configuration=mocks --host 0.0.0.0 --poll=2000

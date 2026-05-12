@@ -21,8 +21,27 @@
     <a routerLink="/policies" routerLinkActive="active" class="nav-link">
       {{ t('header.policies') }}
     </a>
-    <a routerLink="/profile" class="profile-avatar">
-      <span class="avatar-text">MK</span>
-    </a>
   </nav>
+
+  <div class="header-actions">
+    <div class="lang-switcher">
+      @for (lang of availableLangs; track lang; let last = $last) {
+        <button
+          class="lang-btn"
+          [class.lang-btn--active]="lang === activeLang"
+          (click)="switchLang(lang)"
+          [title]="lang.toUpperCase()"
+        >
+          {{ lang.toUpperCase() }}
+        </button>
+        @if (!last) {
+          <span class="lang-divider">|</span>
+        }
+      }
+    </div>
+
+    <button matButton="filled" class="login-btn" (click)="onLoginClick()">
+      {{ t('header.login') }}
+    </button>
+  </div>
 </header>

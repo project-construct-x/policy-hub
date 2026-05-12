@@ -6,17 +6,17 @@
     </div>
   } @else if (policy(); as p) {
     <div class="top-actions">
-      <a routerLink="/policies" class="btn-outline">
-        <span class="material-icons">arrow_back</span>
+      <a routerLink="/policies" matButton="outlined" class="cx-neutral">
+        <mat-icon>arrow_back</mat-icon>
         {{ t('policyDetail.backToOverview') }}
       </a>
       <span class="top-spacer"></span>
-      <button class="btn-outline btn-delete" (click)="deletePolicy()">
-        <span class="material-icons">delete</span>
+      <button matButton="outlined" class="cx-danger" (click)="deletePolicy()">
+        <mat-icon>delete</mat-icon>
         {{ t('policyDetail.delete') }}
       </button>
-      <a [routerLink]="['/policies', p.id, 'edit']" class="btn-primary">
-        <span class="material-icons">edit</span>
+      <a [routerLink]="['/policies', p.id, 'edit']" matButton="filled">
+        <mat-icon>edit</mat-icon>
         {{ t('policyDetail.edit') }}
       </a>
     </div>
@@ -29,7 +29,7 @@
           >{{ t('policyDetail.useCaseContext') }}: {{ p.useCaseContext }}</span
         >
         <span class="meta-date"
-          >{{ t('policyDetail.lastChanged') }}: {{ formatDate(p.updatedAt) }}</span
+          >{{ t('policyDetail.lastChanged') }}: {{ p.updatedAt | relativeDate }}</span
         >
       </div>
     </div>
@@ -71,11 +71,11 @@
           </div>
           <div class="info-row">
             <span class="info-label">{{ t('policyDetail.infoCard.created') }}</span>
-            <span class="info-value">{{ formatDate(p.createdAt) }}</span>
+            <span class="info-value">{{ p.createdAt | relativeDate }}</span>
           </div>
           <div class="info-row">
             <span class="info-label">{{ t('policyDetail.infoCard.lastChange') }}</span>
-            <span class="info-value">{{ formatDate(p.updatedAt) }}</span>
+            <span class="info-value">{{ p.updatedAt | relativeDate }}</span>
           </div>
         </div>
 

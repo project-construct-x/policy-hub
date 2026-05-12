@@ -1,15 +1,25 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
+import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
 import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-policy-detail-page',
-  imports: [RouterLink, MatDialogModule, TranslocoDirective],
+  imports: [
+    RouterLink,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    TranslocoDirective,
+    RelativeDatePipe,
+  ],
   templateUrl: './policy-detail-page.component.html',
   styleUrl: './policy-detail-page.component.scss',
 })
@@ -30,7 +40,7 @@ export class PolicyDetailPageComponent implements OnInit {
       this.router.navigate(['/policies']);
       return;
     }
-    this.policyService.getById(id).subscribe({
+    this.policyService.getPolicyById(id).subscribe({
       next: (data) => {
         this.policy.set(data);
         this.loading.set(false);
@@ -41,21 +51,6 @@ export class PolicyDetailPageComponent implements OnInit {
         this.router.navigate(['/policies']);
       },
     });
-  }
-
-  formatDate(iso: string): string {
-    const date = new Date(iso);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const oneDay = 24 * 60 * 60 * 1000;
-
-    if (diff < oneDay && date.getDate() === now.getDate()) {
-      return `heute, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
-    }
-    if (diff < 2 * oneDay) {
-      return `gestern, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
-    }
-    return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   deletePolicy(): void {
@@ -69,7 +64,7 @@ export class PolicyDetailPageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        this.policyService.delete(p.id).subscribe({
+        this.policyService.deletePolicy(p.id).subscribe({
           next: () => {
             this.notification.success(
               this.transloco.translate('policyDetail.notifications.deleteSuccess'),

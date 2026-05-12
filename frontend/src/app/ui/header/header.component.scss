@@ -1,11 +1,14 @@
+// ============================================================
+// Header Layout
+// ============================================================
 .cx-header {
   background: var(--cx-white);
   border-bottom: 1px solid var(--cx-border-color);
-  padding: 0 56px;
-  height: 64px;
+  padding: 0 3.5rem;
+  height: 4.5rem;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 1.5rem;
 }
 
 .logo-link {
@@ -15,20 +18,19 @@
 }
 
 .logo {
-  height: 30px;
+  height: 1.875rem;
   width: auto;
 }
 
 .divider {
-  width: 1px;
-  height: 24px;
-  background-color: var(--cx-border-color);
+  width: 0.0625rem;
+  height: 1.5rem;
+  background-color: var(--cx-text-tertiary);
 }
 
 .product-label {
-  font-family: 'Montserrat', sans-serif;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 0.9375rem;
   color: var(--cx-text-secondary);
 }
 
@@ -36,48 +38,114 @@
   flex: 1;
 }
 
+// ============================================================
+// Navigation — Underline hover effect (Portal UI pattern)
+// ============================================================
 .global-nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 2rem;
 }
 
 .nav-link {
-  font-family: 'Montserrat', sans-serif;
+  position: relative;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 0.875rem;
   color: var(--cx-text-secondary);
   text-decoration: none;
+  padding-bottom: 0.25rem;
+  transition: color 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.25rem;
+    width: 100%;
+    height: 2px;
+    background-color: var(--cx-orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
 
   &:hover {
-    color: var(--cx-text-primary);
+    color: var(--cx-orange);
     text-decoration: none;
+
+    &::after {
+      transform: scaleX(1);
+    }
   }
 
   &.active {
-    color: var(--cx-text-primary);
+    color: var(--cx-orange);
     font-weight: 600;
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cx-orange);
+    outline-offset: 4px;
+    border-radius: 2px;
   }
 }
 
-.profile-avatar {
+// ============================================================
+// Header Actions — Language Switcher + Login
+// ============================================================
+.header-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--cx-light-blue);
-  text-decoration: none;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--cx-text-tertiary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  letter-spacing: 0.05em;
 
   &:hover {
-    text-decoration: none;
+    color: var(--cx-text-primary);
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &--active {
+    color: var(--cx-text-primary);
+    font-weight: 700;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cx-orange);
+    outline-offset: 2px;
   }
 }
 
-.avatar-text {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--cx-dark-blue);
+.lang-divider {
+  color: var(--cx-text-tertiary);
+  font-size: 0.8125rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.login-btn {
+  white-space: nowrap;
 }

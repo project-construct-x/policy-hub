@@ -2,47 +2,56 @@
   "header": {
     "productLabel": "Policy Hub",
     "start": "Start",
-    "policies": "Richtlinien"
+    "policies": "Policy-Übersicht",
+    "login": "Anmelden",
+    "loginNotAvailable": "Anmeldung ist noch nicht verfügbar."
   },
   "home": {
     "eyebrow": "Construct-X Policy Hub",
-    "title": "Richtlinien verständlich verwalten",
-    "description": "Erstellen, prüfen und pflegen Sie Nutzungsbedingungen für Datenräume, Projekte und Partner. Der Policy Hub führt fachlich durch die wichtigsten Entscheidungen, ohne technische Details in den Vordergrund zu stellen.",
-    "ctaCreate": "Richtlinie erstellen",
-    "ctaAll": "Alle Richtlinien anzeigen",
+    "title": "Policies erstellen und verwalten",
+    "description": "Erstellen, prüfen und pflegen Sie Policies für den Dataspace Construct-X.",
+    "ctaCreate": "Policy erstellen",
+    "ctaAll": "Alle Policies anzeigen",
     "orientation": {
       "title": "Ihr nächster sinnvoller Schritt",
-      "description": "Beginnen Sie mit einer neuen Richtlinie oder prüfen Sie bestehende Regeln, bevor Daten mit Partnern geteilt werden.",
-      "step1": "Neue Richtlinie anlegen",
-      "step2": "Nutzungsbedingungen prüfen",
-      "step3": "Richtlinie freigeben"
+      "description": "Beginnen Sie mit einer neuen Policy oder prüfen Sie bestehende, bevor Daten mit Partnern geteilt werden.",
+      "step1": "Neue Policy anlegen",
+      "step2": "Policies prüfen",
+      "step3": "Policy freigeben"
     },
     "cards": {
       "policies": {
-        "label": "Policies im Hub",
+        "label": "Policies",
         "description": "Gesamtzahl der angelegten Policies"
       },
       "useCases": {
-        "label": "Anwendungsbereiche",
-        "description": "Bereiche, für die Policies angelegt wurden"
+        "label": "Placeholder",
+        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
       },
       "rules": {
-        "label": "Nutzungsregeln",
-        "description": "Fachliche Regeln, die in Policies beschrieben sind"
+        "label": "Placeholder",
+        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
       }
     },
     "recent": {
       "title": "Kürzlich bearbeitet",
-      "showAll": "Alle Richtlinien anzeigen"
+      "showAll": "Alle Policies anzeigen",
+      "empty": {
+        "title": "Noch keine Policies vorhanden",
+        "description": "Erstellen Sie eine erste Policy, um sie hier zu sehen."
+      }
     }
   },
   "policies": {
-    "title": "Richtlinienübersicht",
-    "subtitle": "Alle Nutzungsbedingungen mit Use-Case-Kontext und letzter Änderung.",
-    "createNew": "Richtlinie erstellen",
+    "title": "Policy-Übersicht",
+    "subtitle": "Alle Policies mit Use-Case-Kontext und letzter Änderung.",
+    "createNew": "Policy erstellen",
     "searchPlaceholder": "Nach Name oder Use-Case-Kontext suchen",
-    "loadingHint": "Richtlinien werden geladen …",
-    "noResults": "Keine Richtlinien gefunden.",
+    "loadingHint": "Policies werden geladen …",
+    "noResults": "Keine Policies gefunden.",
+    "pagination": {
+      "info": "{{start}}–{{end}} von {{total}} Policies"
+    },
     "filters": {
       "context": "Use-Case-Kontext"
     },
@@ -52,19 +61,19 @@
       "lastChange": "Letzte Änderung"
     },
     "empty": {
-      "title": "Noch keine Richtlinien vorhanden",
-      "description": "Erstellen Sie eine erste Nutzungsbedingung, um Datenfreigaben und Verwendungszwecke verständlich zu regeln.",
-      "cta": "Erste Richtlinie erstellen",
+      "title": "Noch keine Policies vorhanden",
+      "description": "Erstellen Sie eine erste Policy, um Datenfreigaben und Verwendungszwecke verständlich zu regeln.",
+      "cta": "Erste Policy erstellen",
       "hint": "Oder später aus der Übersicht starten"
     },
     "error": {
-      "title": "Richtlinien konnten nicht geladen werden",
+      "title": "Policies konnten nicht geladen werden",
       "description": "Die Übersicht ist im Moment nicht verfügbar. Versuchen Sie es erneut oder kehren Sie zur Startseite zurück.",
       "retry": "Erneut versuchen",
       "home": "Zur Startseite"
     },
     "notifications": {
-      "loadError": "Richtlinien konnten nicht geladen werden."
+      "loadError": "Policies konnten nicht geladen werden."
     }
   },
   "policyDetail": {
@@ -74,7 +83,7 @@
     "useCaseContext": "Use-Case-Kontext",
     "lastChanged": "Zuletzt geändert",
     "sections": {
-      "purpose": "Zweck der Richtlinie",
+      "purpose": "Zweck der Policy",
       "permittedUsage": "Erlaubte Nutzung",
       "restrictions": "Einschränkungen",
       "legalText": "Rechtlicher Hinweis"
@@ -87,65 +96,16 @@
       "lastChange": "Letzte Änderung"
     },
     "notifications": {
-      "loadError": "Richtlinie konnte nicht geladen werden.",
-      "deleteSuccess": "Richtlinie wurde gelöscht.",
-      "deleteError": "Richtlinie konnte nicht gelöscht werden."
+      "loadError": "Policy konnte nicht geladen werden.",
+      "deleteSuccess": "Policy wurde gelöscht.",
+      "deleteError": "Policy konnte nicht gelöscht werden."
     }
   },
   "policyEditor": {
-    "steps": {
-      "grundlagen": "Grundlagen",
-      "useCase": "Use-Case-Kontext",
-      "nutzung": "Nutzung",
-      "pruefen": "Prüfen"
-    },
-    "stepTitles": {
-      "grundlagen": "Grundlagen der Richtlinie",
-      "useCase": "Use-Case-Kontext definieren",
-      "nutzung": "Nutzung und Einschränkungen",
-      "pruefen": "Zusammenfassung prüfen"
-    },
-    "stepDescriptions": {
-      "grundlagen": "Beschreiben Sie zuerst Zweck, Titel und Verantwortung. Diese Angaben helfen später beim Wiederfinden und bei der fachlichen Prüfung.",
-      "useCase": "Legen Sie fest, für welchen Anwendungsfall diese Richtlinie gilt und welchen Zweck sie erfüllt.",
-      "nutzung": "Definieren Sie, was erlaubt ist, welche Einschränkungen gelten und ob rechtliche Hinweise notwendig sind.",
-      "pruefen": "Überprüfen Sie Ihre Angaben und erstellen Sie die Richtlinie."
-    },
-    "fields": {
-      "name": "Name der Richtlinie",
-      "namePlaceholder": "z.B. Baustellendaten für Qualitätsprüfungen",
-      "nameRequired": "Name ist erforderlich",
-      "description": "Kurzbeschreibung und Zweck",
-      "descriptionPlaceholder": "Beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen.",
-      "useCaseContext": "Verantwortlicher Bereich",
-      "useCaseContextPlaceholder": "Bereich auswählen",
-      "purpose": "Zweck der Richtlinie",
-      "purposePlaceholder": "Beschreiben Sie den Zweck und die Ziele dieser Richtlinie …",
-      "permittedUsage": "Erlaubte Nutzung",
-      "permittedUsagePlaceholder": "Welche Nutzung der Daten ist unter dieser Richtlinie erlaubt?",
-      "restrictions": "Einschränkungen",
-      "restrictionsPlaceholder": "Welche Nutzung ist nicht erlaubt oder an Bedingungen geknüpft?",
-      "legalText": "Rechtlicher Hinweis",
-      "legalTextPlaceholder": "Optionaler juristischer Text zur Richtlinie …"
-    },
-    "actions": {
-      "cancel": "Abbrechen",
-      "save": "Speichern",
-      "create": "Richtlinie erstellen",
-      "back": "Zurück",
-      "skipToReview": "Prüfen und erstellen",
-      "next": {
-        "grundlagen": "Weiter zum Use-Case-Kontext",
-        "useCase": "Weiter zur Nutzung",
-        "nutzung": "Weiter zur Prüfung"
-      }
-    },
-    "notifications": {
-      "loadError": "Richtlinie konnte nicht geladen werden.",
-      "saveSuccess": "Richtlinie wurde gespeichert.",
-      "saveError": "Richtlinie konnte nicht gespeichert werden.",
-      "createSuccess": "Richtlinie wurde erstellt.",
-      "createError": "Richtlinie konnte nicht erstellt werden."
+    "placeholder": {
+      "title": "Policy Builder wird integriert",
+      "description": "Hier entsteht der Policy Builder zur Erstellung und Bearbeitung von Policies. Diese Funktion befindet sich aktuell in der Entwicklung.",
+      "back": "Zurück"
     }
   },
   "deleteDialog": {
@@ -162,8 +122,5 @@
   "jsonViewer": {
     "label": "ODRL JSON-LD",
     "noContent": "(kein Inhalt)"
-  },
-  "profile": {
-    "title": "Profil"
   }
 }

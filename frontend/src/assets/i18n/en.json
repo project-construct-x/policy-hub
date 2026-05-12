@@ -1,0 +1,126 @@
+{
+  "header": {
+    "productLabel": "Policy Hub",
+    "start": "Home",
+    "policies": "Policy Overview",
+    "login": "Sign in",
+    "loginNotAvailable": "Sign in is not yet available."
+  },
+  "home": {
+    "eyebrow": "Construct-X Policy Hub",
+    "title": "Manage policies with clarity",
+    "description": "Create, review and maintain policies for data spaces, projects and partners. The Policy Hub guides you through the key decisions without putting technical details in the foreground.",
+    "ctaCreate": "Create policy",
+    "ctaAll": "View all policies",
+    "orientation": {
+      "title": "Your next meaningful step",
+      "description": "Start with a new policy or review existing rules before sharing data with partners.",
+      "step1": "Create a new policy",
+      "step2": "Review policies",
+      "step3": "Publish policy"
+    },
+    "cards": {
+      "policies": {
+        "label": "Policies in hub",
+        "description": "Total number of policies created"
+      },
+      "useCases": {
+        "label": "Use case areas",
+        "description": "Placeholder – content will be defined during the project."
+      },
+      "rules": {
+        "label": "Policy rules",
+        "description": "Placeholder – details are not yet finalised."
+      }
+    },
+    "recent": {
+      "title": "Recently edited",
+      "showAll": "View all policies",
+      "empty": {
+        "title": "No policies yet",
+        "description": "Create your first policy to see it here."
+      }
+    }
+  },
+  "policies": {
+    "title": "Policy Overview",
+    "subtitle": "All policies with use-case context and last modification.",
+    "createNew": "Create policy",
+    "searchPlaceholder": "Search by name or use-case context",
+    "loadingHint": "Loading policies …",
+    "noResults": "No policies found.",
+    "pagination": {
+      "info": "{{start}}–{{end}} of {{total}} policies"
+    },
+    "filters": {
+      "context": "Use-case context"
+    },
+    "table": {
+      "name": "Name",
+      "context": "Use-case context",
+      "lastChange": "Last modified"
+    },
+    "empty": {
+      "title": "No policies yet",
+      "description": "Create your first policy to clearly define data sharing and usage purposes.",
+      "cta": "Create first policy",
+      "hint": "Or start later from the overview"
+    },
+    "error": {
+      "title": "Policies could not be loaded",
+      "description": "The overview is currently unavailable. Please try again or return to the home page.",
+      "retry": "Try again",
+      "home": "Go to home"
+    },
+    "notifications": {
+      "loadError": "Policies could not be loaded."
+    }
+  },
+  "policyDetail": {
+    "backToOverview": "Back to overview",
+    "edit": "Edit",
+    "delete": "Delete",
+    "useCaseContext": "Use-case context",
+    "lastChanged": "Last modified",
+    "sections": {
+      "purpose": "Purpose of the policy",
+      "permittedUsage": "Permitted usage",
+      "restrictions": "Restrictions",
+      "legalText": "Legal notice"
+    },
+    "infoCard": {
+      "title": "Details",
+      "status": "Status",
+      "context": "Use-case area",
+      "created": "Created",
+      "lastChange": "Last modified"
+    },
+    "notifications": {
+      "loadError": "Policy could not be loaded.",
+      "deleteSuccess": "Policy has been deleted.",
+      "deleteError": "Policy could not be deleted."
+    }
+  },
+  "policyEditor": {
+    "placeholder": {
+      "title": "Policy Builder is being integrated",
+      "description": "The Policy Builder for creating and editing policies is currently under development.",
+      "back": "Back"
+    }
+  },
+  "deleteDialog": {
+    "title": "Delete policy",
+    "message": "Are you sure you want to delete the policy <strong>{{name}}</strong>? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "ACTIVE": "Active",
+    "ARCHIVED": "Archived"
+  },
+  "jsonViewer": {
+    "label": "ODRL JSON-LD",
+    "noContent": "(no content)"
+  }
+}

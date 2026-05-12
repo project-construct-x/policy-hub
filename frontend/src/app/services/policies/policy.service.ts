@@ -9,23 +9,23 @@ export class PolicyService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.backendUrl}/v1/policies`;
 
-  getAll(): Observable<Policy[]> {
+  getAllPolicies(): Observable<Policy[]> {
     return this.http.get<Policy[]>(this.baseUrl);
   }
 
-  getById(id: string): Observable<Policy> {
+  getPolicyById(id: string): Observable<Policy> {
     return this.http.get<Policy>(`${this.baseUrl}/${id}`);
   }
 
-  create(request: CreatePolicyRequest): Observable<Policy> {
+  createPolicy(request: CreatePolicyRequest): Observable<Policy> {
     return this.http.post<Policy>(this.baseUrl, request);
   }
 
-  update(id: string, request: UpdatePolicyRequest): Observable<Policy> {
+  updatePolicy(id: string, request: UpdatePolicyRequest): Observable<Policy> {
     return this.http.put<Policy>(`${this.baseUrl}/${id}`, request);
   }
 
-  delete(id: string): Observable<void> {
+  deletePolicy(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

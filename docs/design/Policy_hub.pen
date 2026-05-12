@@ -384,7 +384,7 @@
                           "type": "text",
                           "id": "m9ZRZ",
                           "fill": "$cx-text-secondary",
-                          "content": "Policies im Hub",
+                          "content": "Policies",
                           "fontFamily": "Montserrat",
                           "fontSize": 13,
                           "fontWeight": "600"

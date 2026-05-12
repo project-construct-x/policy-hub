@@ -1,0 +1,29 @@
+<div class="cx-policy-table" *transloco="let t">
+  @if (showHeader()) {
+    <div class="table-header">
+      <span class="col-name">{{ t('policies.table.name') }}</span>
+      <span class="col-context">{{ t('policies.table.context') }}</span>
+      <span class="col-date">{{ t('policies.table.lastChange') }}</span>
+      @if (showAction()) {
+        <span class="col-action"></span>
+      }
+    </div>
+  }
+  @for (policy of policies(); track policy.id) {
+    <a [routerLink]="['/policies', policy.id]" class="table-row" [attr.aria-label]="policy.name">
+      <div class="col-name">
+        <span class="policy-name">{{ policy.name }}</span>
+        @if (showDescription()) {
+          <span class="policy-desc">{{ policy.description }}</span>
+        }
+      </div>
+      <span class="col-context">{{ policy.useCaseContext }}</span>
+      <span class="col-date">{{ policy.updatedAt | relativeDate }}</span>
+      @if (showAction()) {
+        <span class="col-action">
+          <span class="material-icons view-icon" aria-hidden="true">visibility</span>
+        </span>
+      }
+    </a>
+  }
+</div>

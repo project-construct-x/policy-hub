@@ -1,21 +1,32 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
+import { CxPolicyTableComponent } from '@ui/policy-table/cx-policy-table.component';
+import { CxEmptyStateComponent } from '@ui/empty-state/cx-empty-state.component';
 
 @Component({
   selector: 'app-policies-overview-page',
-  imports: [RouterLink, FormsModule, TranslocoDirective],
+  imports: [
+    RouterLink,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    TranslocoDirective,
+    CxPolicyTableComponent,
+    CxEmptyStateComponent,
+  ],
   templateUrl: './policies-overview-page.component.html',
   styleUrl: './policies-overview-page.component.scss',
 })
 export class PoliciesOverviewPageComponent implements OnInit {
   private readonly policyService = inject(PolicyService);
   private readonly notification = inject(NotificationService);
-  private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
   policies = signal<Policy[]>([]);
@@ -25,7 +36,7 @@ export class PoliciesOverviewPageComponent implements OnInit {
   searchQuery = signal('');
   selectedContext = signal('');
   currentPage = signal(1);
-  pageSize = 4;
+  pageSize = 8;
 
   useCaseContexts = computed(() => {
     const contexts = this.policies()
@@ -64,7 +75,7 @@ export class PoliciesOverviewPageComponent implements OnInit {
     const total = this.filteredPolicies().length;
     const start = (this.currentPage() - 1) * this.pageSize + 1;
     const end = Math.min(this.currentPage() * this.pageSize, total);
-    return `${start}–${end} von ${total} Richtlinien`;
+    return this.transloco.translate('policies.pagination.info', { start, end, total });
   });
 
   ngOnInit(): void {
@@ -74,7 +85,7 @@ export class PoliciesOverviewPageComponent implements OnInit {
   loadPolicies(): void {
     this.loading.set(true);
     this.error.set(false);
-    this.policyService.getAll().subscribe({
+    this.policyService.getAllPolicies().subscribe({
       next: (data) => {
         this.policies.set(data);
         this.loading.set(false);
@@ -97,28 +108,9 @@ export class PoliciesOverviewPageComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  openDetail(policy: Policy): void {
-    this.router.navigate(['/policies', policy.id]);
-  }
-
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages()) {
       this.currentPage.set(page);
     }
-  }
-
-  formatDate(iso: string): string {
-    const date = new Date(iso);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const oneDay = 24 * 60 * 60 * 1000;
-
-    if (diff < oneDay && date.getDate() === now.getDate()) {
-      return `Heute, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
-    }
-    if (diff < 2 * oneDay) {
-      return `Gestern, ${date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}`;
-    }
-    return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 }
