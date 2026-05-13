@@ -1,25 +1,17 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
 import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-policy-detail-page',
-  imports: [
-    RouterLink,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    TranslocoDirective,
-    RelativeDatePipe,
-  ],
+  imports: [RouterLink, MatDialogModule, TranslocoDirective, RelativeDatePipe, CxButtonComponent],
   templateUrl: './policy-detail-page.component.html',
   styleUrl: './policy-detail-page.component.scss',
 })

@@ -5,11 +5,11 @@
       <h1 class="title">{{ t('home.title') }}</h1>
       <p class="description">{{ t('home.description') }}</p>
       <div class="actions">
-        <a routerLink="/policies/new" matButton="filled">
-          <mat-icon>add</mat-icon>
+        <a routerLink="/policies/new" cx-button>
+          <span class="material-icons">add</span>
           {{ t('home.ctaCreate') }}
         </a>
-        <a routerLink="/policies" matButton="outlined" class="cx-neutral">
+        <a routerLink="/policies" cx-button variant="outlined" color="neutral">
           {{ t('home.ctaAll') }}
         </a>
       </div>
@@ -61,8 +61,8 @@
       <app-cx-policy-table [policies]="recentPolicies()" [showDescription]="false" />
     } @else {
       <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
-        <a routerLink="/policies/new" matButton="filled" cxCta>
-          <mat-icon>add</mat-icon>
+        <a routerLink="/policies/new" cx-button cxCta>
+          <span class="material-icons">add</span>
           {{ t('policies.empty.cta') }}
         </a>
       </app-cx-empty-state>

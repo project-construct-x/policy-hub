@@ -1,20 +1,18 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { Policy } from '@shared/types/policy.model';
 import { CxPolicyTableComponent } from '@ui/policy-table/cx-policy-table.component';
 import { CxEmptyStateComponent } from '@ui/empty-state/cx-empty-state.component';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
 
 @Component({
   selector: 'app-home-page',
   imports: [
     RouterLink,
-    MatButtonModule,
-    MatIconModule,
     TranslocoDirective,
+    CxButtonComponent,
     CxPolicyTableComponent,
     CxEmptyStateComponent,
   ],

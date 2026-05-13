@@ -1,23 +1,21 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
 import { CxPolicyTableComponent } from '@ui/policy-table/cx-policy-table.component';
 import { CxEmptyStateComponent } from '@ui/empty-state/cx-empty-state.component';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
 
 @Component({
   selector: 'app-policies-overview-page',
   imports: [
     RouterLink,
     FormsModule,
-    MatButtonModule,
-    MatIconModule,
     TranslocoDirective,
+    CxButtonComponent,
     CxPolicyTableComponent,
     CxEmptyStateComponent,
   ],

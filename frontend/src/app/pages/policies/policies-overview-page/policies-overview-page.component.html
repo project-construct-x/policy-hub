@@ -4,8 +4,8 @@
       <h1>{{ t('policies.title') }}</h1>
       <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
     </div>
-    <a routerLink="/policies/new" matButton="filled">
-      <mat-icon>add</mat-icon>
+    <a routerLink="/policies/new" cx-button>
+      <span class="material-icons">add</span>
       {{ t('policies.createNew') }}
     </a>
   </div>
@@ -55,17 +55,19 @@
       <h2>{{ t('policies.error.title') }}</h2>
       <p>{{ t('policies.error.description') }}</p>
       <div class="error-actions">
-        <button matButton="filled" (click)="loadPolicies()">
-          <mat-icon>refresh</mat-icon>
+        <button cx-button (click)="loadPolicies()">
+          <span class="material-icons">refresh</span>
           {{ t('policies.error.retry') }}
         </button>
-        <a routerLink="/" matButton="outlined" class="cx-neutral">{{ t('policies.error.home') }}</a>
+        <a routerLink="/" cx-button variant="outlined" color="neutral">{{
+          t('policies.error.home')
+        }}</a>
       </div>
     </div>
   } @else if (filteredPolicies().length === 0 && policies().length === 0) {
     <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
-      <a routerLink="/policies/new" matButton="filled" cxCta>
-        <mat-icon>add</mat-icon>
+      <a routerLink="/policies/new" cx-button cxCta>
+        <span class="material-icons">add</span>
         {{ t('policies.empty.cta') }}
       </a>
     </app-cx-empty-state>

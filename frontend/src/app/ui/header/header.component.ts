@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NotificationService } from '@services/notification/notification.service';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, MatButtonModule, TranslocoDirective],
+  imports: [RouterLink, RouterLinkActive, TranslocoDirective, CxButtonComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })

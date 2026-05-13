@@ -1,12 +1,11 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective } from '@jsverse/transloco';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
 
 @Component({
   selector: 'app-policy-editor-page',
-  imports: [MatButtonModule, MatIconModule, TranslocoDirective],
+  imports: [TranslocoDirective, CxButtonComponent],
   templateUrl: './policy-editor-page.component.html',
   styleUrl: './policy-editor-page.component.scss',
 })

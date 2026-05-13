@@ -6,17 +6,17 @@
     </div>
   } @else if (policy(); as p) {
     <div class="top-actions">
-      <a routerLink="/policies" matButton="outlined" class="cx-neutral">
-        <mat-icon>arrow_back</mat-icon>
+      <a routerLink="/policies" cx-button variant="outlined" color="neutral">
+        <span class="material-icons">arrow_back</span>
         {{ t('policyDetail.backToOverview') }}
       </a>
       <span class="top-spacer"></span>
-      <button matButton="outlined" class="cx-danger" (click)="deletePolicy()">
-        <mat-icon>delete</mat-icon>
+      <button cx-button variant="outlined" color="danger" (click)="deletePolicy()">
+        <span class="material-icons">delete</span>
         {{ t('policyDetail.delete') }}
       </button>
-      <a [routerLink]="['/policies', p.id, 'edit']" matButton="filled">
-        <mat-icon>edit</mat-icon>
+      <a [routerLink]="['/policies', p.id, 'edit']" cx-button>
+        <span class="material-icons">edit</span>
         {{ t('policyDetail.edit') }}
       </a>
     </div>
