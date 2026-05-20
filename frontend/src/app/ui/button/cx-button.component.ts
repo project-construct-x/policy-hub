@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation, input } from '@angular/core';
 
 @Component({
   selector: 'button[cx-button], a[cx-button]',
-  template: '<ng-content />',
+  templateUrl: './cx-button.component.html',
   styleUrl: './cx-button.component.scss',
   encapsulation: ViewEncapsulation.None,
   host: {

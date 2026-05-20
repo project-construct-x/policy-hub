@@ -17,7 +17,7 @@
       "description": "Beginnen Sie mit einer neuen Policy oder prüfen Sie bestehende, bevor Daten mit Partnern geteilt werden.",
       "step1": "Neue Policy anlegen",
       "step2": "Policies prüfen",
-      "step3": "Policy freigeben"
+      "step3": "Policies verwalten"
     },
     "cards": {
       "policies": {
@@ -44,7 +44,7 @@
   },
   "policies": {
     "title": "Policy-Übersicht",
-    "subtitle": "Alle Policies mit Use-Case-Kontext und letzter Änderung.",
+    "subtitle": "Hier finden Sie die Übersicht über alle Policies im Hub",
     "createNew": "Policy erstellen",
     "searchPlaceholder": "Nach Name oder Use-Case-Kontext suchen",
     "loadingHint": "Policies werden geladen …",
@@ -110,7 +110,8 @@
   },
   "deleteDialog": {
     "title": "Policy löschen",
-    "message": "Möchten Sie die Policy <strong>{{name}}</strong> wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "messageBefore": "Möchten Sie die Policy ",
+    "messageAfter": " wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
     "cancel": "Abbrechen",
     "confirm": "Löschen"
   },

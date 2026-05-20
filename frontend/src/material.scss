@@ -47,3 +47,8 @@ html {
     color: #ffffff !important;
   }
 }
+
+// Dialog action button spacing
+.mat-mdc-dialog-actions {
+  gap: 0.75rem;
+}

@@ -7,7 +7,7 @@ import { NotificationService } from '@services/notification/notification.service
 import { Policy } from '@shared/types/policy.model';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
 import { CxButtonComponent } from '@ui/button/cx-button.component';
-import { ConfirmDeleteDialogComponent } from './confirm-delete-dialog.component';
+import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
   selector: 'app-policy-detail-page',

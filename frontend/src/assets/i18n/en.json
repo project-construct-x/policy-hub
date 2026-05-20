@@ -17,7 +17,7 @@
       "description": "Start with a new policy or review existing rules before sharing data with partners.",
       "step1": "Create a new policy",
       "step2": "Review policies",
-      "step3": "Publish policy"
+      "step3": "Manage policy"
     },
     "cards": {
       "policies": {
@@ -110,7 +110,8 @@
   },
   "deleteDialog": {
     "title": "Delete policy",
-    "message": "Are you sure you want to delete the policy <strong>{{name}}</strong>? This action cannot be undone.",
+    "messageBefore": "Are you sure you want to delete the policy ",
+    "messageAfter": "? This action cannot be undone.",
     "cancel": "Cancel",
     "confirm": "Delete"
   },
