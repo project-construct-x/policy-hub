@@ -1,0 +1,47 @@
+<header class="cx-header" *transloco="let t">
+  <a routerLink="/" class="logo-link">
+    <img src="assets/images/CX-BWM-quer-RGB.jpg" alt="Construct-X" class="logo" />
+  </a>
+
+  <span class="divider"></span>
+
+  <span class="product-label">{{ t('header.productLabel') }}</span>
+
+  <span class="spacer"></span>
+
+  <nav class="global-nav">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      {{ t('header.start') }}
+    </a>
+    <a routerLink="/policies" routerLinkActive="active" class="nav-link">
+      {{ t('header.policies') }}
+    </a>
+  </nav>
+
+  <div class="header-actions">
+    <div class="lang-switcher">
+      @for (lang of availableLangs; track lang; let last = $last) {
+        <button
+          class="lang-btn"
+          [class.lang-btn--active]="lang === activeLang"
+          (click)="switchLang(lang)"
+          [title]="lang.toUpperCase()"
+        >
+          {{ lang.toUpperCase() }}
+        </button>
+        @if (!last) {
+          <span class="lang-divider">|</span>
+        }
+      }
+    </div>
+
+    <button cx-button class="login-btn" (click)="onLoginClick()">
+      {{ t('header.login') }}
+    </button>
+  </div>
+</header>

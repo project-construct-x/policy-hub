@@ -1,0 +1,111 @@
+<div class="policies-overview" *transloco="let t">
+  <div class="page-top">
+    <div class="page-top-left">
+      <h1>{{ t('policies.title') }}</h1>
+      <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
+    </div>
+    <a routerLink="/policies/new" cx-button>
+      <span class="material-icons">add</span>
+      {{ t('policies.createNew') }}
+    </a>
+  </div>
+
+  <div class="filters">
+    <div class="search-field">
+      <span class="material-icons search-icon">search</span>
+      <input
+        type="text"
+        [placeholder]="t('policies.searchPlaceholder')"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </div>
+    <div class="filter-dropdown">
+      <select [ngModel]="selectedContext()" (ngModelChange)="onContextFilter($event)">
+        <option value="">{{ t('policies.filters.context') }}</option>
+        @for (ctx of useCaseContexts(); track ctx) {
+          <option [value]="ctx">{{ ctx }}</option>
+        }
+      </select>
+      <span class="material-icons dropdown-icon">expand_more</span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-list">
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title"></div>
+        <div class="skeleton-bar skeleton-desc"></div>
+      </div>
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title short"></div>
+        <div class="skeleton-bar skeleton-desc"></div>
+      </div>
+      <div class="skeleton-row">
+        <div class="skeleton-bar skeleton-title"></div>
+        <div class="skeleton-bar skeleton-desc short"></div>
+      </div>
+    </div>
+    <span class="loading-hint">{{ t('policies.loadingHint') }}</span>
+  } @else if (error()) {
+    <div class="error-state">
+      <div class="error-icon-wrap">
+        <span class="material-icons">warning</span>
+      </div>
+      <h2>{{ t('policies.error.title') }}</h2>
+      <p>{{ t('policies.error.description') }}</p>
+      <div class="error-actions">
+        <button cx-button (click)="loadPolicies()">
+          <span class="material-icons">refresh</span>
+          {{ t('policies.error.retry') }}
+        </button>
+        <a routerLink="/" cx-button variant="outlined" color="neutral">{{
+          t('policies.error.home')
+        }}</a>
+      </div>
+    </div>
+  } @else if (filteredPolicies().length === 0 && policies().length === 0) {
+    <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
+      <a routerLink="/policies/new" cx-button cxCta>
+        <span class="material-icons">add</span>
+        {{ t('policies.empty.cta') }}
+      </a>
+    </app-cx-empty-state>
+  } @else if (filteredPolicies().length === 0) {
+    <app-cx-empty-state icon="search_off" [title]="t('policies.noResults')" />
+  } @else {
+    <app-cx-policy-table [policies]="paginatedPolicies()" />
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <span class="pagination-info">{{ paginationInfo() }}</span>
+        <span class="pagination-spacer"></span>
+        <div class="pagination-controls">
+          <button
+            class="page-btn"
+            [disabled]="currentPage() === 1"
+            (click)="goToPage(currentPage() - 1)"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+          @for (page of [].constructor(totalPages()); track $index) {
+            <button
+              class="page-btn"
+              [class.active]="currentPage() === $index + 1"
+              (click)="goToPage($index + 1)"
+            >
+              {{ $index + 1 }}
+            </button>
+          }
+          <button
+            class="page-btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="goToPage(currentPage() + 1)"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>

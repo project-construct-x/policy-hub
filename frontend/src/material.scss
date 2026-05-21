@@ -1,0 +1,54 @@
+@use '@angular/material' as mat;
+
+// ============================================================
+// Angular Material — Minimal config
+// Kept for Dialog + Snackbar infrastructure only.
+// No color palette needed — Snackbar colors are fully overridden
+// via .cx-snackbar-* classes. Dialog uses default MDC styles.
+// ============================================================
+html {
+  @include mat.theme(
+    (
+      typography: Montserrat,
+      density: 0,
+    )
+  );
+}
+
+// ============================================================
+// Snackbar Styles — Construct-X branded
+// ============================================================
+.cx-snackbar-success .mdc-snackbar__surface {
+  background-color: var(--cx-success) !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-error .mdc-snackbar__surface {
+  background-color: #d32f2f !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-warning .mdc-snackbar__surface {
+  background-color: #b06000 !important;
+  color: #ffffff !important;
+}
+
+.cx-snackbar-info .mdc-snackbar__surface {
+  background-color: var(--cx-info) !important;
+  color: #ffffff !important;
+}
+
+// Snackbar action button styling
+.cx-snackbar-success,
+.cx-snackbar-error,
+.cx-snackbar-warning,
+.cx-snackbar-info {
+  .mdc-snackbar__surface .cx-btn {
+    color: #ffffff !important;
+  }
+}
+
+// Dialog action button spacing
+.mat-mdc-dialog-actions {
+  gap: 0.75rem;
+}

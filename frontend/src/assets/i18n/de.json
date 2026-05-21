@@ -1,0 +1,127 @@
+{
+  "header": {
+    "productLabel": "Policy Hub",
+    "start": "Start",
+    "policies": "Policy-Übersicht",
+    "login": "Anmelden",
+    "loginNotAvailable": "Anmeldung ist noch nicht verfügbar."
+  },
+  "home": {
+    "eyebrow": "Construct-X Policy Hub",
+    "title": "Policies erstellen und verwalten",
+    "description": "Erstellen, prüfen und pflegen Sie Policies für den Dataspace Construct-X.",
+    "ctaCreate": "Policy erstellen",
+    "ctaAll": "Alle Policies anzeigen",
+    "orientation": {
+      "title": "Ihr nächster sinnvoller Schritt",
+      "description": "Beginnen Sie mit einer neuen Policy oder prüfen Sie bestehende, bevor Daten mit Partnern geteilt werden.",
+      "step1": "Neue Policy anlegen",
+      "step2": "Policies prüfen",
+      "step3": "Policies verwalten"
+    },
+    "cards": {
+      "policies": {
+        "label": "Policies",
+        "description": "Gesamtzahl der angelegten Policies"
+      },
+      "useCases": {
+        "label": "Placeholder",
+        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
+      },
+      "rules": {
+        "label": "Placeholder",
+        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
+      }
+    },
+    "recent": {
+      "title": "Kürzlich bearbeitet",
+      "showAll": "Alle Policies anzeigen",
+      "empty": {
+        "title": "Noch keine Policies vorhanden",
+        "description": "Erstellen Sie eine erste Policy, um sie hier zu sehen."
+      }
+    }
+  },
+  "policies": {
+    "title": "Policy-Übersicht",
+    "subtitle": "Hier finden Sie die Übersicht über alle Policies im Hub",
+    "createNew": "Policy erstellen",
+    "searchPlaceholder": "Nach Name oder Use-Case-Kontext suchen",
+    "loadingHint": "Policies werden geladen …",
+    "noResults": "Keine Policies gefunden.",
+    "pagination": {
+      "info": "{{start}}–{{end}} von {{total}} Policies"
+    },
+    "filters": {
+      "context": "Use-Case-Kontext"
+    },
+    "table": {
+      "name": "Name",
+      "context": "Use-Case-Kontext",
+      "lastChange": "Letzte Änderung"
+    },
+    "empty": {
+      "title": "Noch keine Policies vorhanden",
+      "description": "Erstellen Sie eine erste Policy, um Datenfreigaben und Verwendungszwecke verständlich zu regeln.",
+      "cta": "Erste Policy erstellen",
+      "hint": "Oder später aus der Übersicht starten"
+    },
+    "error": {
+      "title": "Policies konnten nicht geladen werden",
+      "description": "Die Übersicht ist im Moment nicht verfügbar. Versuchen Sie es erneut oder kehren Sie zur Startseite zurück.",
+      "retry": "Erneut versuchen",
+      "home": "Zur Startseite"
+    },
+    "notifications": {
+      "loadError": "Policies konnten nicht geladen werden."
+    }
+  },
+  "policyDetail": {
+    "backToOverview": "Zur Übersicht",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "useCaseContext": "Use-Case-Kontext",
+    "lastChanged": "Zuletzt geändert",
+    "sections": {
+      "purpose": "Zweck der Policy",
+      "permittedUsage": "Erlaubte Nutzung",
+      "restrictions": "Einschränkungen",
+      "legalText": "Rechtlicher Hinweis"
+    },
+    "infoCard": {
+      "title": "Details",
+      "status": "Status",
+      "context": "Anwendungsbereich",
+      "created": "Erstellt",
+      "lastChange": "Letzte Änderung"
+    },
+    "notifications": {
+      "loadError": "Policy konnte nicht geladen werden.",
+      "deleteSuccess": "Policy wurde gelöscht.",
+      "deleteError": "Policy konnte nicht gelöscht werden."
+    }
+  },
+  "policyEditor": {
+    "placeholder": {
+      "title": "Policy Builder wird integriert",
+      "description": "Hier entsteht der Policy Builder zur Erstellung und Bearbeitung von Policies. Diese Funktion befindet sich aktuell in der Entwicklung.",
+      "back": "Zurück"
+    }
+  },
+  "deleteDialog": {
+    "title": "Policy löschen",
+    "messageBefore": "Möchten Sie die Policy ",
+    "messageAfter": " wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "confirm": "Löschen"
+  },
+  "status": {
+    "DRAFT": "Entwurf",
+    "ACTIVE": "Aktiv",
+    "ARCHIVED": "Archiviert"
+  },
+  "jsonViewer": {
+    "label": "ODRL JSON-LD",
+    "noContent": "(kein Inhalt)"
+  }
+}

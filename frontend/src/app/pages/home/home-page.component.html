@@ -1,0 +1,71 @@
+<div class="home-page" *transloco="let t">
+  <section class="intro">
+    <div class="intro-text">
+      <span class="eyebrow">{{ t('home.eyebrow') }}</span>
+      <h1 class="title">{{ t('home.title') }}</h1>
+      <p class="description">{{ t('home.description') }}</p>
+      <div class="actions">
+        <a routerLink="/policies/new" cx-button>
+          <span class="material-icons">add</span>
+          {{ t('home.ctaCreate') }}
+        </a>
+        <a routerLink="/policies" cx-button variant="outlined" color="neutral">
+          {{ t('home.ctaAll') }}
+        </a>
+      </div>
+    </div>
+
+    <div class="orientation-box">
+      <h3 class="orientation-title">{{ t('home.orientation.title') }}</h3>
+      <p class="orientation-desc">{{ t('home.orientation.description') }}</p>
+      <div class="orientation-step">
+        <span class="step-number">1</span>
+        <span class="step-text">{{ t('home.orientation.step1') }}</span>
+      </div>
+      <div class="orientation-step">
+        <span class="step-number">2</span>
+        <span class="step-text">{{ t('home.orientation.step2') }}</span>
+      </div>
+      <div class="orientation-step">
+        <span class="step-number">3</span>
+        <span class="step-text">{{ t('home.orientation.step3') }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-cards">
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.policies.label') }}</span>
+      <span class="card-value">{{ policyCount() }}</span>
+      <span class="card-desc">{{ t('home.cards.policies.description') }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.useCases.label') }}</span>
+      <span class="card-value">{{ useCaseCount() }}</span>
+      <span class="card-desc">{{ t('home.cards.useCases.description') }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="card-label">{{ t('home.cards.rules.label') }}</span>
+      <span class="card-value">{{ policyCount() * 3 }}</span>
+      <span class="card-desc">{{ t('home.cards.rules.description') }}</span>
+    </div>
+  </section>
+
+  <section class="recent-section">
+    <div class="recent-header">
+      <h2 class="recent-title">{{ t('home.recent.title') }}</h2>
+      <a routerLink="/policies" class="recent-link">{{ t('home.recent.showAll') }}</a>
+    </div>
+
+    @if (recentPolicies().length > 0) {
+      <app-cx-policy-table [policies]="recentPolicies()" [showDescription]="false" />
+    } @else {
+      <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
+        <a routerLink="/policies/new" cx-button cxCta>
+          <span class="material-icons">add</span>
+          {{ t('policies.empty.cta') }}
+        </a>
+      </app-cx-empty-state>
+    }
+  </section>
+</div>

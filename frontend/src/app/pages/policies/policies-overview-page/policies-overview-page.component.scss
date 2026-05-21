@@ -1,0 +1,270 @@
+.policies-overview {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 2.75rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ============================================================
+// Page Top (title + button)
+// ============================================================
+.page-top {
+  display: flex;
+  align-items: center;
+}
+
+.page-top-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+
+  h1 {
+    font-size: 1.625rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+  margin: 0;
+}
+
+// ============================================================
+// Filters
+// ============================================================
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 45rem;
+  height: 2.625rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.875rem;
+  background: var(--cx-white);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.5rem;
+
+  .search-icon {
+    font-size: 1rem;
+    color: var(--cx-text-tertiary);
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+      font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--cx-text-primary);
+
+    &::placeholder {
+      color: var(--cx-text-tertiary);
+    }
+  }
+}
+
+.filter-dropdown {
+  position: relative;
+  height: 2.625rem;
+
+  select {
+    height: 2.625rem;
+    padding: 0 2.25rem 0 1rem;
+    border: 0.0625rem solid var(--cx-border-color);
+    border-radius: 0.5rem;
+    background: var(--cx-white);
+      font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--cx-text-secondary);
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    right: 0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--cx-text-tertiary);
+    pointer-events: none;
+  }
+}
+
+// ============================================================
+// Pagination
+// ============================================================
+.pagination {
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+}
+
+.pagination-info {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-tertiary);
+}
+
+.pagination-spacer {
+  flex: 1;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.page-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.5rem;
+  background: var(--cx-white);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--cx-text-primary);
+  cursor: pointer;
+
+  &:hover:not(:disabled):not(.active) {
+    background-color: var(--cx-bg-page);
+  }
+
+  &.active {
+    background-color: var(--cx-light-orange);
+    border-color: var(--cx-light-orange);
+    color: var(--cx-orange);
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .material-icons {
+    font-size: 1.125rem;
+  }
+}
+
+// ============================================================
+// Loading State (Skeleton)
+// ============================================================
+.skeleton-list {
+  background: var(--cx-white);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.625rem;
+  overflow: hidden;
+}
+
+.skeleton-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1rem 1.25rem;
+  height: 4.875rem;
+  border-bottom: 0.0625rem solid var(--cx-border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.skeleton-bar {
+  border-radius: 0.25rem;
+  background-color: var(--cx-light-gray);
+
+  &.skeleton-title {
+    width: 22.5rem;
+    height: 1rem;
+
+    &.short {
+      width: 20rem;
+    }
+  }
+
+  &.skeleton-desc {
+    width: 32.5rem;
+    height: 0.75rem;
+
+    &.short {
+      width: 28.125rem;
+    }
+  }
+}
+
+.loading-hint {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-tertiary);
+}
+
+// Empty State styling handled by CxEmptyStateComponent
+
+// ============================================================
+// Error State
+// ============================================================
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem;
+  gap: 1.375rem;
+
+  h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--cx-text-secondary);
+    line-height: 1.55;
+    text-align: center;
+    max-width: 26.875rem;
+    margin: 0;
+  }
+}
+
+.error-icon-wrap {
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 50%;
+  background-color: var(--cx-light-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .material-icons {
+    font-size: 2.375rem;
+    color: var(--cx-warning);
+  }
+}
+
+.error-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}

@@ -1,0 +1,11 @@
+<div class="policy-editor" *transloco="let t">
+  <div class="placeholder-card">
+    <span class="material-icons placeholder-icon">construction</span>
+    <h2>{{ t('policyEditor.placeholder.title') }}</h2>
+    <p>{{ t('policyEditor.placeholder.description') }}</p>
+    <button cx-button variant="outlined" color="neutral" (click)="goBack()">
+      <span class="material-icons">arrow_back</span>
+      {{ t('policyEditor.placeholder.back') }}
+    </button>
+  </div>
+</div>

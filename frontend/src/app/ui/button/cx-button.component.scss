@@ -1,0 +1,170 @@
+// ============================================================
+// CX Button — Construct-X Design System
+// Variants: filled (default), outlined, text, icon
+// Colors: primary (orange), neutral (gray), danger (red)
+// ============================================================
+
+.cx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 1.25rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  white-space: nowrap;
+  line-height: 1;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--cx-orange);
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.45;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  // Icon sizing inside buttons
+  .material-icons {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+}
+
+// ============================================================
+// Variant: Filled (default)
+// ============================================================
+.cx-btn--filled {
+  background-color: var(--cx-orange);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: var(--cx-dark-orange);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    background-color: var(--cx-dark-orange);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// ============================================================
+// Variant: Outlined
+// ============================================================
+.cx-btn--outlined {
+  background-color: transparent;
+  color: var(--cx-orange);
+  border: 1px solid var(--cx-orange);
+
+  &:hover {
+    background-color: var(--cx-light-orange);
+  }
+
+  &:active {
+    background-color: var(--cx-light-orange);
+  }
+}
+
+// ============================================================
+// Variant: Text
+// ============================================================
+.cx-btn--text {
+  background-color: transparent;
+  color: var(--cx-orange);
+  border: none;
+  padding: 0 0.75rem;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+// ============================================================
+// Variant: Icon-only
+// ============================================================
+.cx-btn--icon-only {
+  background-color: transparent;
+  color: var(--cx-text-secondary);
+  border: none;
+  padding: 0;
+  width: 2.5rem;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+// ============================================================
+// Color: Neutral (secondary/back actions)
+// ============================================================
+.cx-btn--neutral {
+  &.cx-btn--filled {
+    background-color: var(--cx-text-secondary);
+    color: #ffffff;
+
+    &:hover {
+      background-color: var(--cx-text-primary);
+    }
+  }
+
+  &.cx-btn--outlined {
+    color: var(--cx-text-secondary);
+    border-color: var(--cx-text-secondary);
+
+    &:hover {
+      background-color: var(--cx-light-gray);
+    }
+  }
+
+  &.cx-btn--text {
+    color: var(--cx-text-secondary);
+  }
+}
+
+// ============================================================
+// Color: Danger (destructive actions)
+// ============================================================
+.cx-btn--danger {
+  &.cx-btn--filled {
+    background-color: var(--cx-error);
+    color: #ffffff;
+
+    &:hover {
+      background-color: #b71c1c;
+    }
+  }
+
+  &.cx-btn--outlined {
+    color: var(--cx-error);
+    border-color: var(--cx-error);
+
+    &:hover {
+      background-color: #fde8e8;
+    }
+  }
+
+  &.cx-btn--text {
+    color: var(--cx-error);
+  }
+}

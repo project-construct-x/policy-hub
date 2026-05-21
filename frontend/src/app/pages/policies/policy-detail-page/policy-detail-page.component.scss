@@ -1,0 +1,180 @@
+.policy-detail {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 2.75rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+// ============================================================
+// Top Actions
+// ============================================================
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.top-spacer {
+  flex: 1;
+}
+
+// ============================================================
+// Hero
+// ============================================================
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  h1 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+}
+
+.summary {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+  line-height: 1.6;
+  max-width: 47.5rem;
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.meta-context {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+}
+
+.meta-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-tertiary);
+}
+
+// ============================================================
+// Two-Column Layout
+// ============================================================
+.columns {
+  display: flex;
+  gap: 1.75rem;
+}
+
+.col-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.col-right {
+  width: 21.25rem;
+  min-width: 21.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ============================================================
+// Content Cards
+// ============================================================
+.content-card {
+  background: var(--cx-white);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.625rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--cx-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+.legal-text {
+  white-space: pre-wrap;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+// ============================================================
+// Info Card (right sidebar)
+// ============================================================
+.info-card {
+  background: var(--cx-bg-page);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.625rem;
+  padding: 1.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.info-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cx-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-primary);
+}
+
+// ============================================================
+// Loading State
+// ============================================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2.75rem 0;
+}
+
+.skeleton-bar {
+  border-radius: 0.25rem;
+  background-color: var(--cx-light-gray);
+}

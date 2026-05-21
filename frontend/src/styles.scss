@@ -1,39 +1,86 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
+@use './material';
+
+// ============================================================
+// Construct-X Design Tokens
+// Source: Policy_hub.pen (Design-Variablen)
+// ============================================================
+:root {
+  // Primary Colors
+  --cx-blue: #0a3b93;
+  --cx-orange: #e53d17;
+  --cx-yellow: #f08109;
+
+  // Light Variants
+  --cx-light-blue: #c9d8e0;
+  --cx-light-orange: #ebd8d0;
+  --cx-light-yellow: #f4e7d4;
+
+  // Dark Variants
+  --cx-dark-blue: #3455a1;
+  --cx-dark-orange: #ca4a25;
+  --cx-dark-yellow: #ec9c49;
+
+  // Neutrals
+  --cx-dark-gray: #818386;
+  --cx-light-gray: #f4f3f3;
+  --cx-white: #ffffff;
+  --cx-black: #000000;
+
+  // Text
+  --cx-text-primary: #111111;
+  --cx-text-secondary: #555555;
+  --cx-text-tertiary: #767676;
+
+  // Backgrounds
+  --cx-bg-primary: #ffffff;
+  --cx-bg-page: #fafafa;
+  --cx-bg-card: #ffffff;
+
+  // Borders
+  --cx-border-color: #e5e5e5;
+
+  // Accent
+  --cx-accent: #e53d17;
+
+  // Semantic / Feedback
+  --cx-success: #2e7d32;
+  --cx-error: #d32f2f;
+  --cx-warning: #f08109;
+  --cx-info: #0a3b93;
+}
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$cyan-palette,
-        tertiary: mat.$orange-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: var(--cx-bg-primary);
+  color: var(--cx-text-primary);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */
+
+// ============================================================
+// Global Utility Styles
+// ============================================================
+a {
+  color: var(--cx-orange);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: var(--cx-text-primary);
+}
+
+strong, b {
+  font-weight: 400;
+}

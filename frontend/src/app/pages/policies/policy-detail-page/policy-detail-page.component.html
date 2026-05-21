@@ -1,0 +1,91 @@
+<div class="policy-detail" *transloco="let t">
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
+      <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
+    </div>
+  } @else if (policy(); as p) {
+    <div class="top-actions">
+      <a routerLink="/policies" cx-button variant="outlined" color="neutral">
+        <span class="material-icons">arrow_back</span>
+        {{ t('policyDetail.backToOverview') }}
+      </a>
+      <span class="top-spacer"></span>
+      <button cx-button variant="outlined" color="danger" (click)="deletePolicy()">
+        <span class="material-icons">delete</span>
+        {{ t('policyDetail.delete') }}
+      </button>
+      <a [routerLink]="['/policies', p.id, 'edit']" cx-button>
+        <span class="material-icons">edit</span>
+        {{ t('policyDetail.edit') }}
+      </a>
+    </div>
+
+    <div class="hero">
+      <h1>{{ p.name }}</h1>
+      <p class="summary">{{ p.description }}</p>
+      <div class="meta">
+        <span class="meta-context"
+          >{{ t('policyDetail.useCaseContext') }}: {{ p.useCaseContext }}</span
+        >
+        <span class="meta-date"
+          >{{ t('policyDetail.lastChanged') }}: {{ p.updatedAt | relativeDate }}</span
+        >
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="col-left">
+        @if (p.purpose) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.purpose') }}</h3>
+            <p>{{ p.purpose }}</p>
+          </div>
+        }
+
+        @if (p.permittedUsage) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.permittedUsage') }}</h3>
+            <p>{{ p.permittedUsage }}</p>
+          </div>
+        }
+
+        @if (p.restrictions) {
+          <div class="content-card">
+            <h3>{{ t('policyDetail.sections.restrictions') }}</h3>
+            <p>{{ p.restrictions }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="col-right">
+        <div class="info-card">
+          <h4>{{ t('policyDetail.infoCard.title') }}</h4>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.status') }}</span>
+            <span class="info-value">{{ t('status.' + p.status) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.context') }}</span>
+            <span class="info-value">{{ p.useCaseContext }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.created') }}</span>
+            <span class="info-value">{{ p.createdAt | relativeDate }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">{{ t('policyDetail.infoCard.lastChange') }}</span>
+            <span class="info-value">{{ p.updatedAt | relativeDate }}</span>
+          </div>
+        </div>
+
+        @if (p.legalText) {
+          <div class="content-card legal-card">
+            <h3>{{ t('policyDetail.sections.legalText') }}</h3>
+            <p class="legal-text">{{ p.legalText }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

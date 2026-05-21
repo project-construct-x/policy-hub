@@ -1,0 +1,8 @@
+<span matSnackBarLabel>
+  {{ snackBarRef.containerInstance.snackBarConfig.data.message }}
+</span>
+<span matSnackBarActions>
+  <button cx-button variant="text" matSnackBarAction (click)="snackBarRef.dismissWithAction()">
+    {{ snackBarRef.containerInstance.snackBarConfig.data.action || 'OK' }}
+  </button>
+</span>

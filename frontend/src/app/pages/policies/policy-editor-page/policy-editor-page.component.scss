@@ -1,0 +1,42 @@
+.policy-editor {
+  max-width: 1248px;
+  margin: 0 auto;
+  padding: 2.75rem 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 25rem;
+}
+
+.placeholder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3.5rem;
+  background: var(--cx-white);
+  border: 0.0625rem solid var(--cx-border-color);
+  border-radius: 0.625rem;
+  text-align: center;
+  max-width: 32.5rem;
+
+  h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+    margin: 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--cx-text-secondary);
+    line-height: 1.55;
+    margin: 0;
+  }
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  color: var(--cx-text-tertiary);
+}
