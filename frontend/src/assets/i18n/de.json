@@ -25,12 +25,12 @@
         "description": "Gesamtzahl der angelegten Policies"
       },
       "useCases": {
-        "label": "Placeholder",
-        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
+        "label": "Use Cases",
+        "description": "Anwendungsfälle des Construct-X Datenraums"
       },
       "rules": {
-        "label": "Placeholder",
-        "description": "Platzhalter – Ausgestaltung ist noch nicht final definiert."
+        "label": "Regeln",
+        "description": "Anzahl konfigurierter Constraints"
       }
     },
     "recent": {
@@ -46,18 +46,20 @@
     "title": "Policy-Übersicht",
     "subtitle": "Hier finden Sie die Übersicht über alle Policies im Hub",
     "createNew": "Policy erstellen",
-    "searchPlaceholder": "Nach Name oder Use-Case-Kontext suchen",
+    "searchPlaceholder": "Nach Name oder Beschreibung suchen",
     "loadingHint": "Policies werden geladen …",
     "noResults": "Keine Policies gefunden.",
     "pagination": {
       "info": "{{start}}–{{end}} von {{total}} Policies"
     },
     "filters": {
-      "context": "Use-Case-Kontext"
+      "category": "Kategorie",
+      "policyType": "Policy-Art"
     },
     "table": {
       "name": "Name",
-      "context": "Use-Case-Kontext",
+      "category": "Kategorie",
+      "policyType": "Policy-Art",
       "lastChange": "Letzte Änderung"
     },
     "empty": {
@@ -80,20 +82,12 @@
     "backToOverview": "Zur Übersicht",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "useCaseContext": "Use-Case-Kontext",
     "lastChanged": "Zuletzt geändert",
+    "created": "Erstellt",
+    "alwaysTrue": "Diese Policy enthält keine Einschränkungen — sie erlaubt alles.",
     "sections": {
-      "purpose": "Zweck der Policy",
-      "permittedUsage": "Erlaubte Nutzung",
-      "restrictions": "Einschränkungen",
-      "legalText": "Rechtlicher Hinweis"
-    },
-    "infoCard": {
-      "title": "Details",
-      "status": "Status",
-      "context": "Anwendungsbereich",
-      "created": "Erstellt",
-      "lastChange": "Letzte Änderung"
+      "constraints": "Bedingungen",
+      "technical": "Technische Details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy konnte nicht geladen werden.",
@@ -102,11 +96,159 @@
     }
   },
   "policyEditor": {
-    "placeholder": {
-      "title": "Policy Builder wird integriert",
-      "description": "Hier entsteht der Policy Builder zur Erstellung und Bearbeitung von Policies. Diese Funktion befindet sich aktuell in der Entwicklung.",
-      "back": "Zurück"
+    "notifications": {
+      "loadError": "Policy konnte nicht geladen werden.",
+      "createSuccess": "Policy wurde erstellt.",
+      "createError": "Policy konnte nicht erstellt werden.",
+      "updateSuccess": "Policy wurde aktualisiert.",
+      "updateError": "Policy konnte nicht aktualisiert werden."
     }
+  },
+  "policyBuilder": {
+    "title": {
+      "create": "Neue Policy erstellen",
+      "edit": "Policy bearbeiten"
+    },
+    "subtitle": {
+      "create": "Definieren Sie eine neue Policy mit Kategorie, Policy-Art und Bedingungen.",
+      "edit": "Bearbeiten Sie die Policy und ihre Bedingungen."
+    },
+    "sections": {
+      "basics": {
+        "title": "Grunddaten",
+        "description": "Geben Sie der Policy einen aussagekräftigen Namen und eine kurze Beschreibung."
+      },
+      "category": {
+        "title": "Kategorie",
+        "description": "Wählen Sie, ob die Policy den Zugriff oder die Nutzung der Daten regelt."
+      },
+      "policyType": {
+        "title": "Policy-Art",
+        "description": "Wählen Sie die Art der Bedingung für diese Policy."
+      },
+      "configuration": {
+        "title": "Konfiguration"
+      }
+    },
+    "field": {
+      "name": "Name",
+      "description": "Beschreibung"
+    },
+    "alwaysTrue": {
+      "title": "Keine Einschränkungen",
+      "description": "Diese Policy erlaubt jeden Zugriff bzw. jede Nutzung ohne weitere Bedingungen."
+    },
+    "legalText": {
+      "title": "Rechtlicher Hinweis"
+    },
+    "inputs": {
+      "membership": {
+        "title": "Aktive Dataspace-Mitgliedschaft",
+        "description": "Der Konsument muss ein aktives Mitglied des Datenraums sein."
+      },
+      "useCase": {
+        "hint": "Wählen Sie einen oder mehrere Anwendungsfälle aus."
+      },
+      "endDate": {
+        "label": "Gültig bis"
+      },
+      "frameworkAgreement": {
+        "label": "Rahmenvertrag",
+        "hint": "Der Datenkonsument muss diesem Rahmenvertrag zugestimmt haben."
+      }
+    },
+    "actions": {
+      "save": "Speichern",
+      "create": "Policy erstellen",
+      "update": "Änderungen speichern",
+      "cancel": "Abbrechen"
+    }
+  },
+  "policyCategory": {
+    "ACCESS": {
+      "label": "Access Policy",
+      "description": "Regelt, wer auf die Daten zugreifen darf."
+    },
+    "CONTRACT": {
+      "label": "Contract Policy",
+      "description": "Regelt, unter welchen Bedingungen Daten genutzt werden dürfen."
+    }
+  },
+  "policyType": {
+    "ALWAYS_TRUE": {
+      "label": "Unbeschränkt",
+      "description": "Erlaubt den Zugriff bzw. die Nutzung ohne Einschränkungen."
+    },
+    "MEMBERSHIP_STATIC": {
+      "label": "Mitgliedschaft",
+      "description": "Nur für aktive Dataspace-Mitglieder."
+    },
+    "USE_CASE_MEMBERSHIP": {
+      "label": "Use Case",
+      "description": "Eingeschränkt auf bestimmte Anwendungsfälle."
+    },
+    "END_DATE": {
+      "label": "Zeitlich begrenzt",
+      "description": "Gültig bis zu einem bestimmten Datum."
+    },
+    "FRAMEWORK_AGREEMENT": {
+      "label": "Rahmenvertrag",
+      "description": "Erfordert die Zustimmung zum Rahmenvertrag."
+    }
+  },
+  "constraint": {
+    "MEMBERSHIP": {
+      "label": "Mitgliedschaft",
+      "description": "Aktive Dataspace-Mitgliedschaft erforderlich.",
+      "legalText": "[MOCK] Der Datenkonsument muss ein aktives Mitglied des Datenraums sein."
+    },
+    "USE_CASE": {
+      "label": "Anwendungsfall",
+      "description": "Beschränkung auf ausgewählte Anwendungsfälle.",
+      "legalText": "[MOCK] Die Datennutzung ist auf die ausgewählten Anwendungsfälle beschränkt."
+    },
+    "END_DATE": {
+      "label": "Enddatum",
+      "description": "Gültigkeit endet zum angegebenen Datum.",
+      "legalText": "[MOCK] Die Nutzungsberechtigung erlischt zum angegebenen Datum."
+    },
+    "FRAMEWORK_AGREEMENT": {
+      "label": "Rahmenvertrag",
+      "description": "Zustimmung zum Rahmenvertrag erforderlich.",
+      "legalText": "[MOCK] Der Datenkonsument muss dem DataExchangeGovernance-Rahmenvertrag zugestimmt haben."
+    }
+  },
+  "useCase": {
+    "bim-coordination": "BIM-Koordination",
+    "quality-assurance": "Qualitätssicherung",
+    "material-testing": "Materialprüfung",
+    "site-documentation": "Baustellendokumentation",
+    "geodata": "Geodaten"
+  },
+  "policySummary": {
+    "title": "Fachliche Zusammenfassung",
+    "constraint": {
+      "MEMBERSHIP": "nur für aktive Dataspace-Mitglieder",
+      "USE_CASE": {
+        "list": "nur für die Anwendungsfälle: {{list}}",
+        "empty": "noch keine Anwendungsfälle ausgewählt"
+      },
+      "END_DATE": {
+        "value": "gültig bis {{date}}",
+        "empty": "Enddatum noch nicht gesetzt"
+      },
+      "FRAMEWORK_AGREEMENT": "mit Zustimmung zum Rahmenvertrag „{{agreement}}\""
+    }
+  },
+  "validation": {
+    "nameRequired": "Name ist erforderlich",
+    "nameTooLong": "Name darf maximal 200 Zeichen lang sein",
+    "categoryRequired": "Kategorie muss gewählt werden",
+    "policyTypeRequired": "Policy-Art muss gewählt werden",
+    "useCaseRequired": "Mindestens ein Anwendungsfall muss gewählt werden",
+    "endDateRequired": "Enddatum ist erforderlich",
+    "endDateInvalid": "Datum ist ungültig",
+    "endDateInPast": "Enddatum muss in der Zukunft liegen"
   },
   "deleteDialog": {
     "title": "Policy löschen",
@@ -114,11 +256,6 @@
     "messageAfter": " wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
     "cancel": "Abbrechen",
     "confirm": "Löschen"
-  },
-  "status": {
-    "DRAFT": "Entwurf",
-    "ACTIVE": "Aktiv",
-    "ARCHIVED": "Archiviert"
   },
   "jsonViewer": {
     "label": "ODRL JSON-LD",

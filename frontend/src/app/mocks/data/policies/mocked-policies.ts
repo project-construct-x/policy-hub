@@ -1,4 +1,6 @@
-import { Policy } from '@shared/types/policy.model';
+import { Policy, PolicyCategory, PolicyType } from '@shared/types/policy.model';
+import { Constraint } from '@shared/types/constraint.model';
+import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
 import { BehaviorSubject } from 'rxjs';
 
 export type PolicyMockMode = 'empty' | 'few' | 'many';
@@ -20,80 +22,21 @@ export function setPolicyMockMode(mode: PolicyMockMode): void {
   policyMockMode$.next(mode);
 }
 
-const sampleOdrlPolicy = JSON.stringify(
-  {
-    '@context': 'http://www.w3.org/ns/odrl.jsonld',
-    '@type': 'Set',
-    uid: 'urn:constructx:policy:usage-data-sharing-001',
-    profile: 'https://construct-x.org/odrl/profile/v1',
-    permission: [
-      {
-        target: 'urn:constructx:asset:bim-model-2024',
-        action: 'use',
-        constraint: [
-          {
-            leftOperand: 'purpose',
-            operator: 'eq',
-            rightOperand: 'construction-planning',
-          },
-        ],
-      },
-    ],
-    prohibition: [
-      {
-        target: 'urn:constructx:asset:bim-model-2024',
-        action: 'distribute',
-      },
-    ],
-  },
-  null,
-  2,
-);
-
-const sampleLegalText = `§ 1 Nutzungsrecht
-Der Datennutzer erhält ein einfaches, nicht übertragbares Nutzungsrecht an den bereitgestellten Daten ausschließlich zum Zweck der Bauplanung.
-
-§ 2 Nutzungsbeschränkung
-Eine Weitergabe der Daten an Dritte ist ausdrücklich untersagt. Die Daten dürfen nur im Rahmen des definierten Zwecks verwendet werden.
-
-§ 3 Haftung
-Der Datenanbieter haftet nicht für die Richtigkeit, Vollständigkeit oder Aktualität der bereitgestellten Daten, soweit gesetzlich zulässig.
-
-§ 4 Laufzeit
-Dieses Nutzungsrecht gilt für die Dauer des Projekts, längstens jedoch für 24 Monate ab Bereitstellung.`;
-
-const sampleOdrlAccess = JSON.stringify(
-  {
-    '@context': 'http://www.w3.org/ns/odrl.jsonld',
-    '@type': 'Set',
-    uid: 'urn:constructx:policy:access-bim-viewer-002',
-    profile: 'https://construct-x.org/odrl/profile/v1',
-    permission: [
-      {
-        target: 'urn:constructx:asset:bim-viewer-app',
-        action: 'read',
-        constraint: [
-          {
-            leftOperand: 'role',
-            operator: 'eq',
-            rightOperand: 'project-member',
-          },
-        ],
-      },
-    ],
-  },
-  null,
-  2,
-);
-
-const sampleAccessLegalText = `§ 1 Zugriffsrecht
-Projektmitglieder erhalten lesenden Zugriff auf den BIM-Viewer und die darin enthaltenen Modelle.
-
-§ 2 Zugriffsbeschränkung
-Der Zugriff ist auf authentifizierte Nutzer mit der Rolle "Projektmitglied" beschränkt.`;
-
 let policies: Policy[] = [];
 let nextIdCounter = 100;
+
+function buildPolicy(params: {
+  id: string;
+  name: string;
+  description: string;
+  category: PolicyCategory;
+  type: PolicyType;
+  constraints: Constraint[];
+  createdAt: string;
+  updatedAt: string;
+}): Policy {
+  return { ...params };
+}
 
 function generatePolicies(mode: PolicyMockMode): Policy[] {
   switch (mode) {
@@ -101,283 +44,127 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
       return [];
     case 'few':
       return [
-        {
+        buildPolicy({
           id: '00000000-0000-0000-0000-000000000001',
-          name: 'Baustellendaten für Qualitätsprüfungen',
+          name: 'Öffentlicher Zugriff auf Projektdokumentation',
           description:
-            'Diese Richtlinie beschreibt, wie Baustellendaten für interne Qualitätsprüfungen genutzt werden dürfen. Sie hilft Projektteams, Daten nachvollziehbar, zweckgebunden und regelkonform einzusetzen.',
-          status: 'ACTIVE',
-          useCaseContext: 'Qualitätssicherung',
-          purpose: 'Sicherstellung der Datenqualität bei internen Prüfprozessen auf der Baustelle.',
-          permittedUsage:
-            'Interne Qualitätsprüfungen durch autorisierte Projektmitglieder. Nutzung ausschließlich im Rahmen des definierten Projektkontexts.',
-          restrictions:
-            'Keine Weitergabe an Dritte. Keine Verwendung außerhalb des Qualitätssicherungsprozesses. Daten dürfen nicht für kommerzielle Auswertungen genutzt werden.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
+            'Erlaubt den uneingeschränkten Zugriff auf die öffentlich freigegebene Projektdokumentation.',
+          category: 'ACCESS',
+          type: 'ALWAYS_TRUE',
+          constraints: [],
           createdAt: '2026-03-15T10:30:00Z',
           updatedAt: '2026-04-29T09:40:00Z',
-        },
-        {
+        }),
+        buildPolicy({
           id: '00000000-0000-0000-0000-000000000002',
-          name: 'BIM-Koordinationsmodell Zugriff',
+          name: 'Zugriff nur für Konsortium-Mitglieder',
           description:
-            'Regelt den Zugriff auf das BIM-Koordinationsmodell für alle beteiligten Planungspartner im Projekt.',
-          status: 'DRAFT',
-          useCaseContext: 'Planung und Koordination',
-          purpose:
-            'Koordinierte Zusammenarbeit aller Planungsbeteiligten auf Basis eines gemeinsamen BIM-Modells.',
-          permittedUsage:
-            'Lesender und kommentierender Zugriff für Projektmitglieder mit der Rolle Planer oder Koordinator.',
-          restrictions:
-            'Kein Schreibzugriff ohne explizite Freigabe durch den BIM-Manager. Export nur in abgestimmten Formaten.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
+            'Schränkt den Zugriff auf aktive Dataspace-Mitglieder des Construct-X-Konsortiums ein.',
+          category: 'ACCESS',
+          type: 'MEMBERSHIP_STATIC',
+          constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
           createdAt: '2026-04-10T08:00:00Z',
           updatedAt: '2026-04-28T16:10:00Z',
-        },
-        {
+        }),
+        buildPolicy({
           id: '00000000-0000-0000-0000-000000000003',
-          name: 'Materialprüfung Laborergebnisse',
+          name: 'Baustellendaten für Qualitätsprüfungen',
           description:
-            'Richtlinie für die Nutzung und Weitergabe von Laborergebnissen aus der Materialprüfung.',
-          status: 'ACTIVE',
-          useCaseContext: 'Materialprüfung',
-          purpose: 'Nachvollziehbarkeit der Materialqualität und Einhaltung der Baustoffnormen.',
-          permittedUsage:
-            'Einsicht durch Bauleitung und Qualitätssicherung. Weitergabe an den Auftraggeber auf Anfrage.',
-          restrictions:
-            'Keine eigenständige Veröffentlichung der Ergebnisse. Nur im Zusammenhang mit dem zugehörigen Prüfauftrag nutzbar.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
+            'Erlaubt die Nutzung der Baustellendaten ausschließlich im Anwendungsfall Qualitätssicherung.',
+          category: 'CONTRACT',
+          type: 'USE_CASE_MEMBERSHIP',
+          constraints: [
+            {
+              type: 'USE_CASE',
+              useCases: ['UC.quality-assurance', 'UC.material-testing'],
+            },
+          ],
           createdAt: '2026-02-20T14:00:00Z',
           updatedAt: '2026-04-24T11:30:00Z',
-        },
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000004',
+          name: 'Geodaten bis Projektende 2027',
+          description: 'Erlaubt die Nutzung der Geodaten bis zum Projektabschluss am 31.12.2027.',
+          category: 'CONTRACT',
+          type: 'END_DATE',
+          constraints: [{ type: 'END_DATE', endDate: '2027-12-31' }],
+          createdAt: '2026-02-05T13:15:00Z',
+          updatedAt: '2026-04-02T10:00:00Z',
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000005',
+          name: 'Datenaustausch unter DEG-Rahmenvertrag',
+          description:
+            'Setzt voraus, dass der Datenkonsument dem DataExchangeGovernance-Rahmenvertrag zugestimmt hat.',
+          category: 'CONTRACT',
+          type: 'FRAMEWORK_AGREEMENT',
+          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
+          createdAt: '2026-01-20T11:00:00Z',
+          updatedAt: '2026-04-21T09:30:00Z',
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000006',
+          name: 'Temporärer Zugriff bis Quartalsende',
+          description: 'Begrenzt den Zugriff auf das aktuelle Quartal und erlischt zum 30.06.2026.',
+          category: 'ACCESS',
+          type: 'END_DATE',
+          constraints: [{ type: 'END_DATE', endDate: '2026-06-30' }],
+          createdAt: '2026-04-15T16:00:00Z',
+          updatedAt: '2026-04-15T16:00:00Z',
+        }),
       ];
     case 'many':
       return [
         ...generatePolicies('few'),
-        {
-          id: '00000000-0000-0000-0000-000000000004',
-          name: 'Partnerverträge Datenaustausch',
-          description:
-            'Regelt den Austausch von Vertragsdaten zwischen Generalunternehmer und Nachunternehmern.',
-          status: 'ACTIVE',
-          useCaseContext: 'Partnerarbeit',
-          purpose:
-            'Transparenter und regelkonformer Austausch von Vertragsinformationen im Partnernetzwerk.',
-          permittedUsage:
-            'Einsicht durch berechtigte Vertragspartner. Automatisierte Synchronisation der Vertragsstände.',
-          restrictions:
-            'Keine Weitergabe an nicht beteiligte Dritte. Vertrauliche Konditionen sind ausgenommen.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
-          createdAt: '2026-01-20T11:00:00Z',
-          updatedAt: '2026-04-21T09:30:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000005',
-          name: 'Zeiterfassung Bauprojekt',
-          description:
-            'Policy für den kontrollierten Zugriff auf Zeiterfassungsdaten im Bauprojekt.',
-          status: 'DRAFT',
-          useCaseContext: 'Projektsteuerung',
-          purpose:
-            'Nachvollziehbare Dokumentation der Arbeitszeiten für Abrechnung und Controlling.',
-          permittedUsage: 'Zugriff durch Projektleitung und Controlling-Abteilung.',
-          restrictions:
-            'Personenbezogene Daten nur aggregiert auswertbar. Keine Einzelauswertung ohne Zustimmung.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
-          createdAt: '2026-04-18T07:00:00Z',
-          updatedAt: '2026-04-18T07:00:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000006',
-          name: 'Geodaten Vermessung',
-          description:
-            'Erlaubt die Nutzung von Geodaten für Vermessungszwecke innerhalb des Projekts.',
-          status: 'ACTIVE',
-          useCaseContext: 'Vermessung',
-          purpose: 'Präzise Verortung von Baumaßnahmen und Abgleich mit amtlichen Geodaten.',
-          permittedUsage:
-            'Nutzung durch Vermessungsingenieure und Geoinformationssysteme des Projekts.',
-          restrictions:
-            'Keine kommerzielle Weiterverwertung. Amtliche Grenzdaten dürfen nicht verändert werden.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
-          createdAt: '2026-02-05T13:15:00Z',
-          updatedAt: '2026-04-02T10:00:00Z',
-        },
-        {
+        buildPolicy({
           id: '00000000-0000-0000-0000-000000000007',
-          name: 'IoT-Sensordaten Baustelle',
-          description: 'Regelt die Erfassung und Weitergabe von IoT-Sensordaten der Baustelle.',
-          status: 'DRAFT',
-          useCaseContext: 'Baustellenüberwachung',
-          purpose:
-            'Echtzeitüberwachung von Umgebungsbedingungen und Maschinenstatus auf der Baustelle.',
-          permittedUsage:
-            'Automatisierte Auswertung durch Monitoring-Systeme. Alarmierung bei Grenzwertüberschreitung.',
-          restrictions: 'Rohdaten werden nach 90 Tagen gelöscht. Keine Personenüberwachung.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
-          createdAt: '2026-04-15T16:00:00Z',
-          updatedAt: '2026-04-15T16:00:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000008',
-          name: 'Materiallogistik-Daten (veraltet)',
+          name: 'BIM-Koordination unbeschränkt',
           description:
-            'Veraltete Policy für Materiallogistik. Ersetzt durch aktualisierte Version.',
-          status: 'ARCHIVED',
-          useCaseContext: 'Logistik',
-          purpose: '',
-          permittedUsage: '',
-          restrictions: '',
-          content: null,
-          legalText: null,
-          createdAt: '2025-10-01T08:00:00Z',
-          updatedAt: '2026-01-10T12:00:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000009',
-          name: 'Abfallentsorgungsnachweis Digital',
-          description:
-            'Regelt die digitale Dokumentation und Weitergabe von Abfallentsorgungsnachweisen auf Baustellen.',
-          status: 'ACTIVE',
-          useCaseContext: 'Entsorgung',
-          purpose:
-            'Lückenlose Nachverfolgung der ordnungsgemäßen Entsorgung von Bauabfällen gemäß KrWG.',
-          permittedUsage:
-            'Einsicht durch Bauleitung, Umweltbeauftragte und zuständige Behörden auf Anfrage.',
-          restrictions:
-            'Entsorgungsnachweise dürfen nicht verändert werden. Archivierungspflicht von 5 Jahren.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
+            'Erlaubt allen Berechtigten die Nutzung des BIM-Koordinationsmodells ohne weitere Einschränkungen.',
+          category: 'CONTRACT',
+          type: 'ALWAYS_TRUE',
+          constraints: [],
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000010',
-          name: 'Drohnenbefliegung Dokumentation',
-          description:
-            'Policy für die Nutzung von Drohnenaufnahmen zur Baufortschrittsdokumentation.',
-          status: 'ACTIVE',
-          useCaseContext: 'Dokumentation',
-          purpose: 'Regelmäßige visuelle Dokumentation des Baufortschritts aus der Luft.',
-          permittedUsage:
-            'Nutzung durch Projektleitung und Auftraggeber. Einbindung in Baufortschrittsberichte.',
-          restrictions:
-            'Keine Aufnahmen von Personen ohne Einwilligung. Flugverbotszonen sind einzuhalten.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000008',
+          name: 'Materialprüfung Konsortium',
+          description: 'Materialprüfberichte ausschließlich für aktive Mitglieder des Datenraums.',
+          category: 'CONTRACT',
+          type: 'MEMBERSHIP_STATIC',
+          constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
           createdAt: '2026-02-15T10:00:00Z',
           updatedAt: '2026-04-18T08:45:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000011',
-          name: 'Energieverbrauchsdaten Gebäudebetrieb',
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000009',
+          name: 'Baustellendokumentation Anwendungsfälle',
           description:
-            'Richtlinie zur Erfassung und Auswertung von Energieverbrauchsdaten im Gebäudebetrieb.',
-          status: 'DRAFT',
-          useCaseContext: 'Gebäudebetrieb',
-          purpose: 'Optimierung des Energieverbrauchs und Erfüllung von ESG-Berichtspflichten.',
-          permittedUsage: 'Auswertung durch Facility Management und Nachhaltigkeitsbeauftragte.',
-          restrictions: 'Keine Weitergabe an Dritte ohne Zustimmung des Gebäudeeigentümers.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
+            'Begrenzt die Nutzung der Baustellendokumentation auf ausgewählte Anwendungsfälle.',
+          category: 'ACCESS',
+          type: 'USE_CASE_MEMBERSHIP',
+          constraints: [
+            {
+              type: 'USE_CASE',
+              useCases: ['UC.site-documentation', 'UC.bim-coordination'],
+            },
+          ],
           createdAt: '2026-04-01T07:30:00Z',
           updatedAt: '2026-04-25T16:00:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000012',
-          name: 'Lieferantenbewertung Baustoffe',
+        }),
+        buildPolicy({
+          id: '00000000-0000-0000-0000-000000000010',
+          name: 'Geodaten Rahmenvertrag',
           description:
-            'Regelt den Zugriff auf Bewertungsdaten von Baustofflieferanten im Beschaffungsprozess.',
-          status: 'ACTIVE',
-          useCaseContext: 'Beschaffung',
-          purpose:
-            'Qualitätssicherung bei der Lieferantenauswahl durch transparente Bewertungskriterien.',
-          permittedUsage:
-            'Einsicht durch Einkauf und Bauleitung. Vergleichende Auswertungen für Vergabeentscheidungen.',
-          restrictions:
-            'Bewertungen sind vertraulich. Keine direkte Weitergabe an bewertete Lieferanten.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
+            'Nutzung von Geodaten unter Zustimmung zum DataExchangeGovernance-Rahmenvertrag.',
+          category: 'ACCESS',
+          type: 'FRAMEWORK_AGREEMENT',
+          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
           createdAt: '2026-01-15T13:00:00Z',
           updatedAt: '2026-03-30T09:15:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000013',
-          name: 'Arbeitsschutz Gefährdungsbeurteilung',
-          description:
-            'Policy für die digitale Verwaltung und Weitergabe von Gefährdungsbeurteilungen.',
-          status: 'ACTIVE',
-          useCaseContext: 'Arbeitsschutz',
-          purpose:
-            'Sicherstellung der Einhaltung von Arbeitsschutzvorschriften auf allen Baustellen.',
-          permittedUsage: 'Zugriff durch SiGeKo, Bauleitung und Fachkräfte für Arbeitssicherheit.',
-          restrictions:
-            'Personenbezogene Unfalldaten nur anonymisiert auswertbar. Löschfrist nach Projektende: 10 Jahre.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
-          createdAt: '2026-03-20T11:00:00Z',
-          updatedAt: '2026-04-22T15:30:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000014',
-          name: 'Bautagebuch Digital',
-          description:
-            'Regelt die Erfassung, Speicherung und Einsichtnahme des digitalen Bautagebuchs.',
-          status: 'DRAFT',
-          useCaseContext: 'Baudokumentation',
-          purpose:
-            'Tägliche Dokumentation des Baugeschehens als Nachweis- und Abrechnungsgrundlage.',
-          permittedUsage:
-            'Eintragung durch Bauleitung. Lesezugriff für Auftraggeber und Projektsteuerung.',
-          restrictions:
-            'Einträge dürfen nach Freigabe nicht mehr verändert werden. Nur Ergänzungen sind zulässig.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
-          createdAt: '2026-04-05T06:00:00Z',
-          updatedAt: '2026-04-28T17:00:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000015',
-          name: 'Nachunternehmer Leistungsverzeichnis',
-          description:
-            'Policy für den kontrollierten Zugriff auf Leistungsverzeichnisse von Nachunternehmern.',
-          status: 'ACTIVE',
-          useCaseContext: 'Vergabe',
-          purpose:
-            'Transparente Vergabeprozesse durch standardisierten Zugriff auf Leistungsbeschreibungen.',
-          permittedUsage:
-            'Einsicht durch Vergabestelle und Kalkulation. Export nur für interne Auswertung.',
-          restrictions:
-            'Preisblätter sind vertraulich und nur für berechtigte Vergabeteilnehmer sichtbar.',
-          content: sampleOdrlPolicy,
-          legalText: sampleLegalText,
-          createdAt: '2026-02-28T14:00:00Z',
-          updatedAt: '2026-04-10T10:45:00Z',
-        },
-        {
-          id: '00000000-0000-0000-0000-000000000016',
-          name: 'Bestandsmodell Sanierung',
-          description: 'Richtlinie für die Nutzung von Bestandsmodellen bei Sanierungsprojekten.',
-          status: 'DRAFT',
-          useCaseContext: 'Sanierung',
-          purpose:
-            'Bereitstellung aktueller Bestandsdaten als Planungsgrundlage für Sanierungsmaßnahmen.',
-          permittedUsage:
-            'Lesender Zugriff für Planer und Fachingenieure. Integration in Fachmodelle erlaubt.',
-          restrictions:
-            'Bestandsdaten dürfen nicht als Grundlage für statische Berechnungen ohne Vor-Ort-Überprüfung verwendet werden.',
-          content: sampleOdrlAccess,
-          legalText: sampleAccessLegalText,
-          createdAt: '2026-03-10T08:30:00Z',
-          updatedAt: '2026-04-30T12:00:00Z',
-        },
+        }),
       ];
   }
 }
@@ -403,12 +190,9 @@ export function getMockedPolicyById(id: string): Policy | undefined {
 export function createMockedPolicy(data: {
   name: string;
   description: string;
-  useCaseContext?: string;
-  purpose?: string;
-  permittedUsage?: string;
-  restrictions?: string;
-  content: string | null;
-  legalText: string | null;
+  category: PolicyCategory;
+  type: PolicyType;
+  constraints: Constraint[];
 }): Policy {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
@@ -418,13 +202,9 @@ export function createMockedPolicy(data: {
     id: `generated-${nextIdCounter++}`,
     name: data.name,
     description: data.description,
-    status: 'DRAFT',
-    useCaseContext: data.useCaseContext ?? '',
-    purpose: data.purpose ?? '',
-    permittedUsage: data.permittedUsage ?? '',
-    restrictions: data.restrictions ?? '',
-    content: data.content,
-    legalText: data.legalText,
+    category: data.category,
+    type: data.type,
+    constraints: data.constraints ?? [],
     createdAt: now,
     updatedAt: now,
   };
@@ -437,13 +217,9 @@ export function updateMockedPolicy(
   data: {
     name: string;
     description: string;
-    status: string;
-    useCaseContext?: string;
-    purpose?: string;
-    permittedUsage?: string;
-    restrictions?: string;
-    content: string | null;
-    legalText: string | null;
+    category: PolicyCategory;
+    type: PolicyType;
+    constraints: Constraint[];
   },
 ): Policy | undefined {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
@@ -456,13 +232,9 @@ export function updateMockedPolicy(
     ...policies[index],
     name: data.name,
     description: data.description,
-    status: data.status as Policy['status'],
-    useCaseContext: data.useCaseContext ?? policies[index].useCaseContext,
-    purpose: data.purpose ?? policies[index].purpose,
-    permittedUsage: data.permittedUsage ?? policies[index].permittedUsage,
-    restrictions: data.restrictions ?? policies[index].restrictions,
-    content: data.content,
-    legalText: data.legalText,
+    category: data.category,
+    type: data.type,
+    constraints: data.constraints ?? [],
     updatedAt: new Date().toISOString(),
   };
   policies[index] = updated;

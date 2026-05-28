@@ -2,7 +2,8 @@
   @if (showHeader()) {
     <div class="table-header">
       <span class="col-name">{{ t('policies.table.name') }}</span>
-      <span class="col-context">{{ t('policies.table.context') }}</span>
+      <span class="col-category">{{ t('policies.table.category') }}</span>
+      <span class="col-type">{{ t('policies.table.policyType') }}</span>
       <span class="col-date">{{ t('policies.table.lastChange') }}</span>
       @if (showAction()) {
         <span class="col-action"></span>
@@ -17,7 +18,12 @@
           <span class="policy-desc">{{ policy.description }}</span>
         }
       </div>
-      <span class="col-context">{{ policy.useCaseContext }}</span>
+      <span class="col-category">
+        <app-cx-category-badge variant="category" [category]="policy.category" />
+      </span>
+      <span class="col-type">
+        <app-cx-category-badge variant="type" [policyType]="policy.type" />
+      </span>
       <span class="col-date">{{ policy.updatedAt | relativeDate }}</span>
       @if (showAction()) {
         <span class="col-action">

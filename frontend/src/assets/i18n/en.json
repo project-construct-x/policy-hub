@@ -9,7 +9,7 @@
   "home": {
     "eyebrow": "Construct-X Policy Hub",
     "title": "Manage policies with clarity",
-    "description": "Create, review and maintain policies for data spaces, projects and partners. The Policy Hub guides you through the key decisions without putting technical details in the foreground.",
+    "description": "Create, review and maintain policies for data spaces, projects and partners.",
     "ctaCreate": "Create policy",
     "ctaAll": "View all policies",
     "orientation": {
@@ -21,16 +21,16 @@
     },
     "cards": {
       "policies": {
-        "label": "Policies in hub",
+        "label": "Policies",
         "description": "Total number of policies created"
       },
       "useCases": {
-        "label": "Use case areas",
-        "description": "Placeholder – content will be defined during the project."
+        "label": "Use cases",
+        "description": "Construct-X dataspace use cases"
       },
       "rules": {
-        "label": "Policy rules",
-        "description": "Placeholder – details are not yet finalised."
+        "label": "Rules",
+        "description": "Number of configured constraints"
       }
     },
     "recent": {
@@ -44,20 +44,22 @@
   },
   "policies": {
     "title": "Policy Overview",
-    "subtitle": "All policies with use-case context and last modification.",
+    "subtitle": "All policies with category and policy type.",
     "createNew": "Create policy",
-    "searchPlaceholder": "Search by name or use-case context",
+    "searchPlaceholder": "Search by name or description",
     "loadingHint": "Loading policies …",
     "noResults": "No policies found.",
     "pagination": {
       "info": "{{start}}–{{end}} of {{total}} policies"
     },
     "filters": {
-      "context": "Use-case context"
+      "category": "Category",
+      "policyType": "Policy type"
     },
     "table": {
       "name": "Name",
-      "context": "Use-case context",
+      "category": "Category",
+      "policyType": "Policy type",
       "lastChange": "Last modified"
     },
     "empty": {
@@ -80,20 +82,12 @@
     "backToOverview": "Back to overview",
     "edit": "Edit",
     "delete": "Delete",
-    "useCaseContext": "Use-case context",
     "lastChanged": "Last modified",
+    "created": "Created",
+    "alwaysTrue": "This policy contains no constraints — it allows everything.",
     "sections": {
-      "purpose": "Purpose of the policy",
-      "permittedUsage": "Permitted usage",
-      "restrictions": "Restrictions",
-      "legalText": "Legal notice"
-    },
-    "infoCard": {
-      "title": "Details",
-      "status": "Status",
-      "context": "Use-case area",
-      "created": "Created",
-      "lastChange": "Last modified"
+      "constraints": "Constraints",
+      "technical": "Technical details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy could not be loaded.",
@@ -102,11 +96,159 @@
     }
   },
   "policyEditor": {
-    "placeholder": {
-      "title": "Policy Builder is being integrated",
-      "description": "The Policy Builder for creating and editing policies is currently under development.",
-      "back": "Back"
+    "notifications": {
+      "loadError": "Policy could not be loaded.",
+      "createSuccess": "Policy has been created.",
+      "createError": "Policy could not be created.",
+      "updateSuccess": "Policy has been updated.",
+      "updateError": "Policy could not be updated."
     }
+  },
+  "policyBuilder": {
+    "title": {
+      "create": "Create new policy",
+      "edit": "Edit policy"
+    },
+    "subtitle": {
+      "create": "Define a new policy with category, policy type and constraints.",
+      "edit": "Edit the policy and its constraints."
+    },
+    "sections": {
+      "basics": {
+        "title": "Basics",
+        "description": "Give the policy a meaningful name and a short description."
+      },
+      "category": {
+        "title": "Category",
+        "description": "Choose whether the policy governs access or usage of the data."
+      },
+      "policyType": {
+        "title": "Policy type",
+        "description": "Select the type of constraint for this policy."
+      },
+      "configuration": {
+        "title": "Configuration"
+      }
+    },
+    "field": {
+      "name": "Name",
+      "description": "Description"
+    },
+    "alwaysTrue": {
+      "title": "No constraints",
+      "description": "This policy allows any access or usage without further conditions."
+    },
+    "legalText": {
+      "title": "Legal notice"
+    },
+    "inputs": {
+      "membership": {
+        "title": "Active dataspace membership",
+        "description": "The consumer must be an active member of the dataspace."
+      },
+      "useCase": {
+        "hint": "Select one or more use cases."
+      },
+      "endDate": {
+        "label": "Valid until"
+      },
+      "frameworkAgreement": {
+        "label": "Framework agreement",
+        "hint": "The data consumer must have agreed to this framework agreement."
+      }
+    },
+    "actions": {
+      "save": "Save",
+      "create": "Create policy",
+      "update": "Save changes",
+      "cancel": "Cancel"
+    }
+  },
+  "policyCategory": {
+    "ACCESS": {
+      "label": "Access Policy",
+      "description": "Governs who is allowed to access the data."
+    },
+    "CONTRACT": {
+      "label": "Contract Policy",
+      "description": "Governs under which conditions the data may be used."
+    }
+  },
+  "policyType": {
+    "ALWAYS_TRUE": {
+      "label": "Unrestricted",
+      "description": "Allows any access or usage without conditions."
+    },
+    "MEMBERSHIP_STATIC": {
+      "label": "Membership",
+      "description": "Only for active dataspace members."
+    },
+    "USE_CASE_MEMBERSHIP": {
+      "label": "Use Case",
+      "description": "Restricted to specific use cases."
+    },
+    "END_DATE": {
+      "label": "Time-limited",
+      "description": "Valid until a specific date."
+    },
+    "FRAMEWORK_AGREEMENT": {
+      "label": "Framework agreement",
+      "description": "Requires acceptance of the framework agreement."
+    }
+  },
+  "constraint": {
+    "MEMBERSHIP": {
+      "label": "Membership",
+      "description": "Active dataspace membership required.",
+      "legalText": "[MOCK] The data consumer must be an active member of the dataspace."
+    },
+    "USE_CASE": {
+      "label": "Use case",
+      "description": "Restricted to selected use cases.",
+      "legalText": "[MOCK] Data usage is limited to the selected use cases."
+    },
+    "END_DATE": {
+      "label": "End date",
+      "description": "Validity ends on the given date.",
+      "legalText": "[MOCK] The usage right expires on the given date."
+    },
+    "FRAMEWORK_AGREEMENT": {
+      "label": "Framework agreement",
+      "description": "Acceptance of the framework agreement required.",
+      "legalText": "[MOCK] The data consumer must have agreed to the DataExchangeGovernance framework agreement."
+    }
+  },
+  "useCase": {
+    "bim-coordination": "BIM coordination",
+    "quality-assurance": "Quality assurance",
+    "material-testing": "Material testing",
+    "site-documentation": "Site documentation",
+    "geodata": "Geodata"
+  },
+  "policySummary": {
+    "title": "Plain-language summary",
+    "constraint": {
+      "MEMBERSHIP": "only for active dataspace members",
+      "USE_CASE": {
+        "list": "only for use cases: {{list}}",
+        "empty": "no use cases selected yet"
+      },
+      "END_DATE": {
+        "value": "valid until {{date}}",
+        "empty": "end date not set yet"
+      },
+      "FRAMEWORK_AGREEMENT": "with acceptance of the framework agreement \"{{agreement}}\""
+    }
+  },
+  "validation": {
+    "nameRequired": "Name is required",
+    "nameTooLong": "Name must be at most 200 characters",
+    "categoryRequired": "Category must be selected",
+    "policyTypeRequired": "Policy type must be selected",
+    "useCaseRequired": "At least one use case must be selected",
+    "endDateRequired": "End date is required",
+    "endDateInvalid": "Date is invalid",
+    "endDateInPast": "End date must be in the future"
   },
   "deleteDialog": {
     "title": "Delete policy",
@@ -114,11 +256,6 @@
     "messageAfter": "? This action cannot be undone.",
     "cancel": "Cancel",
     "confirm": "Delete"
-  },
-  "status": {
-    "DRAFT": "Draft",
-    "ACTIVE": "Active",
-    "ARCHIVED": "Archived"
   },
   "jsonViewer": {
     "label": "ODRL JSON-LD",

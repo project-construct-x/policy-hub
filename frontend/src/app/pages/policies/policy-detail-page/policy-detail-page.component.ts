@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
@@ -7,11 +7,24 @@ import { NotificationService } from '@services/notification/notification.service
 import { Policy } from '@shared/types/policy.model';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
 import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { CxCategoryBadgeComponent } from '@ui/category-badge/cx-category-badge.component';
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
+import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
+import { PolicySummaryCardComponent } from '@features/policies/builder/components/policy-summary-card/policy-summary-card.component';
+import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
 
 @Component({
   selector: 'app-policy-detail-page',
-  imports: [RouterLink, MatDialogModule, TranslocoDirective, RelativeDatePipe, CxButtonComponent],
+  imports: [
+    RouterLink,
+    MatDialogModule,
+    TranslocoDirective,
+    RelativeDatePipe,
+    CxButtonComponent,
+    CxCategoryBadgeComponent,
+    ConstraintCardComponent,
+    PolicySummaryCardComponent,
+  ],
   templateUrl: './policy-detail-page.component.html',
   styleUrl: './policy-detail-page.component.scss',
 })
@@ -25,6 +38,13 @@ export class PolicyDetailPageComponent implements OnInit {
 
   policy = signal<Policy | null>(null);
   loading = signal(true);
+  showJsonLd = signal(false);
+
+  odrlJson = computed(() => {
+    const p = this.policy();
+    if (!p) return '';
+    return JSON.stringify(policyToOdrl(p), null, 2);
+  });
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -43,6 +63,10 @@ export class PolicyDetailPageComponent implements OnInit {
         this.router.navigate(['/policies']);
       },
     });
+  }
+
+  toggleJsonLd(): void {
+    this.showJsonLd.update((v) => !v);
   }
 
   deletePolicy(): void {

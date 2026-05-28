@@ -22,70 +22,51 @@
     </div>
 
     <div class="hero">
+      <div class="badges">
+        <app-cx-category-badge variant="category" [category]="p.category" />
+        <app-cx-category-badge variant="type" [policyType]="p.type" />
+      </div>
       <h1>{{ p.name }}</h1>
       <p class="summary">{{ p.description }}</p>
       <div class="meta">
-        <span class="meta-context"
-          >{{ t('policyDetail.useCaseContext') }}: {{ p.useCaseContext }}</span
-        >
         <span class="meta-date"
           >{{ t('policyDetail.lastChanged') }}: {{ p.updatedAt | relativeDate }}</span
         >
+        <span class="meta-date"
+          >{{ t('policyDetail.created') }}: {{ p.createdAt | relativeDate }}</span
+        >
       </div>
     </div>
 
-    <div class="columns">
-      <div class="col-left">
-        @if (p.purpose) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.purpose') }}</h3>
-            <p>{{ p.purpose }}</p>
-          </div>
-        }
+    <app-policy-summary-card [policy]="p" />
 
-        @if (p.permittedUsage) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.permittedUsage') }}</h3>
-            <p>{{ p.permittedUsage }}</p>
-          </div>
-        }
-
-        @if (p.restrictions) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.restrictions') }}</h3>
-            <p>{{ p.restrictions }}</p>
-          </div>
-        }
-      </div>
-
-      <div class="col-right">
-        <div class="info-card">
-          <h4>{{ t('policyDetail.infoCard.title') }}</h4>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.status') }}</span>
-            <span class="info-value">{{ t('status.' + p.status) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.context') }}</span>
-            <span class="info-value">{{ p.useCaseContext }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.created') }}</span>
-            <span class="info-value">{{ p.createdAt | relativeDate }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.lastChange') }}</span>
-            <span class="info-value">{{ p.updatedAt | relativeDate }}</span>
-          </div>
+    <section class="constraints-section">
+      <h2>{{ t('policyDetail.sections.constraints') }}</h2>
+      @if (p.constraints.length === 0) {
+        <div class="empty-constraints">
+          <span class="material-icons" aria-hidden="true">all_inclusive</span>
+          <p>{{ t('policyDetail.alwaysTrue') }}</p>
         </div>
+      } @else {
+        <div class="constraints-grid">
+          @for (c of p.constraints; track $index) {
+            <app-constraint-card [constraint]="c" />
+          }
+        </div>
+      }
+    </section>
 
-        @if (p.legalText) {
-          <div class="content-card legal-card">
-            <h3>{{ t('policyDetail.sections.legalText') }}</h3>
-            <p class="legal-text">{{ p.legalText }}</p>
-          </div>
-        }
-      </div>
-    </div>
+    <section class="json-ld-section">
+      <button type="button" class="json-toggle" (click)="toggleJsonLd()">
+        <span class="material-icons" aria-hidden="true">code</span>
+        <span>{{ t('policyDetail.sections.technical') }}</span>
+        <span class="material-icons chevron" [class.open]="showJsonLd()" aria-hidden="true">
+          expand_more
+        </span>
+      </button>
+      @if (showJsonLd()) {
+        <pre class="json-content">{{ odrlJson() }}</pre>
+      }
+    </section>
   }
 </div>

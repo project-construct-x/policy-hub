@@ -28,6 +28,12 @@
   flex-direction: column;
   gap: 0.875rem;
 
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   h1 {
     font-size: 1.875rem;
     font-weight: 600;
@@ -162,6 +168,94 @@
   font-size: 0.8125rem;
   font-weight: 400;
   color: var(--cx-text-primary);
+}
+
+// ============================================================
+// Constraints / Always-True
+// ============================================================
+.constraints-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--cx-text-primary);
+  }
+}
+
+.constraints-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 14px;
+}
+
+.empty-constraints {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 18px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+
+  .material-icons {
+    color: #0369a1;
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--cx-text-primary);
+  }
+}
+
+// ============================================================
+// JSON-LD Expander
+// ============================================================
+.json-ld-section {
+  border: 1px solid var(--cx-border-color);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.json-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cx-text-secondary);
+  cursor: pointer;
+
+  > span:nth-child(2) {
+    flex: 1;
+    text-align: left;
+  }
+  .chevron {
+    transition: transform 0.15s;
+  }
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+}
+
+.json-content {
+  margin: 0;
+  padding: 14px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: #1e293b;
+  color: #e2e8f0;
+  overflow-x: auto;
+  white-space: pre;
 }
 
 // ============================================================

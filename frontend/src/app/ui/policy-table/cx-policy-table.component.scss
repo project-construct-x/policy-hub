@@ -24,11 +24,18 @@
 }
 
 .col-name {
-  width: 29.375rem;
+  width: 24rem;
 }
 
-.col-context {
-  width: 17.5rem;
+.col-category {
+  width: 8.5rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cx-text-secondary);
+}
+
+.col-type {
+  width: 11rem;
   font-size: 0.8125rem;
   font-weight: 400;
   color: var(--cx-text-secondary);

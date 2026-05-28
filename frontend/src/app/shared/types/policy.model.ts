@@ -1,16 +1,21 @@
-export type PolicyStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+import { Constraint } from './constraint.model';
+
+export type PolicyCategory = 'ACCESS' | 'CONTRACT';
+
+export type PolicyType =
+  | 'ALWAYS_TRUE'
+  | 'MEMBERSHIP_STATIC'
+  | 'USE_CASE_MEMBERSHIP'
+  | 'END_DATE'
+  | 'FRAMEWORK_AGREEMENT';
 
 export interface Policy {
   id: string;
   name: string;
   description: string;
-  status: PolicyStatus;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
+  category: PolicyCategory;
+  type: PolicyType;
+  constraints: Constraint[];
   createdAt: string;
   updatedAt: string;
 }
@@ -18,22 +23,15 @@ export interface Policy {
 export interface CreatePolicyRequest {
   name: string;
   description: string;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
+  category: PolicyCategory;
+  type: PolicyType;
+  constraints: Constraint[];
 }
 
 export interface UpdatePolicyRequest {
   name: string;
   description: string;
-  status: PolicyStatus;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
+  category: PolicyCategory;
+  type: PolicyType;
+  constraints: Constraint[];
 }

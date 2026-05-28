@@ -4,10 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
-import { Policy } from '@shared/types/policy.model';
+import { Policy, PolicyCategory, PolicyType } from '@shared/types/policy.model';
 import { CxPolicyTableComponent } from '@ui/policy-table/cx-policy-table.component';
 import { CxEmptyStateComponent } from '@ui/empty-state/cx-empty-state.component';
 import { CxButtonComponent } from '@ui/button/cx-button.component';
+import {
+  ALL_POLICY_TYPES,
+  POLICY_TYPE_METADATA,
+} from '@features/policies/builder/metadata/policy-type-metadata';
 
 @Component({
   selector: 'app-policies-overview-page',
@@ -27,36 +31,40 @@ export class PoliciesOverviewPageComponent implements OnInit {
   private readonly notification = inject(NotificationService);
   private readonly transloco = inject(TranslocoService);
 
+  readonly categoryOptions: PolicyCategory[] = ['ACCESS', 'CONTRACT'];
+  readonly typeOptions = ALL_POLICY_TYPES.map((t) => ({
+    value: t,
+    labelKey: POLICY_TYPE_METADATA[t].labelKey,
+  }));
+
   policies = signal<Policy[]>([]);
   loading = signal(true);
   error = signal(false);
 
   searchQuery = signal('');
-  selectedContext = signal('');
+  selectedCategory = signal<PolicyCategory | ''>('');
+  selectedType = signal<PolicyType | ''>('');
   currentPage = signal(1);
   pageSize = 8;
-
-  useCaseContexts = computed(() => {
-    const contexts = this.policies()
-      .map((p) => p.useCaseContext)
-      .filter(Boolean);
-    return [...new Set(contexts)].sort();
-  });
 
   filteredPolicies = computed(() => {
     let result = this.policies();
     const query = this.searchQuery().toLowerCase().trim();
-    const context = this.selectedContext();
+    const category = this.selectedCategory();
+    const type = this.selectedType();
 
     if (query) {
       result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) || p.useCaseContext.toLowerCase().includes(query),
+        (p) => p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query),
       );
     }
 
-    if (context) {
-      result = result.filter((p) => p.useCaseContext === context);
+    if (category) {
+      result = result.filter((p) => p.category === category);
+    }
+
+    if (type) {
+      result = result.filter((p) => p.type === type);
     }
 
     return result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
@@ -101,8 +109,13 @@ export class PoliciesOverviewPageComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  onContextFilter(value: string): void {
-    this.selectedContext.set(value);
+  onCategoryFilter(value: string): void {
+    this.selectedCategory.set((value as PolicyCategory) || '');
+    this.currentPage.set(1);
+  }
+
+  onTypeFilter(value: string): void {
+    this.selectedType.set((value as PolicyType) || '');
     this.currentPage.set(1);
   }
 
