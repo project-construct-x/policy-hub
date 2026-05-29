@@ -12,14 +12,13 @@
   &__header {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
     gap: 1rem;
   }
 
   &__title {
     display: flex;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: 0.5rem;
 
     h4 {
       margin: 0;
@@ -31,18 +30,20 @@
     p {
       margin: 0.25rem 0 0;
       font-size: 0.8125rem;
-      color: #5b6b78;
+      color: var(--cx-text-secondary, #555555);
     }
   }
 
   &__icon {
     color: var(--cx-orange, #e53d17);
-    background: var(--cx-light-orange, #ebd8d0);
-    border-radius: 8px;
-    padding: 6px;
-    width: 36px;
-    height: 36px;
-    font-size: 24px;
+    background: transparent;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 24px !important;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   &__body {
@@ -53,6 +54,15 @@
 
   &__field {
     width: 100%;
+
+    &--datepicker {
+      cursor: pointer;
+
+      input {
+        cursor: pointer;
+        caret-color: transparent;
+      }
+    }
   }
 
   &__static {

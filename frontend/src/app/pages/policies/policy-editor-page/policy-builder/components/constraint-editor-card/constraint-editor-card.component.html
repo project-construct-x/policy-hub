@@ -7,14 +7,6 @@
         <p>{{ t(meta().descriptionKey) }}</p>
       </div>
     </div>
-    <button
-      mat-icon-button
-      type="button"
-      [attr.aria-label]="t('policyBuilder.constraint.remove')"
-      (click)="onRemove()"
-    >
-      <mat-icon>delete_outline</mat-icon>
-    </button>
   </header>
 
   <div class="ce-card__body">
@@ -47,14 +39,20 @@
       }
 
       @case ('END_DATE') {
-        <mat-form-field appearance="outline" class="ce-card__field">
+        <mat-form-field appearance="outline" class="ce-card__field ce-card__field--datepicker">
           <mat-label>{{ t('policyBuilder.constraint.END_DATE.label') }}</mat-label>
           <input
             matInput
-            type="date"
-            [value]="asEndDate(constraint()).endDate"
-            (change)="onEndDateChange($any($event.target).value)"
+            [matDatepicker]="picker"
+            [min]="minDate"
+            [value]="endDateValue()"
+            (dateChange)="onEndDateChange($event.value)"
+            (click)="picker.open()"
+            (focus)="picker.open()"
+            readonly
           />
+          <mat-datepicker-toggle matIconSuffix [for]="picker" />
+          <mat-datepicker #picker />
           @if (hasError('.endDate')) {
             <mat-error>{{ t(errorKey('.endDate')!) }}</mat-error>
           } @else {

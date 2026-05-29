@@ -1,8 +1,7 @@
 .palette {
-  border: 1px dashed var(--cx-border-color, #e5e5e5);
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
-  background: var(--cx-light-gray, #f4f3f3);
+  padding: 0;
+  background: transparent;
+  border: none;
 
   &__header {
     margin-bottom: 1rem;
@@ -17,7 +16,7 @@
 
   &__subtitle {
     margin: 0;
-    color: #5b6b78;
+    color: var(--cx-text-secondary, #555555);
     font-size: 0.875rem;
   }
 
@@ -31,5 +30,52 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--cx-border-color, #e5e5e5);
+    background: var(--cx-bg-card, #ffffff);
+    color: var(--cx-text-primary, #111111);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--cx-text-secondary, #555555);
+      transition: color 0.15s ease;
+    }
+
+    &:hover:not(.palette__btn--active) {
+      border-color: var(--cx-orange, #e53d17);
+      color: var(--cx-orange, #e53d17);
+
+      mat-icon {
+        color: var(--cx-orange, #e53d17);
+      }
+    }
+
+    &--active {
+      background: var(--cx-orange, #e53d17);
+      border-color: var(--cx-orange, #e53d17);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(229, 61, 23, 0.25);
+
+      mat-icon {
+        color: #ffffff;
+      }
+
+      &:hover {
+        background: var(--cx-dark-orange, #ca4a25);
+        border-color: var(--cx-dark-orange, #ca4a25);
+      }
+    }
   }
 }

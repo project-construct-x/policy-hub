@@ -104,8 +104,14 @@ export class PolicyBuilderComponent {
     return CONSTRAINT_METADATA[type].allowedIn.includes(cat);
   }
 
-  addConstraint(type: ConstraintType): void {
-    this.constraints.update((list) => [...list, buildDefaultConstraint(type)]);
+  toggleConstraint(type: ConstraintType): void {
+    this.constraints.update((list) => {
+      const existingIndex = list.findIndex((c) => c.type === type);
+      if (existingIndex !== -1) {
+        return list.filter((_, i) => i !== existingIndex);
+      }
+      return [...list, buildDefaultConstraint(type)];
+    });
   }
 
   updateConstraint(index: number, c: Constraint): void {

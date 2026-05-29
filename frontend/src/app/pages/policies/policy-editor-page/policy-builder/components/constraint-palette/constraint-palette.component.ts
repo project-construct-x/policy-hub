@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ConstraintType } from '@shared/types/constraint.model';
 import { PolicyCategory } from '@shared/types/policy.model';
@@ -11,7 +10,7 @@ import {
 
 @Component({
   selector: 'app-constraint-palette',
-  imports: [TranslocoDirective, MatButtonModule, MatIconModule],
+  imports: [TranslocoDirective, MatIconModule],
   templateUrl: './constraint-palette.component.html',
   styleUrl: './constraint-palette.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,7 +19,7 @@ export class ConstraintPaletteComponent {
   readonly category = input.required<PolicyCategory>();
   readonly existingTypes = input<ConstraintType[]>([]);
 
-  readonly addConstraint = output<ConstraintType>();
+  readonly toggleConstraint = output<ConstraintType>();
 
   readonly options = computed(() => {
     const cat = this.category();
@@ -28,11 +27,11 @@ export class ConstraintPaletteComponent {
     return getAllowedConstraintTypes(cat).map((type) => ({
       type,
       meta: CONSTRAINT_METADATA[type],
-      disabled: existing.has(type),
+      active: existing.has(type),
     }));
   });
 
-  onAdd(type: ConstraintType): void {
-    this.addConstraint.emit(type);
+  onToggle(type: ConstraintType): void {
+    this.toggleConstraint.emit(type);
   }
 }

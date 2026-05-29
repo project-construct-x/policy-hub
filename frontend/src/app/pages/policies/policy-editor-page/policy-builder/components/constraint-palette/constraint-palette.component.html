@@ -7,11 +7,10 @@
   <div class="palette__buttons">
     @for (opt of options(); track opt.type) {
       <button
-        mat-stroked-button
         type="button"
         class="palette__btn"
-        [disabled]="opt.disabled"
-        (click)="onAdd(opt.type)"
+        [class.palette__btn--active]="opt.active"
+        (click)="onToggle(opt.type)"
       >
         <mat-icon>{{ opt.meta.icon }}</mat-icon>
         <span>{{ t(opt.meta.labelKey) }}</span>

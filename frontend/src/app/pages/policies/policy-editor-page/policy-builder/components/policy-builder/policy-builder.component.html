@@ -70,7 +70,7 @@
     <app-constraint-palette
       [category]="category()"
       [existingTypes]="existingConstraintTypes()"
-      (addConstraint)="addConstraint($event)"
+      (toggleConstraint)="toggleConstraint($event)"
     />
 
     @if (constraints().length > 0) {
@@ -81,7 +81,6 @@
             [index]="i"
             [showErrors]="submitted()"
             (constraintChange)="updateConstraint(i, $event)"
-            (remove)="removeConstraint(i)"
           />
           @if (!last) {
             <div class="pb__and-connector">

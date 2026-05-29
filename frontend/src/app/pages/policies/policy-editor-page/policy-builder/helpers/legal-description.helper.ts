@@ -64,9 +64,10 @@ function joinList(items: string[]): string {
 
 function formatDate(iso: string): string {
   if (!iso) return '—';
-  try {
-    return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' }).format(new Date(iso));
-  } catch {
-    return iso;
-  }
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}.${month}.${year}`;
 }
