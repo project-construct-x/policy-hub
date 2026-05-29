@@ -58,7 +58,7 @@
     </div>
 
     @if (recentPolicies().length > 0) {
-      <app-cx-policy-table [policies]="recentPolicies()" [showDescription]="false" />
+      <app-cx-policy-table [policies]="recentPolicies()" />
     } @else {
       <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
         <a routerLink="/policies/new" cx-button cxCta>

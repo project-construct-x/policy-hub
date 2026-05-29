@@ -1,138 +1,114 @@
-<form class="policy-builder" *transloco="let t" (submit)="$event.preventDefault(); submit()">
-  <!-- Section 1: Basics -->
-  <section class="section">
-    <header class="section-header">
-      <h2>{{ t('policyBuilder.sections.basics.title') }}</h2>
-      <p class="section-desc">{{ t('policyBuilder.sections.basics.description') }}</p>
+<form class="pb" *transloco="let t" (ngSubmit)="submit()" novalidate>
+  <!-- Section: Policy ID -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.identity') }}</h2>
     </header>
 
-    <div class="field">
-      <label for="policy-name">{{ t('policyBuilder.field.name') }} *</label>
+    <mat-form-field appearance="outline" class="pb__field">
+      <mat-label>{{ t('policyBuilder.policyId.label') }}</mat-label>
       <input
-        id="policy-name"
+        matInput
         type="text"
-        [ngModel]="name()"
-        (ngModelChange)="name.set($event)"
-        name="policyName"
-        [class.invalid]="showErrorFor('name')"
-        maxlength="200"
+        [value]="policyId()"
+        (input)="onPolicyIdInput($any($event.target).value)"
+        [placeholder]="t('policyBuilder.policyId.placeholder')"
+        autocomplete="off"
+        required
       />
-      @if (showErrorFor('name'); as err) {
-        <p class="error">{{ t(err) }}</p>
+      @if (policyIdError()) {
+        <mat-error>{{ t(policyIdError()!) }}</mat-error>
+      } @else {
+        <mat-hint>{{ t('policyBuilder.policyId.hint') }}</mat-hint>
       }
-    </div>
+    </mat-form-field>
+  </section>
 
-    <div class="field">
-      <label for="policy-description">{{ t('policyBuilder.field.description') }}</label>
-      <textarea
-        id="policy-description"
-        rows="3"
-        [ngModel]="description()"
-        (ngModelChange)="description.set($event)"
-        name="policyDescription"
-      ></textarea>
+  <!-- Section: Category -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.category') }}</h2>
+      <p>{{ t('policyBuilder.sections.categoryHint') }}</p>
+    </header>
+
+    <div class="pb__category-grid">
+      <button
+        type="button"
+        class="pb__category-card"
+        [class.is-active]="category() === 'ACCESS'"
+        (click)="selectCategory('ACCESS')"
+      >
+        <mat-icon>lock_open</mat-icon>
+        <div>
+          <strong>{{ t('policyCategory.ACCESS.label') }}</strong>
+          <small>{{ t('policyCategory.ACCESS.description') }}</small>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        class="pb__category-card"
+        [class.is-active]="category() === 'CONTRACT'"
+        (click)="selectCategory('CONTRACT')"
+      >
+        <mat-icon>handshake</mat-icon>
+        <div>
+          <strong>{{ t('policyCategory.CONTRACT.label') }}</strong>
+          <small>{{ t('policyCategory.CONTRACT.description') }}</small>
+        </div>
+      </button>
     </div>
   </section>
 
-  <!-- Section 2: Category -->
-  <section class="section">
-    <header class="section-header">
-      <h2>{{ t('policyBuilder.sections.category.title') }}</h2>
-      <p class="section-desc">{{ t('policyBuilder.sections.category.description') }}</p>
+  <!-- Section: Constraints -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.constraints') }}</h2>
+      <p>{{ t('policyBuilder.sections.constraintsHint') }}</p>
     </header>
 
-    <div class="category-options">
-      @for (c of ['ACCESS', 'CONTRACT']; track c) {
-        <button
-          type="button"
-          class="category-option"
-          [class.selected]="category() === c"
-          (click)="selectCategory($any(c))"
-        >
-          <span class="material-icons" aria-hidden="true">
-            {{ c === 'ACCESS' ? 'lock_open' : 'description' }}
-          </span>
-          <span class="opt-title">{{ t('policyCategory.' + c + '.label') }}</span>
-          <span class="opt-desc">{{ t('policyCategory.' + c + '.description') }}</span>
-        </button>
-      }
-    </div>
-    @if (showErrorFor('category'); as err) {
-      <p class="error">{{ t(err) }}</p>
+    <app-constraint-palette
+      [category]="category()"
+      [existingTypes]="existingConstraintTypes()"
+      (addConstraint)="addConstraint($event)"
+    />
+
+    @if (constraints().length > 0) {
+      <div class="pb__constraint-list">
+        @for (c of constraints(); track $index; let i = $index, last = $last) {
+          <app-constraint-editor-card
+            [constraint]="c"
+            [index]="i"
+            [showErrors]="submitted()"
+            (constraintChange)="updateConstraint(i, $event)"
+            (remove)="removeConstraint(i)"
+          />
+          @if (!last) {
+            <div class="pb__and-connector">
+              <span>{{ t('policyBuilder.andConnector') }}</span>
+            </div>
+          }
+        }
+      </div>
+    } @else {
+      <p class="pb__empty">{{ t('policyBuilder.constraint.empty') }}</p>
     }
   </section>
 
-  <!-- Section 3: Policy Type -->
-  @if (category()) {
-    <section class="section">
-      <header class="section-header">
-        <h2>{{ t('policyBuilder.sections.policyType.title') }}</h2>
-        <p class="section-desc">{{ t('policyBuilder.sections.policyType.description') }}</p>
-      </header>
-
-      <div class="type-options">
-        @for (meta of availableTypes(); track meta.type) {
-          <button
-            type="button"
-            class="type-option"
-            [class.selected]="type() === meta.type"
-            (click)="selectType(meta.type)"
-          >
-            <span class="material-icons" aria-hidden="true">{{ meta.icon }}</span>
-            <span class="opt-title">{{ t(meta.labelKey) }}</span>
-            <span class="opt-desc">{{ t(meta.descriptionKey) }}</span>
-          </button>
-        }
-      </div>
-      @if (showErrorFor('type'); as err) {
-        <p class="error">{{ t(err) }}</p>
-      }
-    </section>
-  }
-
-  <!-- Section 4: Configuration -->
-  @if (type()) {
-    <section class="section">
-      <header class="section-header">
-        <h2>{{ t('policyBuilder.sections.configuration.title') }}</h2>
-        <p class="section-desc">{{ t(selectedTypeDescription()) }}</p>
-      </header>
-
-      @if (type() === 'ALWAYS_TRUE') {
-        <div class="always-true">
-          <span class="material-icons" aria-hidden="true">all_inclusive</span>
-          <div>
-            <h4>{{ t('policyBuilder.alwaysTrue.title') }}</h4>
-            <p>{{ t('policyBuilder.alwaysTrue.description') }}</p>
-          </div>
-        </div>
-      } @else {
-        <div class="constraints-list">
-          @for (c of constraints(); track $index) {
-            <app-constraint-input
-              [constraint]="c"
-              [errors]="errorsForConstraintIndex($index)"
-              (constraintChange)="updateConstraint($index, $event)"
-            />
-          }
-        </div>
-      }
-    </section>
-
-    <!-- Summary -->
-    <section class="section">
-      <app-policy-summary-card [policy]="draftPreview()" />
-    </section>
-  }
-
-  <!-- Actions -->
-  <div class="actions">
-    <button type="button" class="btn-outline" (click)="onCancel()">
+  <!-- Footer actions -->
+  <footer class="pb__footer">
+    <button
+      cx-button
+      variant="outlined"
+      color="neutral"
+      type="button"
+      (click)="onCancel()"
+      [disabled]="submitting()"
+    >
       {{ t('policyBuilder.actions.cancel') }}
     </button>
-    <button type="submit" class="btn-primary" [disabled]="submitting()">
-      <span class="material-icons" aria-hidden="true">save</span>
+    <button cx-button type="submit" class="pb__submit" [disabled]="submitting()">
       {{ t(submitLabelKey()) }}
     </button>
-  </div>
+  </footer>
 </form>

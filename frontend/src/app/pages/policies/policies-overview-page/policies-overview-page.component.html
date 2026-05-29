@@ -29,15 +29,6 @@
       </select>
       <span class="material-icons dropdown-icon">expand_more</span>
     </div>
-    <div class="filter-dropdown">
-      <select [ngModel]="selectedType()" (ngModelChange)="onTypeFilter($event)">
-        <option value="">{{ t('policies.filters.policyType') }}</option>
-        @for (opt of typeOptions; track opt.value) {
-          <option [value]="opt.value">{{ t(opt.labelKey) }}</option>
-        }
-      </select>
-      <span class="material-icons dropdown-icon">expand_more</span>
-    </div>
   </div>
 
   @if (loading()) {

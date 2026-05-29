@@ -19,16 +19,16 @@
 }
 
 .cx-badge--category.cx-badge--access {
-  background: #e0f2fe;
-  color: #075985;
+  background: var(--cx-light-blue);
+  color: var(--cx-blue);
 }
 
 .cx-badge--category.cx-badge--contract {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--cx-light-orange);
+  color: var(--cx-orange);
 }
 
 .cx-badge--type {
-  background: #ede9fe;
-  color: #5b21b6;
+  background: var(--cx-light-yellow);
+  color: var(--cx-yellow);
 }

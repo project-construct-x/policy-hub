@@ -1,9 +1,8 @@
 <div class="cx-policy-table" *transloco="let t">
   @if (showHeader()) {
     <div class="table-header">
-      <span class="col-name">{{ t('policies.table.name') }}</span>
+      <span class="col-name">{{ t('policies.table.policyId') }}</span>
       <span class="col-category">{{ t('policies.table.category') }}</span>
-      <span class="col-type">{{ t('policies.table.policyType') }}</span>
       <span class="col-date">{{ t('policies.table.lastChange') }}</span>
       @if (showAction()) {
         <span class="col-action"></span>
@@ -11,18 +10,16 @@
     </div>
   }
   @for (policy of policies(); track policy.id) {
-    <a [routerLink]="['/policies', policy.id]" class="table-row" [attr.aria-label]="policy.name">
+    <a
+      [routerLink]="['/policies', policy.id]"
+      class="table-row"
+      [attr.aria-label]="policy.policyId"
+    >
       <div class="col-name">
-        <span class="policy-name">{{ policy.name }}</span>
-        @if (showDescription()) {
-          <span class="policy-desc">{{ policy.description }}</span>
-        }
+        <span class="policy-name">{{ policy.policyId }}</span>
       </div>
       <span class="col-category">
-        <app-cx-category-badge variant="category" [category]="policy.category" />
-      </span>
-      <span class="col-type">
-        <app-cx-category-badge variant="type" [policyType]="policy.type" />
+        <app-cx-category-badge [category]="policy.category" />
       </span>
       <span class="col-date">{{ policy.updatedAt | relativeDate }}</span>
       @if (showAction()) {

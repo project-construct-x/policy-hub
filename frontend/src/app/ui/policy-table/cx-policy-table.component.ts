@@ -13,7 +13,6 @@ import { CxCategoryBadgeComponent } from '@ui/category-badge/cx-category-badge.c
 })
 export class CxPolicyTableComponent {
   policies = input.required<Policy[]>();
-  showDescription = input(true);
   showHeader = input(true);
   showAction = input(true);
 }

@@ -1,0 +1,8 @@
+<article class="cc" *transloco="let t">
+  <span class="cc__bar" aria-hidden="true"></span>
+  <span class="material-icons cc__icon" aria-hidden="true">{{ metadata().icon }}</span>
+  <div class="cc__body">
+    <h4 class="cc__title">{{ t(metadata().labelKey) }}</h4>
+    <p class="cc__summary">{{ summary() }}</p>
+  </div>
+</article>

@@ -1,63 +1,47 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
-import { LegalTextBlockComponent } from '../legal-text-block/legal-text-block.component';
-import { formatConstraintSummary } from '@features/policies/builder/helpers/policy-summary.helper';
+import { USE_CASE_OPTIONS } from '@features/policies/builder/metadata/use-case-options.data';
 
 @Component({
   selector: 'app-constraint-card',
-  imports: [TranslocoDirective, LegalTextBlockComponent],
-  template: `
-    <article class="constraint-card" *transloco="let t">
-      <header>
-        <span class="material-icons" aria-hidden="true">{{ metadata().icon }}</span>
-        <div>
-          <h4>{{ t(metadata().labelKey) }}</h4>
-          <p class="value">{{ summaryText() }}</p>
-        </div>
-      </header>
-      <app-legal-text-block [legalTextKey]="metadata().legalTextKey" />
-    </article>
-  `,
-  styles: [
-    `
-      .constraint-card {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 18px;
-        border: 1px solid var(--cx-border-color);
-        border-radius: 10px;
-        background: #fff;
-      }
-      header {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-      }
-      header .material-icons {
-        color: var(--cx-orange, #f97316);
-        margin-top: 2px;
-      }
-      h4 {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 600;
-      }
-      .value {
-        margin: 4px 0 0 0;
-        font-size: 14px;
-        color: var(--cx-text-secondary);
-      }
-    `,
-  ],
+  imports: [TranslocoDirective],
+  templateUrl: './constraint-card.component.html',
+  styleUrl: './constraint-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConstraintCardComponent {
-  constraint = input.required<Constraint>();
+  readonly constraint = input.required<Constraint>();
 
   private readonly transloco = inject(TranslocoService);
 
-  metadata = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
-  summaryText = computed(() => formatConstraintSummary(this.constraint(), this.transloco));
+  readonly metadata = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
+
+  readonly summary = computed(() => formatSummary(this.constraint(), this.transloco));
+}
+
+function formatSummary(c: Constraint, transloco: TranslocoService): string {
+  switch (c.type) {
+    case 'MEMBERSHIP':
+      return transloco.translate('constraint.MEMBERSHIP.summary');
+    case 'USE_CASE': {
+      if (!c.useCases.length) return transloco.translate('constraint.USE_CASE.summaryEmpty');
+      const labels = c.useCases.map((id) => {
+        const opt = USE_CASE_OPTIONS.find((o) => o.id === id);
+        return opt ? transloco.translate(opt.labelKey) : id;
+      });
+      return labels.join(', ');
+    }
+    case 'END_DATE': {
+      if (!c.endDate) return '—';
+      try {
+        return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' }).format(new Date(c.endDate));
+      } catch {
+        return c.endDate;
+      }
+    }
+    case 'FRAMEWORK_AGREEMENT':
+      return c.agreement;
+  }
 }

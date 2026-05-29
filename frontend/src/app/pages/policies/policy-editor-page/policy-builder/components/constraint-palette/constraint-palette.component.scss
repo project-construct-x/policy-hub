@@ -1,0 +1,35 @@
+.palette {
+  border: 1px dashed var(--cx-border-color, #e5e5e5);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  background: var(--cx-light-gray, #f4f3f3);
+
+  &__header {
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--cx-text-primary, #111111);
+    }
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: #5b6b78;
+    font-size: 0.875rem;
+  }
+
+  &__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

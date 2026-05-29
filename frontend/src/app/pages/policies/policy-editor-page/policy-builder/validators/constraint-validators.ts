@@ -1,57 +1,65 @@
 import { Constraint } from '@shared/types/constraint.model';
-import { Policy, PolicyType } from '@shared/types/policy.model';
+import { Policy } from '@shared/types/policy.model';
+import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
 
 export interface ValidationError {
   field: string;
   messageKey: string;
 }
 
+export const POLICY_ID_PATTERN = /^.{1,200}$/;
+
 export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   const errors: ValidationError[] = [];
 
-  if (!draft.name || draft.name.trim().length === 0) {
-    errors.push({ field: 'name', messageKey: 'validation.nameRequired' });
-  } else if (draft.name.length > 200) {
-    errors.push({ field: 'name', messageKey: 'validation.nameTooLong' });
+  const id = (draft.policyId ?? '').trim();
+  if (!id) {
+    errors.push({ field: 'policyId', messageKey: 'validation.policyIdRequired' });
+  } else if (id.length > 200) {
+    errors.push({ field: 'policyId', messageKey: 'validation.policyIdTooLong' });
   }
 
   if (!draft.category) {
     errors.push({ field: 'category', messageKey: 'validation.categoryRequired' });
   }
 
-  if (!draft.type) {
-    errors.push({ field: 'type', messageKey: 'validation.policyTypeRequired' });
-  }
-
-  for (const c of draft.constraints ?? []) {
-    errors.push(...validateConstraint(c));
+  for (const [index, c] of (draft.constraints ?? []).entries()) {
+    // Check category compatibility
+    if (draft.category && !CONSTRAINT_METADATA[c.type].allowedIn.includes(draft.category)) {
+      errors.push({
+        field: `constraint[${index}]`,
+        messageKey: 'validation.constraintNotAllowedInCategory',
+      });
+    }
+    errors.push(...validateConstraint(c, index));
   }
 
   return errors;
 }
 
-export function validateConstraint(constraint: Constraint): ValidationError[] {
+export function validateConstraint(constraint: Constraint, index = 0): ValidationError[] {
   const errors: ValidationError[] = [];
+  const prefix = `constraint[${index}]`;
 
   switch (constraint.type) {
     case 'END_DATE': {
       if (!constraint.endDate) {
-        errors.push({ field: 'endDate', messageKey: 'validation.endDateRequired' });
+        errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateRequired' });
       } else {
         const date = new Date(constraint.endDate);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         if (isNaN(date.getTime())) {
-          errors.push({ field: 'endDate', messageKey: 'validation.endDateInvalid' });
+          errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateInvalid' });
         } else if (date < today) {
-          errors.push({ field: 'endDate', messageKey: 'validation.endDateInPast' });
+          errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateInPast' });
         }
       }
       break;
     }
     case 'USE_CASE': {
       if (!constraint.useCases || constraint.useCases.length === 0) {
-        errors.push({ field: 'useCases', messageKey: 'validation.useCaseRequired' });
+        errors.push({ field: `${prefix}.useCases`, messageKey: 'validation.useCaseRequired' });
       }
       break;
     }
@@ -61,19 +69,4 @@ export function validateConstraint(constraint: Constraint): ValidationError[] {
   }
 
   return errors;
-}
-
-export function buildDefaultConstraintsForType(type: PolicyType): Constraint[] {
-  switch (type) {
-    case 'ALWAYS_TRUE':
-      return [];
-    case 'MEMBERSHIP_STATIC':
-      return [{ type: 'MEMBERSHIP', value: 'active' }];
-    case 'USE_CASE_MEMBERSHIP':
-      return [{ type: 'USE_CASE', useCases: [] }];
-    case 'END_DATE':
-      return [{ type: 'END_DATE', endDate: '' }];
-    case 'FRAMEWORK_AGREEMENT':
-      return [{ type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' }];
-  }
 }

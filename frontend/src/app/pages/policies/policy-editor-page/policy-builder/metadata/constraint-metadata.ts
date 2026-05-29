@@ -37,7 +37,7 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     legalTextKey: 'constraint.END_DATE.legalText',
     icon: 'event_busy',
     defaultOperator: 'eq',
-    allowedIn: ['ACCESS', 'CONTRACT'],
+    allowedIn: ['CONTRACT'],
   },
   FRAMEWORK_AGREEMENT: {
     type: 'FRAMEWORK_AGREEMENT',
@@ -49,3 +49,29 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
 };
+
+export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
+  'MEMBERSHIP',
+  'USE_CASE',
+  'END_DATE',
+  'FRAMEWORK_AGREEMENT',
+];
+
+export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
+  return ALL_CONSTRAINT_TYPES.filter((t) => CONSTRAINT_METADATA[t].allowedIn.includes(category));
+}
+
+export function buildDefaultConstraint(
+  type: ConstraintType,
+): import('@shared/types/constraint.model').Constraint {
+  switch (type) {
+    case 'MEMBERSHIP':
+      return { type: 'MEMBERSHIP', value: 'active' };
+    case 'USE_CASE':
+      return { type: 'USE_CASE', useCases: [] };
+    case 'END_DATE':
+      return { type: 'END_DATE', endDate: '' };
+    case 'FRAMEWORK_AGREEMENT':
+      return { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
+  }
+}

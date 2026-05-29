@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -10,97 +11,84 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { Constraint } from '@shared/types/constraint.model';
-import { Policy, PolicyCategory, PolicyType } from '@shared/types/policy.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { Constraint, ConstraintType } from '@shared/types/constraint.model';
+import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import {
-  getPolicyTypesForCategory,
-  POLICY_TYPE_METADATA,
-} from '@features/policies/builder/metadata/policy-type-metadata';
-import {
-  buildDefaultConstraintsForType,
-  validatePolicyDraft,
-  ValidationError,
-} from '@features/policies/builder/validators/constraint-validators';
-import { ConstraintInputComponent } from '../constraint-input/constraint-input.component';
-import { PolicySummaryCardComponent } from '../policy-summary-card/policy-summary-card.component';
+  buildDefaultConstraint,
+  CONSTRAINT_METADATA,
+} from '@features/policies/builder/metadata/constraint-metadata';
+import { validatePolicyDraft } from '@features/policies/builder/validators/constraint-validators';
+import { ConstraintPaletteComponent } from '../constraint-palette/constraint-palette.component';
+import { ConstraintEditorCardComponent } from '../constraint-editor-card/constraint-editor-card.component';
 
 export interface PolicyDraft {
-  name: string;
-  description: string;
+  policyId: string;
   category: PolicyCategory;
-  type: PolicyType;
   constraints: Constraint[];
 }
 
 @Component({
   selector: 'app-policy-builder',
-  imports: [FormsModule, TranslocoDirective, ConstraintInputComponent, PolicySummaryCardComponent],
+  imports: [
+    FormsModule,
+    TranslocoDirective,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    CxButtonComponent,
+    ConstraintPaletteComponent,
+    ConstraintEditorCardComponent,
+  ],
   templateUrl: './policy-builder.component.html',
   styleUrl: './policy-builder.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PolicyBuilderComponent {
-  initialPolicy = input<Policy | null>(null);
-  submitting = input(false);
-  submitLabelKey = input('policyBuilder.actions.save');
+  readonly initialPolicy = input<Policy | null>(null);
+  readonly submitting = input(false);
+  readonly submitLabelKey = input('policyBuilder.actions.save');
 
-  save = output<PolicyDraft>();
-  cancelled = output<void>();
+  readonly save = output<PolicyDraft>();
+  readonly cancelled = output<void>();
 
   private readonly transloco = inject(TranslocoService);
 
-  name = signal('');
-  description = signal('');
-  category = signal<PolicyCategory | null>(null);
-  type = signal<PolicyType | null>(null);
-  constraints = signal<Constraint[]>([]);
+  readonly policyId = signal('');
+  readonly category = signal<PolicyCategory>('ACCESS');
+  readonly constraints = signal<Constraint[]>([]);
+  readonly submitted = signal(false);
 
-  submitted = signal(false);
+  readonly existingConstraintTypes = computed<ConstraintType[]>(() =>
+    this.constraints().map((c) => c.type),
+  );
 
-  availableTypes = computed(() => {
-    const c = this.category();
-    return c ? getPolicyTypesForCategory(c) : [];
-  });
-
-  selectedTypeDescription = computed(() => {
-    const t = this.type();
-    return t ? POLICY_TYPE_METADATA[t].descriptionKey : '';
-  });
-
-  validationErrors = computed(() => {
-    return validatePolicyDraft({
-      name: this.name(),
-      category: this.category() ?? undefined,
-      type: this.type() ?? undefined,
+  readonly validationErrors = computed(() =>
+    validatePolicyDraft({
+      policyId: this.policyId().trim(),
+      category: this.category(),
       constraints: this.constraints(),
-    });
+    }),
+  );
+
+  readonly isValid = computed(() => this.validationErrors().length === 0);
+
+  readonly policyIdError = computed(() => {
+    if (!this.submitted()) return null;
+    return this.validationErrors().find((e) => e.field === 'policyId')?.messageKey ?? null;
   });
-
-  errorsByField = computed<Record<string, string>>(() => {
-    const map: Record<string, string> = {};
-    for (const err of this.validationErrors()) {
-      if (!map[err.field]) map[err.field] = err.messageKey;
-    }
-    return map;
-  });
-
-  isValid = computed(() => this.validationErrors().length === 0);
-
-  draftPreview = computed<Pick<Policy, 'category' | 'type' | 'constraints'>>(() => ({
-    category: this.category() ?? 'ACCESS',
-    type: this.type() ?? 'ALWAYS_TRUE',
-    constraints: this.constraints(),
-  }));
 
   constructor() {
     effect(() => {
       const initial = this.initialPolicy();
       if (!initial) return;
       untracked(() => {
-        this.name.set(initial.name);
-        this.description.set(initial.description);
+        this.policyId.set(initial.policyId);
         this.category.set(initial.category);
-        this.type.set(initial.type);
-        this.constraints.set(initial.constraints);
+        this.constraints.set([...initial.constraints]);
       });
     });
   }
@@ -108,18 +96,16 @@ export class PolicyBuilderComponent {
   selectCategory(c: PolicyCategory): void {
     if (this.category() === c) return;
     this.category.set(c);
-    // Reset type if not allowed in the new category
-    const t = this.type();
-    if (t && !POLICY_TYPE_METADATA[t].allowedCategories.includes(c)) {
-      this.type.set(null);
-      this.constraints.set([]);
-    }
+    // Filter out constraints not allowed in the new category
+    this.constraints.update((list) => list.filter((cn) => this.isConstraintAllowed(cn.type, c)));
   }
 
-  selectType(t: PolicyType): void {
-    if (this.type() === t) return;
-    this.type.set(t);
-    this.constraints.set(buildDefaultConstraintsForType(t));
+  private isConstraintAllowed(type: ConstraintType, cat: PolicyCategory): boolean {
+    return CONSTRAINT_METADATA[type].allowedIn.includes(cat);
+  }
+
+  addConstraint(type: ConstraintType): void {
+    this.constraints.update((list) => [...list, buildDefaultConstraint(type)]);
   }
 
   updateConstraint(index: number, c: Constraint): void {
@@ -130,38 +116,20 @@ export class PolicyBuilderComponent {
     });
   }
 
-  showErrorFor(field: string): string | null {
-    if (!this.submitted()) return null;
-    return this.errorsByField()[field] ?? null;
+  removeConstraint(index: number): void {
+    this.constraints.update((list) => list.filter((_, i) => i !== index));
   }
 
-  errorsForConstraintIndex(index: number): Record<string, string> {
-    if (!this.submitted()) return {};
-    const c = this.constraints()[index];
-    if (!c) return {};
-    const fieldByType: Record<string, string[]> = {
-      USE_CASE: ['useCases'],
-      END_DATE: ['endDate'],
-      MEMBERSHIP: [],
-      FRAMEWORK_AGREEMENT: [],
-    };
-    const fields = fieldByType[c.type] ?? [];
-    const errors = this.errorsByField();
-    const result: Record<string, string> = {};
-    for (const f of fields) {
-      if (errors[f]) result[f] = errors[f];
-    }
-    return result;
+  onPolicyIdInput(value: string): void {
+    this.policyId.set(value);
   }
 
   submit(): void {
     this.submitted.set(true);
     if (!this.isValid()) return;
     this.save.emit({
-      name: this.name().trim(),
-      description: this.description().trim(),
-      category: this.category()!,
-      type: this.type()!,
+      policyId: this.policyId().trim(),
+      category: this.category(),
       constraints: this.constraints(),
     });
   }
@@ -170,6 +138,3 @@ export class PolicyBuilderComponent {
     this.cancelled.emit();
   }
 }
-
-// Unused helper signature kept for clarity
-export type _ValidationError = ValidationError;

@@ -1,13 +1,8 @@
 <span
-  class="cx-badge"
-  [class.cx-badge--category]="variant() === 'category'"
-  [class.cx-badge--type]="variant() === 'type'"
-  [class.cx-badge--access]="variant() === 'category' && category() === 'ACCESS'"
-  [class.cx-badge--contract]="variant() === 'category' && category() === 'CONTRACT'"
+  class="cx-badge cx-badge--category"
+  [class.cx-badge--access]="category() === 'ACCESS'"
+  [class.cx-badge--contract]="category() === 'CONTRACT'"
   *transloco="let t"
 >
-  @if (icon()) {
-    <span class="material-icons cx-badge__icon" aria-hidden="true">{{ icon() }}</span>
-  }
   <span class="cx-badge__label">{{ t(labelKey()) }}</span>
 </span>

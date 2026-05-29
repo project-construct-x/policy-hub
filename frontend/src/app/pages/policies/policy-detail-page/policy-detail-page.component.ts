@@ -1,6 +1,15 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
@@ -10,23 +19,25 @@ import { CxButtonComponent } from '@ui/button/cx-button.component';
 import { CxCategoryBadgeComponent } from '@ui/category-badge/cx-category-badge.component';
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
-import { PolicySummaryCardComponent } from '@features/policies/builder/components/policy-summary-card/policy-summary-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
+import { buildLegalDescription } from '@features/policies/builder/helpers/legal-description.helper';
 
 @Component({
   selector: 'app-policy-detail-page',
   imports: [
     RouterLink,
     MatDialogModule,
+    MatExpansionModule,
+    MatIconModule,
     TranslocoDirective,
     RelativeDatePipe,
     CxButtonComponent,
     CxCategoryBadgeComponent,
     ConstraintCardComponent,
-    PolicySummaryCardComponent,
   ],
   templateUrl: './policy-detail-page.component.html',
   styleUrl: './policy-detail-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PolicyDetailPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -36,14 +47,19 @@ export class PolicyDetailPageComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly transloco = inject(TranslocoService);
 
-  policy = signal<Policy | null>(null);
-  loading = signal(true);
-  showJsonLd = signal(false);
+  readonly policy = signal<Policy | null>(null);
+  readonly loading = signal(true);
 
-  odrlJson = computed(() => {
+  readonly odrlJson = computed(() => {
     const p = this.policy();
     if (!p) return '';
     return JSON.stringify(policyToOdrl(p), null, 2);
+  });
+
+  readonly legalDescription = computed(() => {
+    const p = this.policy();
+    if (!p) return '';
+    return buildLegalDescription(p, this.transloco);
   });
 
   ngOnInit(): void {
@@ -65,16 +81,12 @@ export class PolicyDetailPageComponent implements OnInit {
     });
   }
 
-  toggleJsonLd(): void {
-    this.showJsonLd.update((v) => !v);
-  }
-
   deletePolicy(): void {
     const p = this.policy();
     if (!p) return;
 
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
-      data: { policyName: p.name },
+      data: { policyName: p.policyId },
       width: '400px',
     });
 
