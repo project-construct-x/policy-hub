@@ -22,6 +22,7 @@ import {
   CONSTRAINT_METADATA,
 } from '@features/policies/builder/metadata/constraint-metadata';
 import { validatePolicyDraft } from '@features/policies/builder/validators/constraint-validators';
+import { buildLegalDescription } from '@features/policies/builder/helpers/legal-description.helper';
 import { ConstraintPaletteComponent } from '../constraint-palette/constraint-palette.component';
 import { ConstraintEditorCardComponent } from '../constraint-editor-card/constraint-editor-card.component';
 
@@ -29,6 +30,8 @@ export interface PolicyDraft {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  /** Aus category + constraints erzeugter juristischer Text, der mit gespeichert wird. */
+  legalText: string;
 }
 
 @Component({
@@ -133,10 +136,15 @@ export class PolicyBuilderComponent {
   submit(): void {
     this.submitted.set(true);
     if (!this.isValid()) return;
+    const category = this.category();
+    const constraints = this.constraints();
     this.save.emit({
       policyId: this.policyId().trim(),
-      category: this.category(),
-      constraints: this.constraints(),
+      category,
+      constraints,
+      // Gespeichert wird der Text immer auf Deutsch (rechtlich maßgeblich),
+      // unabhängig von der aktiven UI-Sprache.
+      legalText: buildLegalDescription({ category, constraints }, this.transloco, 'de'),
     });
   }
 

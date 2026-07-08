@@ -6,6 +6,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -50,6 +51,11 @@ export class PolicyDetailPageComponent implements OnInit {
   readonly policy = signal<Policy | null>(null);
   readonly loading = signal(true);
 
+  /** Aktive UI-Sprache als Signal – sorgt dafür, dass die Anzeige bei Sprachwechsel neu berechnet wird. */
+  private readonly activeLang = toSignal(this.transloco.langChanges$, {
+    initialValue: this.transloco.getActiveLang(),
+  });
+
   readonly odrlJson = computed(() => {
     const p = this.policy();
     if (!p) return '';
@@ -57,6 +63,8 @@ export class PolicyDetailPageComponent implements OnInit {
   });
 
   readonly legalDescription = computed(() => {
+    // Abhängigkeit auf die aktive Sprache: Anzeige folgt dem UI-Sprachwechsel (z.B. Englisch).
+    this.activeLang();
     const p = this.policy();
     if (!p) return '';
     return buildLegalDescription(p, this.transloco);

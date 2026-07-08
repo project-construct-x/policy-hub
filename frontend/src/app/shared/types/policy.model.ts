@@ -16,6 +16,11 @@ export interface CreatePolicyRequest {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  /**
+   * Aus den Constraints erzeugter juristischer Text. Wird vom Frontend mitgeschickt,
+   * im Backend persistiert und unverändert wieder ausgeliefert (das Backend erzeugt ihn nicht selbst).
+   */
+  legalText: string;
 }
 
 export type UpdatePolicyRequest = CreatePolicyRequest;
