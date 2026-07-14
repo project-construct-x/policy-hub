@@ -11,10 +11,10 @@ import java.util.UUID;
 public class PolicyResponse {
 
     private final UUID id;
-    private final String name;
-    private final String description;
-    private final String status;
-    private final String content;
+    private final String policyId;
+    private final PolicyCategory category;
+    private final List<JsonNode> constraints;
+    private final String legalText;
     private final Instant createdAt;
     private final Instant updatedAt;
 }

@@ -23,4 +23,30 @@ public class PolicyController {
     public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
         return ResponseEntity.ok(policyService.getAllPolicies());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PolicyResponse> getPolicyById(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(policyService.getPolicyById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<PolicyResponse> createPolicy(
+            @Valid @RequestBody CreatePolicyRequest request
+    ) {
+        PolicyResponse created = policyService.createPolicy(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PolicyResponse> updatePolicy(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdatePolicyRequest request
+    ) {
+        return ResponseEntity.ok(policyService.updatePolicy(id, request));
+    }
 }

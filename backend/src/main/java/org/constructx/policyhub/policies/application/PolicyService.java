@@ -36,10 +36,10 @@ public class PolicyService {
     private PolicyResponse toResponse(Policy policy) {
         return new PolicyResponse(
                 policy.id(),
-                policy.name(),
-                policy.description(),
-                policy.status().name(),
-                policy.content(),
+                policy.policyId(),
+                policy.category(),
+                policy.constraints(),
+                policy.legalText(),
                 policy.createdAt(),
                 policy.updatedAt()
         );
