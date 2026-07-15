@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CxButtonComponent } from '@ui/button/cx-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
-import { Policy, PolicyCategory, CreatePolicyRequest } from '@shared/types/policy.model';
+import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import {
   buildDefaultConstraint,
   CONSTRAINT_METADATA,
@@ -26,7 +26,13 @@ import { buildLegalDescription } from '@features/policies/builder/helpers/legal-
 import { ConstraintPaletteComponent } from '../constraint-palette/constraint-palette.component';
 import { ConstraintEditorCardComponent } from '../constraint-editor-card/constraint-editor-card.component';
 
-export type PolicyDraft = CreatePolicyRequest
+export interface PolicyDraft {
+  policyId: string;
+  category: PolicyCategory;
+  constraints: Constraint[];
+  /** Aus category + constraints erzeugter juristischer Text, der mit gespeichert wird. */
+  legalText: string;
+}
 
 @Component({
   selector: 'app-policy-builder',

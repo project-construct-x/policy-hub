@@ -1,4 +1,4 @@
-import { Policy, PolicyCategory, CreatePolicyRequest, UpdatePolicyRequest } from '@shared/types/policy.model';
+import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
 import { BehaviorSubject } from 'rxjs';
@@ -25,8 +25,15 @@ export function setPolicyMockMode(mode: PolicyMockMode): void {
 let policies: Policy[] = [];
 let nextIdCounter = 100;
 
-function buildPolicy(policy: Policy): Policy {
-  return policy;
+function buildPolicy(params: {
+  id: string;
+  policyId: string;
+  category: PolicyCategory;
+  constraints: Constraint[];
+  createdAt: string;
+  updatedAt: string;
+}): Policy {
+  return { ...params };
 }
 
 function generatePolicies(mode: PolicyMockMode): Policy[] {
@@ -40,7 +47,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           policyId: 'oeffentlicher-zugriff-projektdokumentation',
           category: 'ACCESS',
           constraints: [],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-03-15T10:30:00Z',
           updatedAt: '2026-04-29T09:40:00Z',
         }),
@@ -49,7 +55,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           policyId: 'zugriff-konsortium-mitglieder',
           category: 'ACCESS',
           constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-04-10T08:00:00Z',
           updatedAt: '2026-04-28T16:10:00Z',
         }),
@@ -63,7 +68,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
               useCases: ['UC.quality-assurance', 'UC.material-testing'],
             },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-02-20T14:00:00Z',
           updatedAt: '2026-04-24T11:30:00Z',
         }),
@@ -75,7 +79,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'END_DATE', endDate: '2027-12-31' },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-02-05T13:15:00Z',
           updatedAt: '2026-04-02T10:00:00Z',
         }),
@@ -84,7 +87,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           policyId: 'datenaustausch-deg-rahmenvertrag',
           category: 'CONTRACT',
           constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-01-20T11:00:00Z',
           updatedAt: '2026-04-21T09:30:00Z',
         }),
@@ -97,7 +99,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
             { type: 'END_DATE', endDate: '2027-06-30' },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-04-15T16:00:00Z',
           updatedAt: '2026-04-15T16:00:00Z',
         }),
@@ -112,7 +113,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
               useCases: ['UC.quality-assurance', 'UC.material-testing'],
             },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
         }),
@@ -130,7 +130,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
             { type: 'END_DATE', endDate: '2028-03-31' },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
         }),
@@ -142,7 +141,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-01-15T13:00:00Z',
           updatedAt: '2026-03-30T09:15:00Z',
         }),
@@ -154,7 +152,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'USE_CASE', useCases: ['UC.quality-assurance'] },
             { type: 'END_DATE', endDate: '2027-12-31' },
           ],
-          legalText: 'aus den Constraints einer Policy erzeugter juristischen Beschreibungstext...',
           createdAt: '2026-02-15T10:00:00Z',
           updatedAt: '2026-04-18T08:45:00Z',
         }),
@@ -180,35 +177,38 @@ export function getMockedPolicyById(id: string): Policy | undefined {
   return policies.find((p) => p.id === id);
 }
 
-export function createMockedPolicy(data: CreatePolicyRequest): Policy {
+export function createMockedPolicy(data: {
+  policyId: string;
+  category: PolicyCategory;
+  constraints: Constraint[];
+}): Policy {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
   }
-
   const now = new Date().toISOString();
-
   const newPolicy: Policy = {
     id: `generated-${nextIdCounter++}`,
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
-    legalText: data.legalText,
     createdAt: now,
     updatedAt: now,
   };
-
   policies = [newPolicy, ...policies];
   return newPolicy;
 }
 
 export function updateMockedPolicy(
   id: string,
-  data: UpdatePolicyRequest,
+  data: {
+    policyId: string;
+    category: PolicyCategory;
+    constraints: Constraint[];
+  },
 ): Policy | undefined {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
   }
-
   const index = policies.findIndex((p) => p.id === id);
   if (index === -1) return undefined;
 
@@ -217,10 +217,8 @@ export function updateMockedPolicy(
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
-    legalText: data.legalText,
     updatedAt: new Date().toISOString(),
   };
-
   policies[index] = updated;
   return updated;
 }

@@ -8,11 +8,6 @@ export interface Policy {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
-  /**
-   * Aus Kategorie und Constraints erzeugter juristischer Text.
-   * Wird vom Backend unverändert persistiert und zurückgeliefert.
-   */
-  legalText: string;
   createdAt: string;
   updatedAt: string;
 }
