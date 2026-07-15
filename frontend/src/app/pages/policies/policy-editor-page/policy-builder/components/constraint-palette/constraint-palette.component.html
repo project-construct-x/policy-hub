@@ -1,0 +1,20 @@
+<section class="palette" *transloco="let t">
+  <header class="palette__header">
+    <h3>{{ t('policyBuilder.palette.title') }}</h3>
+    <p class="palette__subtitle">{{ t('policyBuilder.palette.subtitle') }}</p>
+  </header>
+
+  <div class="palette__buttons">
+    @for (opt of options(); track opt.type) {
+      <button
+        type="button"
+        class="palette__btn"
+        [class.palette__btn--active]="opt.active"
+        (click)="onToggle(opt.type)"
+      >
+        <mat-icon>{{ opt.meta.icon }}</mat-icon>
+        <span>{{ t(opt.meta.labelKey) }}</span>
+      </button>
+    }
+  </div>
+</section>

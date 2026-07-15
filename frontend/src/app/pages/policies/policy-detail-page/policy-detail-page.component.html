@@ -1,16 +1,17 @@
-<div class="policy-detail" *transloco="let t">
+<div class="pd" *transloco="let t">
   @if (loading()) {
-    <div class="loading-container">
+    <div class="pd__loading">
       <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
       <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
     </div>
   } @else if (policy(); as p) {
-    <div class="top-actions">
+    <!-- Action bar -->
+    <div class="pd__actions">
       <a routerLink="/policies" cx-button variant="outlined" color="neutral">
         <span class="material-icons">arrow_back</span>
         {{ t('policyDetail.backToOverview') }}
       </a>
-      <span class="top-spacer"></span>
+      <span class="pd__spacer"></span>
       <button cx-button variant="outlined" color="danger" (click)="deletePolicy()">
         <span class="material-icons">delete</span>
         {{ t('policyDetail.delete') }}
@@ -21,70 +22,88 @@
       </a>
     </div>
 
-    <div class="hero">
-      <h1>{{ p.name }}</h1>
-      <p class="summary">{{ p.description }}</p>
-      <div class="meta">
-        <span class="meta-context"
-          >{{ t('policyDetail.useCaseContext') }}: {{ p.useCaseContext }}</span
-        >
-        <span class="meta-date"
-          >{{ t('policyDetail.lastChanged') }}: {{ p.updatedAt | relativeDate }}</span
-        >
+    <!-- Hero -->
+    <header class="pd__hero">
+      <div class="pd__badges">
+        <app-cx-category-badge [category]="p.category" />
       </div>
-    </div>
+      <h1 class="pd__title">{{ p.policyId }}</h1>
+    </header>
 
-    <div class="columns">
-      <div class="col-left">
-        @if (p.purpose) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.purpose') }}</h3>
-            <p>{{ p.purpose }}</p>
-          </div>
-        }
+    <!-- Two-column layout -->
+    <div class="pd__columns">
+      <!-- Left: content -->
+      <div class="pd__col-left">
+        <!-- Permissions section -->
+        <section class="pd__section">
+          <h2 class="pd__section-title">{{ t('policyDetail.sections.permissions') }}</h2>
+          @if (p.constraints.length === 0) {
+            <div class="pd__empty">
+              <span class="material-icons" aria-hidden="true">all_inclusive</span>
+              <p>{{ t('policyDetail.alwaysTrue') }}</p>
+            </div>
+          } @else {
+            <div class="pd__constraint-list">
+              @for (c of p.constraints; track $index; let last = $last) {
+                <app-constraint-card [constraint]="c" />
+                @if (!last) {
+                  <div class="pd__and-connector">
+                    <span>{{ t('policyBuilder.andConnector') }}</span>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </section>
 
-        @if (p.permittedUsage) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.permittedUsage') }}</h3>
-            <p>{{ p.permittedUsage }}</p>
-          </div>
-        }
+        <!-- Legal description (expandable) -->
+        <section class="pd__panel-section">
+          <mat-expansion-panel class="pd__panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="pd__panel-icon">gavel</mat-icon>
+                <span>{{ t('policyDetail.sections.legalDescription') }}</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p class="pd__legal-text">{{ legalDescription() }}</p>
+          </mat-expansion-panel>
+        </section>
 
-        @if (p.restrictions) {
-          <div class="content-card">
-            <h3>{{ t('policyDetail.sections.restrictions') }}</h3>
-            <p>{{ p.restrictions }}</p>
-          </div>
-        }
+        <!-- Technical details (expandable) -->
+        <section class="pd__panel-section">
+          <mat-expansion-panel class="pd__panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon class="pd__panel-icon">code</mat-icon>
+                <span>{{ t('policyDetail.sections.technical') }}</span>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <pre class="pd__json">{{ odrlJson() }}</pre>
+          </mat-expansion-panel>
+        </section>
       </div>
 
-      <div class="col-right">
-        <div class="info-card">
-          <h4>{{ t('policyDetail.infoCard.title') }}</h4>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.status') }}</span>
-            <span class="info-value">{{ t('status.' + p.status) }}</span>
+      <!-- Right: details card -->
+      <div class="pd__col-right">
+        <div class="pd__info-card">
+          <h4>{{ t('policyDetail.details') }}</h4>
+          <div class="pd__info-row">
+            <span class="pd__info-label">{{ t('policyDetail.category') }}</span>
+            <span class="pd__info-value">{{ t('policyCategory.' + p.category + '.label') }}</span>
           </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.context') }}</span>
-            <span class="info-value">{{ p.useCaseContext }}</span>
+          <div class="pd__info-row">
+            <span class="pd__info-label">{{ t('policyDetail.lastChanged') }}</span>
+            <span class="pd__info-value">{{ p.updatedAt | relativeDate }}</span>
           </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.created') }}</span>
-            <span class="info-value">{{ p.createdAt | relativeDate }}</span>
+          <div class="pd__info-row">
+            <span class="pd__info-label">{{ t('policyDetail.created') }}</span>
+            <span class="pd__info-value">{{ p.createdAt | relativeDate }}</span>
           </div>
-          <div class="info-row">
-            <span class="info-label">{{ t('policyDetail.infoCard.lastChange') }}</span>
-            <span class="info-value">{{ p.updatedAt | relativeDate }}</span>
+          <div class="pd__info-row">
+            <span class="pd__info-label">{{ t('policyDetail.constraintCount') }}</span>
+            <span class="pd__info-value">{{ p.constraints.length }}</span>
           </div>
         </div>
-
-        @if (p.legalText) {
-          <div class="content-card legal-card">
-            <h3>{{ t('policyDetail.sections.legalText') }}</h3>
-            <p class="legal-text">{{ p.legalText }}</p>
-          </div>
-        }
       </div>
     </div>
   }

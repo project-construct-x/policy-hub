@@ -1,0 +1,113 @@
+<form class="pb" *transloco="let t" (ngSubmit)="submit()" novalidate>
+  <!-- Section: Policy ID -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.identity') }}</h2>
+    </header>
+
+    <mat-form-field appearance="outline" class="pb__field">
+      <mat-label>{{ t('policyBuilder.policyId.label') }}</mat-label>
+      <input
+        matInput
+        type="text"
+        [value]="policyId()"
+        (input)="onPolicyIdInput($any($event.target).value)"
+        [placeholder]="t('policyBuilder.policyId.placeholder')"
+        autocomplete="off"
+        required
+      />
+      @if (policyIdError()) {
+        <mat-error>{{ t(policyIdError()!) }}</mat-error>
+      } @else {
+        <mat-hint>{{ t('policyBuilder.policyId.hint') }}</mat-hint>
+      }
+    </mat-form-field>
+  </section>
+
+  <!-- Section: Category -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.category') }}</h2>
+      <p>{{ t('policyBuilder.sections.categoryHint') }}</p>
+    </header>
+
+    <div class="pb__category-grid">
+      <button
+        type="button"
+        class="pb__category-card"
+        [class.is-active]="category() === 'ACCESS'"
+        (click)="selectCategory('ACCESS')"
+      >
+        <mat-icon>lock_open</mat-icon>
+        <div>
+          <strong>{{ t('policyCategory.ACCESS.label') }}</strong>
+          <small>{{ t('policyCategory.ACCESS.description') }}</small>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        class="pb__category-card"
+        [class.is-active]="category() === 'CONTRACT'"
+        (click)="selectCategory('CONTRACT')"
+      >
+        <mat-icon>handshake</mat-icon>
+        <div>
+          <strong>{{ t('policyCategory.CONTRACT.label') }}</strong>
+          <small>{{ t('policyCategory.CONTRACT.description') }}</small>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Section: Constraints -->
+  <section class="pb__section">
+    <header class="pb__section-header">
+      <h2>{{ t('policyBuilder.sections.constraints') }}</h2>
+      <p>{{ t('policyBuilder.sections.constraintsHint') }}</p>
+    </header>
+
+    <app-constraint-palette
+      [category]="category()"
+      [existingTypes]="existingConstraintTypes()"
+      (toggleConstraint)="toggleConstraint($event)"
+    />
+
+    @if (constraints().length > 0) {
+      <div class="pb__constraint-list">
+        @for (c of constraints(); track $index; let i = $index, last = $last) {
+          <app-constraint-editor-card
+            [constraint]="c"
+            [index]="i"
+            [showErrors]="submitted()"
+            (constraintChange)="updateConstraint(i, $event)"
+          />
+          @if (!last) {
+            <div class="pb__and-connector">
+              <span>{{ t('policyBuilder.andConnector') }}</span>
+            </div>
+          }
+        }
+      </div>
+    } @else {
+      <p class="pb__empty">{{ t('policyBuilder.constraint.empty') }}</p>
+    }
+  </section>
+
+  <!-- Footer actions -->
+  <footer class="pb__footer">
+    <button
+      cx-button
+      variant="outlined"
+      color="neutral"
+      type="button"
+      (click)="onCancel()"
+      [disabled]="submitting()"
+    >
+      {{ t('policyBuilder.actions.cancel') }}
+    </button>
+    <button cx-button type="submit" class="pb__submit" [disabled]="submitting()">
+      {{ t(submitLabelKey()) }}
+    </button>
+  </footer>
+</form>

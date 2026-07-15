@@ -21,10 +21,10 @@
       />
     </div>
     <div class="filter-dropdown">
-      <select [ngModel]="selectedContext()" (ngModelChange)="onContextFilter($event)">
-        <option value="">{{ t('policies.filters.context') }}</option>
-        @for (ctx of useCaseContexts(); track ctx) {
-          <option [value]="ctx">{{ ctx }}</option>
+      <select [ngModel]="selectedCategory()" (ngModelChange)="onCategoryFilter($event)">
+        <option value="">{{ t('policies.filters.category') }}</option>
+        @for (cat of categoryOptions; track cat) {
+          <option [value]="cat">{{ t('policyCategory.' + cat + '.label') }}</option>
         }
       </select>
       <span class="material-icons dropdown-icon">expand_more</span>

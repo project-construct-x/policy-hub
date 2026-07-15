@@ -1,11 +1,27 @@
 <div class="policy-editor" *transloco="let t">
-  <div class="placeholder-card">
-    <span class="material-icons placeholder-icon">construction</span>
-    <h2>{{ t('policyEditor.placeholder.title') }}</h2>
-    <p>{{ t('policyEditor.placeholder.description') }}</p>
-    <button cx-button variant="outlined" color="neutral" (click)="goBack()">
-      <span class="material-icons">arrow_back</span>
-      {{ t('policyEditor.placeholder.back') }}
-    </button>
-  </div>
+  <header class="editor-header">
+    <h1>
+      {{ isEditMode() ? t('policyBuilder.title.edit') : t('policyBuilder.title.create') }}
+    </h1>
+    <p class="subtitle">
+      {{ isEditMode() ? t('policyBuilder.subtitle.edit') : t('policyBuilder.subtitle.create') }}
+    </p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading">
+      <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
+      <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
+    </div>
+  } @else if (!isEditMode() || initialPolicy()) {
+    <app-policy-builder
+      [initialPolicy]="initialPolicy()"
+      [submitting]="submitting()"
+      [submitLabelKey]="
+        isEditMode() ? 'policyBuilder.actions.update' : 'policyBuilder.actions.create'
+      "
+      (save)="onSave($event)"
+      (cancelled)="onCancel()"
+    />
+  }
 </div>

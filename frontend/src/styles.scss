@@ -84,3 +84,57 @@ h1, h2, h3, h4, h5, h6 {
 strong, b {
   font-weight: 400;
 }
+
+// ============================================================
+// Angular Material overlay overrides
+// (Select / Autocomplete / Menu panels are rendered at body
+//  level via CDK overlay — component-scoped styles cannot reach
+//  them, so global !important rules are required.)
+// ============================================================
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel,
+.mat-mdc-menu-panel {
+  background-color: var(--cx-bg-card, #ffffff) !important;
+}
+
+.mat-datepicker-content {
+  background-color: var(--cx-bg-card, #ffffff) !important;
+  color: var(--cx-text-primary, #111111) !important;
+
+  .mat-calendar-body-cell-content {
+    color: var(--cx-text-primary, #111111);
+  }
+
+  .mat-calendar-body-selected {
+    background-color: var(--cx-orange, #e53d17) !important;
+    color: #ffffff !important;
+  }
+
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: var(--cx-orange, #e53d17);
+  }
+
+  .mat-calendar-body-disabled {
+    pointer-events: none;
+
+    .mat-calendar-body-cell-content {
+      color: var(--cx-text-tertiary, #767676) !important;
+      opacity: 0.4;
+      text-decoration: line-through;
+      background-color: transparent !important;
+    }
+
+    &:hover .mat-calendar-body-cell-content {
+      background-color: transparent !important;
+    }
+  }
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background-color: var(--cx-light-orange, #ebd8d0) !important;
+
+  .mdc-list-item__primary-text {
+    color: var(--cx-text-primary, #111111) !important;
+  }
+}

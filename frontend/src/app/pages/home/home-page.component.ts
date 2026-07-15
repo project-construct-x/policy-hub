@@ -23,15 +23,11 @@ export class HomePageComponent implements OnInit {
   private readonly policyService = inject(PolicyService);
 
   policyCount = signal(0);
-  useCaseCount = signal(0);
   recentPolicies = signal<Policy[]>([]);
 
   ngOnInit(): void {
     this.policyService.getAllPolicies().subscribe((policies) => {
       this.policyCount.set(policies.length);
-
-      const useCases = new Set(policies.map((p) => p.useCaseContext).filter(Boolean));
-      this.useCaseCount.set(useCases.size);
 
       const sorted = [...policies].sort(
         (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),

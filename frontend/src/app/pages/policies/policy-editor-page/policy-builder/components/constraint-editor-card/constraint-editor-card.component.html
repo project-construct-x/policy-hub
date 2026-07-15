@@ -1,0 +1,72 @@
+<article class="ce-card" *transloco="let t">
+  <header class="ce-card__header">
+    <div class="ce-card__title">
+      <mat-icon class="ce-card__icon">{{ meta().icon }}</mat-icon>
+      <div>
+        <h4>{{ t(meta().labelKey) }}</h4>
+        <p>{{ t(meta().descriptionKey) }}</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="ce-card__body">
+    @switch (constraint().type) {
+      @case ('MEMBERSHIP') {
+        <p class="ce-card__static">
+          {{ t('policyBuilder.constraint.MEMBERSHIP.hint') }}
+        </p>
+      }
+
+      @case ('USE_CASE') {
+        <mat-form-field appearance="outline" class="ce-card__field">
+          <mat-label>{{ t('policyBuilder.constraint.USE_CASE.label') }}</mat-label>
+          <mat-select
+            multiple
+            [value]="asUseCase(constraint()).useCases"
+            (valueChange)="onUseCaseChange($event)"
+            [placeholder]="t('policyBuilder.constraint.USE_CASE.placeholder')"
+          >
+            @for (opt of useCaseOptions; track opt.id) {
+              <mat-option [value]="opt.id">{{ t(opt.labelKey) }}</mat-option>
+            }
+          </mat-select>
+          @if (hasError('.useCases')) {
+            <mat-error>{{ t(errorKey('.useCases')!) }}</mat-error>
+          } @else {
+            <mat-hint>{{ t('policyBuilder.constraint.USE_CASE.hint') }}</mat-hint>
+          }
+        </mat-form-field>
+      }
+
+      @case ('END_DATE') {
+        <mat-form-field appearance="outline" class="ce-card__field ce-card__field--datepicker">
+          <mat-label>{{ t('policyBuilder.constraint.END_DATE.label') }}</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [min]="minDate"
+            [value]="endDateValue()"
+            (dateChange)="onEndDateChange($event.value)"
+            (click)="picker.open()"
+            (focus)="picker.open()"
+            readonly
+          />
+          <mat-datepicker-toggle matIconSuffix [for]="picker" />
+          <mat-datepicker #picker />
+          @if (hasError('.endDate')) {
+            <mat-error>{{ t(errorKey('.endDate')!) }}</mat-error>
+          } @else {
+            <mat-hint>{{ t('policyBuilder.constraint.END_DATE.hint') }}</mat-hint>
+          }
+        </mat-form-field>
+      }
+
+      @case ('FRAMEWORK_AGREEMENT') {
+        <p class="ce-card__static">
+          {{ t('policyBuilder.constraint.FRAMEWORK_AGREEMENT.hint') }}
+          <code>{{ asFramework(constraint()).agreement }}</code>
+        </p>
+      }
+    }
+  </div>
+</article>

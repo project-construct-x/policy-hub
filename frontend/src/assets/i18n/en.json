@@ -2,40 +2,40 @@
   "header": {
     "productLabel": "Policy Hub",
     "start": "Home",
-    "policies": "Policy Overview",
+    "policies": "Policies",
     "login": "Sign in",
     "loginNotAvailable": "Sign in is not yet available."
   },
   "home": {
     "eyebrow": "Construct-X Policy Hub",
-    "title": "Manage policies with clarity",
-    "description": "Create, review and maintain policies for data spaces, projects and partners. The Policy Hub guides you through the key decisions without putting technical details in the foreground.",
+    "title": "Create and manage policies",
+    "description": "Create, review and maintain policies for the Construct-X dataspace.",
     "ctaCreate": "Create policy",
-    "ctaAll": "View all policies",
+    "ctaAll": "Show all policies",
     "orientation": {
-      "title": "Your next meaningful step",
-      "description": "Start with a new policy or review existing rules before sharing data with partners.",
+      "title": "Your next sensible step",
+      "description": "Start with a new policy or review existing ones before sharing data with partners.",
       "step1": "Create a new policy",
       "step2": "Review policies",
-      "step3": "Manage policy"
+      "step3": "Manage policies"
     },
     "cards": {
       "policies": {
-        "label": "Policies in hub",
-        "description": "Total number of policies created"
+        "label": "Policies",
+        "description": "Total number of policies"
       },
       "useCases": {
-        "label": "Use case areas",
-        "description": "Placeholder – content will be defined during the project."
+        "label": "Use Cases",
+        "description": "Use cases of the Construct-X dataspace"
       },
       "rules": {
-        "label": "Policy rules",
-        "description": "Placeholder – details are not yet finalised."
+        "label": "Rules",
+        "description": "Number of configured constraints"
       }
     },
     "recent": {
       "title": "Recently edited",
-      "showAll": "View all policies",
+      "showAll": "Show all policies",
       "empty": {
         "title": "No policies yet",
         "description": "Create your first policy to see it here."
@@ -43,34 +43,34 @@
     }
   },
   "policies": {
-    "title": "Policy Overview",
-    "subtitle": "All policies with use-case context and last modification.",
+    "title": "Policies",
+    "subtitle": "All policies maintained in this hub",
     "createNew": "Create policy",
-    "searchPlaceholder": "Search by name or use-case context",
+    "searchPlaceholder": "Search by policy ID",
     "loadingHint": "Loading policies …",
     "noResults": "No policies found.",
     "pagination": {
       "info": "{{start}}–{{end}} of {{total}} policies"
     },
     "filters": {
-      "context": "Use-case context"
+      "category": "Category"
     },
     "table": {
-      "name": "Name",
-      "context": "Use-case context",
-      "lastChange": "Last modified"
+      "policyId": "Policy ID",
+      "category": "Category",
+      "lastChange": "Last change"
     },
     "empty": {
       "title": "No policies yet",
-      "description": "Create your first policy to clearly define data sharing and usage purposes.",
+      "description": "Create your first policy to clearly govern data sharing and usage.",
       "cta": "Create first policy",
       "hint": "Or start later from the overview"
     },
     "error": {
       "title": "Policies could not be loaded",
-      "description": "The overview is currently unavailable. Please try again or return to the home page.",
-      "retry": "Try again",
-      "home": "Go to home"
+      "description": "The overview is currently unavailable. Please retry or return to the home page.",
+      "retry": "Retry",
+      "home": "Home"
     },
     "notifications": {
       "loadError": "Policies could not be loaded."
@@ -80,45 +80,152 @@
     "backToOverview": "Back to overview",
     "edit": "Edit",
     "delete": "Delete",
-    "useCaseContext": "Use-case context",
-    "lastChanged": "Last modified",
+    "details": "Details",
+    "category": "Category",
+    "lastChanged": "Last changed",
+    "created": "Created",
+    "constraintCount": "Number of permissions",
+    "alwaysTrue": "This policy has no constraints — it allows everything.",
     "sections": {
-      "purpose": "Purpose of the policy",
-      "permittedUsage": "Permitted usage",
-      "restrictions": "Restrictions",
-      "legalText": "Legal notice"
-    },
-    "infoCard": {
-      "title": "Details",
-      "status": "Status",
-      "context": "Use-case area",
-      "created": "Created",
-      "lastChange": "Last modified"
+      "permissions": "Permissions",
+      "legalDescription": "Legal description",
+      "technical": "Technical details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy could not be loaded.",
-      "deleteSuccess": "Policy has been deleted.",
+      "deleteSuccess": "Policy deleted.",
       "deleteError": "Policy could not be deleted."
     }
   },
   "policyEditor": {
-    "placeholder": {
-      "title": "Policy Builder is being integrated",
-      "description": "The Policy Builder for creating and editing policies is currently under development.",
-      "back": "Back"
+    "notifications": {
+      "loadError": "Policy could not be loaded.",
+      "createSuccess": "Policy created.",
+      "createError": "Policy could not be created.",
+      "updateSuccess": "Policy updated.",
+      "updateError": "Policy could not be updated."
     }
+  },
+  "policyBuilder": {
+    "title": {
+      "create": "Create new policy",
+      "edit": "Edit policy"
+    },
+    "subtitle": {
+      "create": "Define a new policy with a unique Policy ID, category and constraints.",
+      "edit": "Edit the policy and its constraints."
+    },
+    "sections": {
+      "identity": "Policy identification",
+      "category": "Category",
+      "categoryHint": "Choose whether the policy governs access to or usage of the data.",
+      "constraints": "Constraints",
+      "constraintsHint": "Add one or more constraints. Multiple constraints are combined."
+    },
+    "policyId": {
+      "label": "Policy ID",
+      "placeholder": "my-policy-01",
+      "hint": "Choose a unique ID without spaces (e.g. geodata-access-2027)."
+    },
+    "palette": {
+      "title": "Add constraint",
+      "subtitle": "Choose from the constraints available for the selected category."
+    },
+    "andConnector": "AND",
+    "constraint": {
+      "empty": "No constraints added yet. Without constraints this policy allows everything.",
+      "remove": "Remove constraint",
+      "MEMBERSHIP": {
+        "hint": "The consumer must be an active member of the dataspace. No further configuration required."
+      },
+      "USE_CASE": {
+        "label": "Use cases",
+        "placeholder": "Select use cases",
+        "hint": "Select one or more use cases."
+      },
+      "END_DATE": {
+        "label": "Valid until",
+        "hint": "Choose a date in the future."
+      },
+      "FRAMEWORK_AGREEMENT": {
+        "hint": "The consumer must have agreed to this framework agreement:"
+      }
+    },
+    "actions": {
+      "save": "Save",
+      "create": "Create policy",
+      "update": "Save changes",
+      "cancel": "Cancel"
+    }
+  },
+  "policyCategory": {
+    "ACCESS": {
+      "label": "Access Policy",
+      "description": "Governs who is allowed to access the data."
+    },
+    "CONTRACT": {
+      "label": "Contract Policy",
+      "description": "Governs under which conditions the data may be used."
+    }
+  },
+  "constraint": {
+    "MEMBERSHIP": {
+      "label": "Membership",
+      "description": "Active dataspace membership required.",
+      "legalText": "The data consumer must be an active, verified member of the Construct-X dataspace at the time of data access. Access by non-members or organizations with suspended membership is excluded.",
+      "summary": "active dataspace membership required"
+    },
+    "USE_CASE": {
+      "label": "Use Case",
+      "description": "Restricted to selected use cases.",
+      "legalText": "Data usage is restricted to the selected use cases.",
+      "summaryEmpty": "no use cases selected yet"
+    },
+    "END_DATE": {
+      "label": "End date",
+      "description": "Validity ends on the given date.",
+      "legalText": "The usage right expires on the given date."
+    },
+    "FRAMEWORK_AGREEMENT": {
+      "label": "Framework agreement",
+      "description": "Agreement to the framework contract required.",
+      "legalText": "The consumer must have agreed to the DataExchangeGovernance framework agreement."
+    }
+  },
+  "useCase": {
+    "bim-coordination": "BIM coordination",
+    "quality-assurance": "Quality assurance",
+    "material-testing": "Material testing",
+    "site-documentation": "Site documentation",
+    "geodata": "Geodata"
+  },
+  "legalDescription": {
+    "unrestricted": "This policy contains no restrictions. Access to and usage of the provided data is permitted without limitation.",
+    "introAccess": "Access to the provided data is only permitted under the following conditions:",
+    "introContract": "Usage of the provided data is only permitted under the following conditions:",
+    "and": "Furthermore:",
+    "clause": {
+      "useCase": "The data may only be processed within the scope of the following use cases: {{list}}. Any usage for other purposes is prohibited.",
+      "endDate": "The granted permission is time-limited and expires automatically on {{date}}. After this date, any further usage of the data is prohibited.",
+      "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place."
+    }
+  },
+  "validation": {
+    "policyIdRequired": "Policy ID is required",
+    "policyIdTooLong": "Policy ID must be at most 200 characters long",
+    "categoryRequired": "A category must be selected",
+    "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
+    "useCaseRequired": "At least one use case must be selected",
+    "endDateRequired": "End date is required",
+    "endDateInvalid": "Date is invalid",
+    "endDateInPast": "End date must be in the future"
   },
   "deleteDialog": {
     "title": "Delete policy",
-    "messageBefore": "Are you sure you want to delete the policy ",
+    "messageBefore": "Do you really want to delete the policy ",
     "messageAfter": "? This action cannot be undone.",
     "cancel": "Cancel",
     "confirm": "Delete"
-  },
-  "status": {
-    "DRAFT": "Draft",
-    "ACTIVE": "Active",
-    "ARCHIVED": "Archived"
   },
   "jsonViewer": {
     "label": "ODRL JSON-LD",

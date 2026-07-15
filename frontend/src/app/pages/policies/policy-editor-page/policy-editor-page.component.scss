@@ -4,39 +4,36 @@
   padding: 2.75rem 6rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 25rem;
+  gap: 24px;
 }
 
-.placeholder-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 3.5rem;
-  background: var(--cx-white);
-  border: 0.0625rem solid var(--cx-border-color);
-  border-radius: 0.625rem;
-  text-align: center;
-  max-width: 32.5rem;
-
-  h2 {
-    font-size: 1.375rem;
-    font-weight: 600;
-    color: var(--cx-text-primary);
+.editor-header {
+  h1 {
     margin: 0;
+    font-size: 1.625rem;
+    font-weight: 700;
+    color: var(--cx-text-primary);
   }
-
-  p {
+  .subtitle {
+    margin: 6px 0 0 0;
     font-size: 0.875rem;
     color: var(--cx-text-secondary);
-    line-height: 1.55;
-    margin: 0;
   }
 }
 
-.placeholder-icon {
-  font-size: 3rem;
-  color: var(--cx-text-tertiary);
+.loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-bar {
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  background-size: 200% 100%;
+  animation: pulse 1.4s infinite;
+  border-radius: 6px;
+}
+@keyframes pulse {
+  0% { background-position: 0% 0; }
+  100% { background-position: -200% 0; }
 }

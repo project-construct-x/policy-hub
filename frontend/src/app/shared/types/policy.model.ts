@@ -1,39 +1,26 @@
-export type PolicyStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+import { Constraint } from './constraint.model';
+
+export type PolicyCategory = 'ACCESS' | 'CONTRACT';
 
 export interface Policy {
   id: string;
-  name: string;
-  description: string;
-  status: PolicyStatus;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
+  /** Fachliche Policy-ID (z.B. "policy.use-case-quality-assurance"). */
+  policyId: string;
+  category: PolicyCategory;
+  constraints: Constraint[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreatePolicyRequest {
-  name: string;
-  description: string;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
+  policyId: string;
+  category: PolicyCategory;
+  constraints: Constraint[];
+  /**
+   * Aus den Constraints erzeugter juristischer Text. Wird vom Frontend mitgeschickt,
+   * im Backend persistiert und unverändert wieder ausgeliefert (das Backend erzeugt ihn nicht selbst).
+   */
+  legalText: string;
 }
 
-export interface UpdatePolicyRequest {
-  name: string;
-  description: string;
-  status: PolicyStatus;
-  useCaseContext: string;
-  purpose: string;
-  permittedUsage: string;
-  restrictions: string;
-  content: string | null;
-  legalText: string | null;
-}
+export type UpdatePolicyRequest = CreatePolicyRequest;
