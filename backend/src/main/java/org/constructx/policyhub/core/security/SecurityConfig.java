@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/actuator/health",
+                                "/actuator/health/**",
                                 "/actuator/info",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

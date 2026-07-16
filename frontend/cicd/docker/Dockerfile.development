@@ -11,7 +11,9 @@ COPY package*.json ./
 # --legacy-peer-deps: needed because npm 10 in Docker is stricter than npm 11 on the host
 RUN npm install --legacy-peer-deps
 
-# Start the Angular development server
+# Start the Angular development server without mocks
+# --configuration=development is explicit because angular.json's
+# defaultConfiguration for "serve" is "mocks"
 # --host 0.0.0.0 makes it accessible outside the container
 # --poll=2000 ensures hot reload works with mounted volumes
-CMD npx ng serve --host 0.0.0.0 --poll=2000
+CMD npx ng serve --configuration=development --host 0.0.0.0 --poll=2000
