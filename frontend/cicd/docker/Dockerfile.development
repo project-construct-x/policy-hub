@@ -8,8 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies locally
-# --legacy-peer-deps: needed because npm 10 in Docker is stricter than npm 11 on the host
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 # Start the Angular development server without mocks
 # --configuration=development is explicit because angular.json's
