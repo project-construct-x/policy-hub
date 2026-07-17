@@ -42,12 +42,22 @@ spec:
               value: /var/lib/postgresql/data/pgdata
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", {{ .Values.database.username | quote }}, "-d", {{ .Values.database.name | quote }}]
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.database.username | quote }}
+                - -d
+                - {{ .Values.database.name | quote }}
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             exec:
-              command: ["pg_isready", "-U", {{ .Values.database.username | quote }}, "-d", {{ .Values.database.name | quote }}]
+              command:
+                - pg_isready
+                - -U
+                - {{ .Values.database.username | quote }}
+                - -d
+                - {{ .Values.database.name | quote }}
             initialDelaySeconds: 30
             periodSeconds: 15
           volumeMounts:
