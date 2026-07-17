@@ -7,10 +7,21 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# Pull secret(s) for the private ghcr.io images. Created out-of-band with
-# kubectl (see deploy/secrets/README.md); referenced here only by name.
+# Pull secret(s) for the private ghcr.io images, referenced here only by name.
+# See `ghcrCreds` below for how the Secret itself gets created.
 imagePullSecrets:
   - name: ghcr-creds
+
+# Creates the ghcr-creds Secret from these values when `create: true`. Leave
+# create: false (default) and set username/password as ArgoCD Application
+# parameter overrides (Application -> Parameters in the UI) instead of
+# committing them here — see deploy/secrets/README.md.
+ghcrCreds:
+  create: false
+  name: ghcr-creds
+  registry: ghcr.io
+  username: ""
+  password: ""
 
 # ---------------------------------------------------------------------------
 # Backend (Spring Boot)
@@ -63,10 +74,16 @@ database:
 auth:
   username: admin
 
-# Name + keys of the pre-created Secret holding the sensitive values
-# (created out-of-band with kubectl — see deploy/secrets/README.md).
+# Name + keys of the Secret holding the sensitive values. Creates the Secret
+# from dbPassword/authPassword below when `create: true`. Leave create: false
+# (default) and set those two as ArgoCD Application parameter overrides
+# (Application -> Parameters in the UI) instead of committing them here —
+# see deploy/secrets/README.md.
 secret:
   name: policy-hub-secrets
+  create: false
+  dbPassword: ""
+  authPassword: ""
   keys:
     dbPassword: db-password
     authPassword: security-user-password

@@ -47,3 +47,28 @@ kubectl create secret docker-registry ghcr-creds \
   plaintext value, so nothing outside a running workflow (neither ArgoCD nor the
   cluster) can read them. Using them would require the CI to push secrets into the
   cluster, which needs cluster credentials in CI and a reachable cluster API.
+
+## Alternative: creating the Secrets via ArgoCD (no kubectl needed)
+
+Not finalized — an interim option for anyone without direct cluster/kubectl
+access but with ArgoCD UI access. The chart can create both Secrets itself
+(`templates/secrets.yaml`), gated behind `create: false` defaults so nothing
+changes for the values already committed to `values.yaml`.
+
+In the ArgoCD UI, open the `policy-hub` Application -> App Details ->
+Parameters, and add overrides (do **not** commit these to `values.yaml`):
+
+```
+secret.create=true
+secret.dbPassword=<strong-db-password>
+secret.authPassword=<strong-admin-password>
+ghcrCreds.create=true
+ghcrCreds.username=<github-user>
+ghcrCreds.password=<github-token-with-read:packages>
+```
+
+Caveat: these parameters live in the Application object in-cluster, not in
+git — but they're plaintext there too, visible to anyone with read access to
+the Application in ArgoCD. This is not a substitute for a real secrets
+manager (Sealed Secrets, External Secrets Operator, …), just a way to avoid
+needing a direct kubectl context for the one-time setup.
