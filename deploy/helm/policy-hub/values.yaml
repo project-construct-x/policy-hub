@@ -96,7 +96,7 @@ ingress:
   enabled: true
   className: nginx
   host: policy-hub.staging.construct-x.net
-  # cert-manager ClusterIssuer that signs the TLS cert. TODO: confirm the name
+  # cert-manager ClusterIssuer that signs the TLS cert.
   # used in your staging cluster.
   clusterIssuer: letsencrypt-staging
   tls: true
