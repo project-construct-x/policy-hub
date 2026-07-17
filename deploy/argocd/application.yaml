@@ -1,0 +1,27 @@
+# Main workload Application: renders the Helm chart under deploy/helm/policy-hub.
+#   kubectl apply -f deploy/argocd/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: policy-hub
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: policy-hub
+  source:
+    repoURL: https://github.com/project-construct-x/policy-hub
+    targetRevision: main
+    path: deploy/helm/policy-hub
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: policy-hub
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
