@@ -1,0 +1,20 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "policy-hub.fullname" . }}-postgres
+  labels:
+    {{- include "policy-hub.labels" . | nindent 4 }}
+    app.kubernetes.io/name: policy-hub-postgres
+    app.kubernetes.io/component: postgres
+spec:
+  # Headless service: governs the StatefulSet and gives the pod a stable DNS name.
+  clusterIP: None
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+{{- end }}
