@@ -11,7 +11,8 @@ spec:
   project: policy-hub
   source:
     repoURL: https://github.com/project-construct-x/policy-hub
-    targetRevision: main
+    # TEMPORARY (deployment test on feature/deployment) — revert to `main` before merging.
+    targetRevision: feature/deployment
     path: deploy/helm/policy-hub
     helm:
       valueFiles:
