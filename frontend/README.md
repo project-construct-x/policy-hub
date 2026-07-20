@@ -9,6 +9,7 @@ Modernes Angular-Frontend für Policy Hub, gebaut mit Angular 21, TypeScript und
 - **Git**: Für Version Control
 
 Prüfe deine Versionen mit:
+
 ```bash
 node --version
 npm --version
@@ -19,16 +20,19 @@ npm --version
 ### Installation
 
 1. Navigiere in das Frontend-Verzeichnis:
+
 ```bash
 cd frontend
 ```
 
 2. Installiere die Dependencies:
+
 ```bash
 npm install
 ```
 
 3. Starte den Entwicklungsserver:
+
 ```bash
 npm start
 ```
@@ -38,19 +42,23 @@ Die Anwendung ist anschließend unter [http://localhost:4200] erreichbar und lä
 ## 📝 Verfügbare Befehle
 
 ### Entwicklung
+
 ```bash
-npm start              # Entwicklungsserver mit Mock-Daten (ng serve --configuration mocks)
-npm run start:dev      # Entwicklungsserver ohne Mocks (ng serve)
-npm run watch          # Build im Watch-Modus mit Development-Config
+npm start                              # Entwicklungsserver mit Mock-Daten (ng serve --configuration mocks)
+npm run start:dev                      # ng serve (nutzt aktuell ebenfalls die mocks-Config als Default)
+ng serve --configuration development   # Entwicklungsserver gegen echtes Backend (http://localhost:8080/api)
+npm run watch                          # Build im Watch-Modus mit Development-Config
 ```
 
 ### Docker
+
 ```bash
 npm run docker:mocks   # Docker-Container mit Mock-Konfiguration starten
 npm run docker:dev     # Docker-Container mit Development-Konfiguration starten
 ```
 
 ### Code-Qualität
+
 ```bash
 npm run lint          # ESLint ausführen und Fehler anzeigen
 npm run format        # Code mit Prettier formatieren
@@ -58,13 +66,17 @@ npm run format:check  # Prüfe ob Code formatiert ist (ohne Änderungen)
 ```
 
 ### Testing
+
 ```bash
-npm test              # Unit Tests mit Vitest ausführen
-npm run e2e           # E2E Tests mit Cypress ausführen
-npm run e2e:open      # Cypress Test Runner öffnen (interaktiv)
+npm test              # Unit Tests (Vitest) headless ausführen
+npm run test:watch    # Unit Tests im Watch-Modus
+npm run e2e           # E2E Tests: startet Mock-Server automatisch, führt Cypress headless aus
+npm run e2e:open      # E2E Tests interaktiv (startet Mock-Server automatisch)
+npm run cy:run        # Nur Cypress (setzt bereits laufenden Dev-Server auf :4200 voraus)
 ```
 
 ### Build
+
 ```bash
 npm run build         # Production Build erstellen (dist/ Ordner)
 ```
@@ -90,25 +102,30 @@ frontend/
 │     ├─ app.config.ts                        # Angular App Konfiguration
 │     ├─ app.routes.ts                        # Routing Definition
 │     │
-│     ├─ pages/                               # Page/Route-Komponenten
+│     ├─ pages/                               # Page/Route-Komponenten (Selektor-Präfix app-)
 │     │  ├─ home/                             # Home-Seite
 │     │  └─ policies/                         # Policy Management Pages
 │     │     ├─ policies-overview-page/        # Übersicht aller Policies
 │     │     ├─ policy-detail-page/            # Detail-View einer Policy
-│     │     └─ policy-editor-page/            # Policy bearbeiten/erstellen
+│     │     └─ policy-editor-page/            # Policy erstellen/bearbeiten
+│     │        └─ policy-builder/             # Kern-Feature: Wizard (components/metadata/validators/helpers)
 │     │
-│     ├─ ui/                                  # Wiederverwendbare UI-Komponenten
+│     ├─ ui/                                  # Wiederverwendbares Design-System (cx-*)
+│     │  ├─ button/  category-badge/  empty-state/  snackbar/  policy-table/
+│     │  ├─ confirm-delete-dialog/
 │     │  ├─ header/                           # App-Header mit Navigation
 │     │  └─ mock-data-switcher/               # Entwicklermenü (Mock-Daten-Umschalter)
 │     │
 │     ├─ services/                            # Business Logic & API
-│     │  ├─ policies/                         # PolicyService (CRUD API)
+│     │  ├─ policies/                         # PolicyService (CRUD) + policy-mapper/ (ODRL/EDC-Mapping)
 │     │  └─ notification/                     # NotificationService (MatSnackBar)
 │     │
-│     └─ shared/                              # Gemeinsame Utilities & Types
-│        ├─ types/                            # TypeScript Interfaces (Policy, etc.)
-│        ├─ pipes/                            # Pipes (RelativeDatePipe, etc.)
-│        └─ utils/                            # Helper-Funktionen
+│     ├─ shared/                              # Gemeinsame Types & Utilities
+│     │  ├─ types/                            # TypeScript-Interfaces (policy.model, constraint.model)
+│     │  ├─ pipes/                            # Pipes (RelativeDatePipe, etc.)
+│     │  └─ adapters/                         # z.B. CxDateAdapter
+│     │
+│     └─ mocks/                               # MirageJS-Server + Mock-Daten (empty/few/many)
 │
 ├─ angular.json                               # Angular CLI Konfiguration
 ├─ cypress.config.ts                          # Cypress Konfiguration
@@ -123,18 +140,18 @@ frontend/
 
 ### 📖 Ordnerstruktur Erklärung
 
-| Ordner | Zweck |
-|--------|-------|
-| **pages/** | Page-Komponenten für Routes. Jede Page ist eine Seite in der Anwendung. |
-| **ui/** | Wiederverwendbare, dumb UI-Komponenten (keine Business Logic). Sind ein Design System. |
-| **services/** | Smart Services für API-Calls, State Management & Business Logic. |
-| **core/** | Singleton-Services, die app-weit genau einmal instanziiert werden (Guards, Interceptors). |
-| **shared/** | Gemeinsame Types, Enums & Utility-Funktionen. |
-| **assets/** | Statische Dateien wie Icons, Logos, Fonts. |
-| **environments/** | Umgebungsspezifische Konfigurationen (dev, test, prod). |
-
+| Ordner            | Zweck                                                                              |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| **pages/**        | Page-Komponenten für Routes (Selektor-Präfix `app-`). Jede Page ist eine Seite.    |
+| **ui/**           | Wiederverwendbare, präsentationsnahe UI-Komponenten (Design-System, Präfix `cx-`). |
+| **services/**     | Services für API-Calls & abgeleitete Logik (z.B. ODRL/EDC-Mapping).                |
+| **shared/**       | Gemeinsame Types (String-Union-/Discriminated-Union-Modelle), Pipes, Adapters.     |
+| **mocks/**        | MirageJS-Mock-Server samt Beispieldaten für die lokale Entwicklung.                |
+| **assets/**       | Statische Dateien wie Icons, Logos, Fonts.                                         |
+| **environments/** | Umgebungskonfigurationen (`environment.ts` / `.mocks.ts` / `.production.ts`).      |
 
 ### Code-Stil
+
 Dieses Projekt nutzt **Prettier** für automatische Code-Formatierung. Code wird automatisch formatiert beim Commit (via Hooks, sofern konfiguriert).
 
 ```bash
@@ -143,16 +160,17 @@ npm run format  # Formatiere alle Dateien
 npm run lint    # Prüfe auf Linting-Fehler
 ```
 
+> **Konventionen & Erwartungen:** Verbindliche Code-Conventions, Architektur-Entscheidungen und
+> Verhaltensregeln stehen in [`../CLAUDE.md`](../CLAUDE.md) (Single Source of Truth).
+
 ## 🧪 Testing
 
-### Unit Tests
-```bash
-npm test              # Tests ausführen
-npm test -- --watch   # Watch-Modus
-npm test -- --coverage  # Mit Coverage-Report
-```
+### Unit Tests (Vitest)
 
-Unit Tests befinden sich neben dem Code:
+Der Unit-Test-Runner **Vitest** läuft über den Angular-Builder `@angular/build:unit-test`
+(headless, jsdom). Ausführen mit `npm test` (bzw. `npm run test:watch`). Spec-Dateien liegen
+**neben dem Code** als `*.spec.ts`:
+
 ```
 src/
 ├── app/
@@ -160,20 +178,40 @@ src/
 │   └── my.component.spec.ts  # Test-Datei
 ```
 
-### E2E Tests
+Fokus (gezielt, kein flächendeckendes Testen) sind die kritischen reinen Funktionen:
+
+- `services/policies/policy-mapper/policy-odrl.mapper.spec.ts` — ODRL/EDC-Mapping (alle
+  Bedingungstypen + Kombinationen),
+- `policy-builder/validators/constraint-validators.spec.ts` — Bedingungs-Prüfung
+  (gültige/ungültige Eingaben),
+- `policy-builder/metadata/constraint-metadata.spec.ts` — erlaubte Typen & Default-Bedingungen.
+
+> Hinweis: `tsconfig.spec.json` ist für Vitest konfiguriert; die Cypress-Typen liegen getrennt in
+> `cypress/tsconfig.json`.
+
+### E2E Tests (Cypress)
+
 ```bash
-npm run e2e           # Tests headless ausführen
-npm run e2e:open      # Cypress IDE öffnen
+npm run e2e           # startet den Mock-Server automatisch (start-server-and-test) + Cypress headless
+npm run e2e:open      # dasselbe interaktiv (Cypress-UI)
+npm run cy:run        # nur Cypress gegen einen bereits laufenden Dev-Server (:4200)
 ```
 
-E2E Tests befinden sich in `cypress/`:
+E2E-Tests laufen zuverlässig gegen den **Mock-Modus** (MirageJS, unabhängig vom Backend) und decken
+die Kernabläufe ab (erstellen, ansehen, bearbeiten, löschen, durchsuchen/filtern). Sie befinden sich
+in `cypress/`:
+
 ```
 cypress/
-├── e2e/               # Test-Dateien
-├── support/           # Test-Utilities
+├── e2e/               # Test-Dateien (*.cy.ts)
+├── support/           # Custom Commands (getByCy, visitWithMode) + Typen
+├── tsconfig.json      # TypeScript-Config für Cypress
 └── fixtures/          # Mock-Daten
 ```
 
+**Selektor-Konvention:** UI-Elemente werden in Tests über `data-cy="…"`-Attribute angesprochen
+(entkoppelt Tests von CSS-Klassen und i18n-Text). Datensatzgröße wird deterministisch über
+`cy.visitWithMode(path, 'empty' | 'few' | 'many')` gesteuert.
 
 ## 📚 Tech Stack
 
