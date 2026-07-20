@@ -1,37 +1,42 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+// Custom Cypress-Commands für die Policy-Hub-E2E-Tests.
+// Alle Tests laufen gegen den MirageJS-Mock-Modus (`npm start`), unabhängig vom Backend.
+
+export type PolicyMockMode = 'empty' | 'few' | 'many';
+
+/** localStorage-Key, über den `mocks/data/policies/mocked-policies.ts` die Datensatzgröße steuert. */
+const MOCK_MODE_KEY = 'mock-policy-mode';
+
+/**
+ * Selektiert ein Element über sein `data-cy`-Attribut.
+ * Bevorzugte Methode, um Tests von CSS-Klassen und i18n-Text zu entkoppeln.
+ */
+Cypress.Commands.add('getByCy', (selector: string) => {
+  return cy.get(`[data-cy="${selector}"]`);
+});
+
+/**
+ * Besucht eine Route und setzt zuvor den Mock-Datensatz-Modus deterministisch
+ * (`empty` / `few` / `many`) — ohne den UI-Switcher zu bedienen.
+ * Mirage erzeugt seinen In-Memory-State beim Laden aus diesem Modus.
+ */
+Cypress.Commands.add('visitWithMode', (path: string, mode: PolicyMockMode) => {
+  return cy.visit(path, {
+    onBeforeLoad(win) {
+      win.localStorage.setItem(MOCK_MODE_KEY, mode);
+    },
+  });
+});
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /** `cy.get('[data-cy="..."]')`-Kurzform. */
+      getByCy(selector: string): Chainable<JQuery<HTMLElement>>;
+      /** Besucht `path` mit vorab gesetztem Mock-Datensatz-Modus. */
+      visitWithMode(path: string, mode: PolicyMockMode): Chainable<Cypress.AUTWindow>;
+    }
+  }
+}

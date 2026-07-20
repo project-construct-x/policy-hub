@@ -8,10 +8,10 @@
     </p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button cx-button variant="outlined" color="neutral" mat-dialog-close>
+    <button cx-button variant="outlined" color="neutral" mat-dialog-close data-cy="delete-cancel">
       {{ t('deleteDialog.cancel') }}
     </button>
-    <button cx-button color="danger" [mat-dialog-close]="true">
+    <button cx-button color="danger" [mat-dialog-close]="true" data-cy="delete-confirm">
       {{ t('deleteDialog.confirm') }}
     </button>
   </mat-dialog-actions>

@@ -14,6 +14,7 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { CxButtonComponent } from '@ui/button/cx-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
 import { Policy, PolicyCategory } from '@shared/types/policy.model';
@@ -83,6 +84,13 @@ export class PolicyBuilderComponent {
     if (!this.submitted()) return null;
     return this.validationErrors().find((e) => e.field === 'policyId')?.messageKey ?? null;
   });
+
+  // Das policyId-Input hat kein NgControl (kein ngModel/formControl), daher würde Material die
+  // errorState nie selbst berechnen und <mat-error> nie anzeigen. Der Matcher koppelt die
+  // Fehleranzeige stattdessen an unsere eigene Validierung.
+  readonly policyIdErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => this.policyIdError() !== null,
+  };
 
   constructor() {
     effect(() => {

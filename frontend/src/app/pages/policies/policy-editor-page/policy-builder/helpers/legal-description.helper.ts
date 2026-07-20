@@ -52,7 +52,11 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
       );
     }
     case 'END_DATE':
-      return transloco.translate('legalDescription.clause.endDate', { date: formatDate(c.endDate) }, lang);
+      return transloco.translate(
+        'legalDescription.clause.endDate',
+        { date: formatDate(c.endDate) },
+        lang,
+      );
     case 'FRAMEWORK_AGREEMENT':
       return transloco.translate(
         'legalDescription.clause.frameworkAgreement',

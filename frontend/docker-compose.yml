@@ -5,12 +5,12 @@ services:
       context: .
       dockerfile: cicd/docker/Dockerfile.mocks
     ports:
-      - "4200:4200"
+      - '4200:4200'
     volumes:
       - .:/app
       - /app/node_modules
     profiles:
-      - "mocks"
+      - 'mocks'
 
   policy-frontend-dev:
     container_name: policy-frontend
@@ -18,9 +18,9 @@ services:
       context: .
       dockerfile: cicd/docker/Dockerfile.development
     ports:
-      - "4200:4200"
+      - '4200:4200'
     volumes:
       - .:/app
       - /app/node_modules
     profiles:
-      - "development"
+      - 'development'

@@ -14,6 +14,7 @@
       [routerLink]="['/policies', policy.id]"
       class="table-row"
       [attr.aria-label]="policy.policyId"
+      data-cy="policy-row"
     >
       <div class="col-name">
         <span class="policy-name">{{ policy.policyId }}</span>
