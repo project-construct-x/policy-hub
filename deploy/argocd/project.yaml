@@ -1,0 +1,22 @@
+# ArgoCD AppProject for Policy Hub. Apply once if the "policyhub" project does
+# not already exist in your ArgoCD instance:
+#   kubectl apply -f deploy/argocd/project.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: policyhub
+  namespace: argocd
+spec:
+  description: Construct-X Policy Hub
+  sourceRepos:
+    - https://github.com/project-construct-x/policy-hub
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: policyhub
+  # Allow the namespace + the cluster-scoped Namespace object (CreateNamespace=true).
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

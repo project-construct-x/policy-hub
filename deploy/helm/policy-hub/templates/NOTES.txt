@@ -1,0 +1,20 @@
+Policy Hub has been deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Components:
+  - backend  ({{ .Values.backend.replicaCount }} replica(s))  image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
+  - frontend ({{ .Values.frontend.replicaCount }} replica(s)) image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
+{{- if .Values.postgresql.enabled }}
+  - postgres (in-cluster StatefulSet, {{ .Values.postgresql.storage }})
+{{- else }}
+  - postgres: DISABLED (using an external database — check the `database` values)
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+
+The app will be reachable at:
+  https://{{ .Values.ingress.host }}/        (frontend)
+  https://{{ .Values.ingress.host }}/api/... (backend)
+{{- end }}
+
+Prerequisite: the Secret "{{ .Values.secret.name }}" (keys: {{ .Values.secret.keys.dbPassword }}, {{ .Values.secret.keys.authPassword }})
+and the image pull secret must exist in the namespace. See deploy/secrets/README.md.

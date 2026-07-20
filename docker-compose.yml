@@ -1,0 +1,54 @@
+# Monorepo Docker Compose — Frontend, Backend und Postgres in einer Datei.
+#
+# Startet immer den vollen Stack (Postgres + Backend + Frontend, ohne Mocks):
+#
+#   docker compose up --build
+#
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: policyhub-postgres
+    environment:
+      POSTGRES_DB: policyhub
+      POSTGRES_USER: policyhub
+      POSTGRES_PASSWORD: policyhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U policyhub -d policyhub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: policyhub-backend
+    environment:
+      # Das dev-Profil verwendet fest localhost:5432 — hier ueberschreiben,
+      # damit im Compose-Netzwerk der postgres-Service erreichbar ist.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/policyhub
+      SPRING_DATASOURCE_USERNAME: policyhub
+      SPRING_DATASOURCE_PASSWORD: policyhub
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    container_name: policyhub-frontend
+    build:
+      context: ./frontend
+      dockerfile: cicd/docker/Dockerfile.development
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

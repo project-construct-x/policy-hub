@@ -1,0 +1,43 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "policy-hub.fullname" . }}
+  labels:
+    {{- include "policy-hub.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.ingress.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ include "policy-hub.fullname" . }}-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          # Backend API. Longest-prefix match sends /api/* to the backend;
+          # everything else falls through to the frontend below.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "policy-hub.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "policy-hub.fullname" . }}-frontend
+                port:
+                  number: {{ .Values.frontend.service.port }}
+{{- end }}

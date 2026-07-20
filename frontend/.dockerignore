@@ -1,0 +1,13 @@
+# Keep the build context small and prevent host artifacts from overwriting
+# the dependencies installed inside the image.
+node_modules
+dist
+.angular
+coverage
+cypress/videos
+cypress/screenshots
+.git
+.gitignore
+*.log
+.vscode
+.idea
