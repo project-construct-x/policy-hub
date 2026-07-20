@@ -1,6 +1,7 @@
 package org.constructx.policyhub.core.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.constructx.policyhub.policies.application.PolicyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,26 @@ public class GlobalExceptionHandler {
                         "Not Found",
                         ex.getMessage(),
                         request.getRequestURI()));
+    }
+
+    @ExceptionHandler(PolicyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePolicyNotFoundException(
+            PolicyNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "Policy not found on {}: {}",
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponse.of(
+                        HttpStatus.NOT_FOUND.value(),
+                        "Not Found",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
     @ExceptionHandler(Exception.class)

@@ -89,6 +89,16 @@ public class PolicyService {
         return toResponse(policyMapper.toDomain(savedEntity));
     }
 
+    @Transactional
+    public void deletePolicy(UUID id) {
+        log.info("Deleting policy with id {}", id);
+
+        PolicyEntity entity = policyRepository.findById(id)
+                .orElseThrow(() -> new PolicyNotFoundException(id));
+
+        policyRepository.delete(entity);
+    }
+
     private PolicyResponse toResponse(Policy policy) {
         return new PolicyResponse(
                 policy.id(),
