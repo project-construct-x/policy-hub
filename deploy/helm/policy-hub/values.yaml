@@ -6,12 +6,10 @@
 # release name (e.g. "policy-hub-backend").
 nameOverride: ""
 fullnameOverride: ""
-
 # Pull secret(s) for the private ghcr.io images, referenced here only by name.
 # See `ghcrCreds` below for how the Secret itself gets created.
 imagePullSecrets:
   - name: ghcr-creds
-
 # Creates the ghcr-creds Secret from these values when `create: true`. Leave
 # create: false (default) and set username/password as ArgoCD Application
 # parameter overrides (Application -> Parameters in the UI) instead of
@@ -22,7 +20,6 @@ ghcrCreds:
   registry: ghcr.io
   username: ""
   password: ""
-
 # ---------------------------------------------------------------------------
 # Backend (Spring Boot)
 # ---------------------------------------------------------------------------
@@ -30,7 +27,7 @@ backend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-backend
     # Tag is maintained by the CI commit-back step; "latest" is only a placeholder.
-    tag: latest
+    tag: 7c5339f
     pullPolicy: IfNotPresent
   replicaCount: 1
   # Spring profile driving application-prod.yaml.
@@ -43,14 +40,13 @@ backend:
       memory: 512Mi
     limits:
       memory: 1Gi
-
 # ---------------------------------------------------------------------------
 # Frontend (Angular served by nginx)
 # ---------------------------------------------------------------------------
 frontend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-frontend
-    tag: latest
+    tag: 7c5339f
     pullPolicy: IfNotPresent
   replicaCount: 2
   service:
@@ -61,7 +57,6 @@ frontend:
       memory: 64Mi
     limits:
       memory: 128Mi
-
 # ---------------------------------------------------------------------------
 # Database connection (non-secret parts). The password comes from the Secret
 # referenced under `secret.name` below.
@@ -69,11 +64,9 @@ frontend:
 database:
   name: policyhub
   username: policyhub
-
 # Basic-auth user for the backend (non-secret parts). Password from the Secret.
 auth:
   username: admin
-
 # Name + keys of the Secret holding the sensitive values. Creates the Secret
 # from dbPassword/authPassword below when `create: true`. Leave create: false
 # (default) and set those two as ArgoCD Application parameter overrides
@@ -87,7 +80,6 @@ secret:
   keys:
     dbPassword: db-password
     authPassword: security-user-password
-
 # ---------------------------------------------------------------------------
 # In-cluster PostgreSQL (self-contained StatefulSet, official image).
 # Set enabled: false to use an external/managed database instead — then point
@@ -105,7 +97,6 @@ postgresql:
       memory: 256Mi
     limits:
       memory: 512Mi
-
 # ---------------------------------------------------------------------------
 # Ingress (ingress-nginx + cert-manager)
 # ---------------------------------------------------------------------------
