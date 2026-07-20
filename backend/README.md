@@ -10,22 +10,30 @@ Spring Boot Backend für die Policy Hub Anwendung.
 
 ## Lokale Datenbank starten
 
-Im **backend/**-Verzeichnis:
+Docker Compose liegt zentral im Repo-Root (`../docker-compose.yml`) als Monorepo-Stack für Frontend + Backend + Postgres. Alle folgenden Befehle vom **Repo-Root** aus ausführen.
+
+Nur die Datenbank starten:
 
 ```bash
-docker compose up -d
+docker compose up -d postgres
 ```
 
 Stoppt die Datenbank (ohne Datenverlust):
 
 ```bash
-docker compose stop
+docker compose stop postgres
 ```
 
 Vollständig aufräumen inkl. Volumes:
 
 ```bash
 docker compose down -v
+```
+
+Das Backend zusätzlich im Container starten (baut das Image; Postgres wird als Abhängigkeit mitgestartet):
+
+```bash
+docker compose up --build backend
 ```
 
 ### Verbindungsdaten (Dev)

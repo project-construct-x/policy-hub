@@ -120,7 +120,7 @@
       "category": "Category",
       "categoryHint": "Choose whether the policy governs access to or usage of the data.",
       "constraints": "Constraints",
-      "constraintsHint": "Add one or more constraints. Multiple constraints are combined with AND."
+      "constraintsHint": "Add one or more constraints. Multiple constraints are combined."
     },
     "policyId": {
       "label": "Policy ID",

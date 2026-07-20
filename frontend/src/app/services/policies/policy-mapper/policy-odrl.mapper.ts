@@ -21,16 +21,31 @@ interface OdrlConstraintGroup {
   'odrl:and': OdrlAtomicConstraint[];
 }
 
-export interface OdrlPolicy {
-  '@context': typeof ODRL_CONTEXT;
-  '@type': 'odrl:Set';
-  '@id'?: string;
-  'odrl:permission': {
-    'odrl:action': { '@id': string };
-    'odrl:constraint'?: OdrlAtomicConstraint | OdrlConstraintGroup;
-  }[];
+interface OdrlPermission {
+  'odrl:action': { '@id': string };
+  'odrl:constraint'?: OdrlConstraintGroup;
 }
 
+/**
+ * EDC-PolicyDefinition-Envelope (Management-API `/v3/policydefinitions`).
+ * Access- und Contract-Policy teilen dasselbe Envelope; sie unterscheiden sich per
+ * Catena-X-Konvention nur über die `odrl:action` (Access = `access`, Contract = `odrl:use`).
+ * Die endgültige Rolle wird technisch erst in der ContractDefinition festgelegt.
+ */
+export interface OdrlPolicyDefinition {
+  '@context': typeof ODRL_CONTEXT;
+  '@type': 'PolicyDefinition';
+  '@id': string;
+  policy: {
+    '@context': 'http://www.w3.org/ns/odrl.jsonld';
+    '@type': 'Set';
+    'odrl:permission': OdrlPermission[];
+    'odrl:prohibition': [];
+    'odrl:obligation': [];
+  };
+}
+
+/** Catena-X-Konvention: Access Policy -> `access`, Contract/Usage Policy -> `odrl:use`. */
 export function actionForCategory(category: PolicyCategory): string {
   return category === 'ACCESS' ? CX_ACCESS : ODRL_USE;
 }
@@ -64,22 +79,24 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint {
   }
 }
 
-export function policyToOdrl(policy: Policy): OdrlPolicy {
-  const action = { '@id': actionForCategory(policy.category) };
+export function policyToOdrl(policy: Policy): OdrlPolicyDefinition {
   const atomics = policy.constraints.map(constraintToOdrl);
 
-  const permission: OdrlPolicy['odrl:permission'][number] = { 'odrl:action': action };
-
-  if (atomics.length === 1) {
-    permission['odrl:constraint'] = atomics[0];
-  } else if (atomics.length > 1) {
-    permission['odrl:constraint'] = { 'odrl:and': atomics };
-  }
+  const permissionObj: OdrlPermission = {
+    'odrl:action': { '@id': actionForCategory(policy.category) },
+    ...(atomics.length > 0 && { 'odrl:constraint': { 'odrl:and': atomics } }),
+  };
 
   return {
     '@context': ODRL_CONTEXT,
-    '@type': 'odrl:Set',
-    '@id': policy.id ? `urn:constructx:policy:${policy.id}` : undefined,
-    'odrl:permission': [permission],
+    '@type': 'PolicyDefinition',
+    '@id': policy.policyId,
+    policy: {
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Set',
+      'odrl:permission': [permissionObj],
+      'odrl:prohibition': [],
+      'odrl:obligation': [],
+    },
   };
 }
