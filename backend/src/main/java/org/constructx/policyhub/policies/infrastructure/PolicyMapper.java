@@ -1,5 +1,6 @@
 package org.constructx.policyhub.policies.infrastructure;
 
+import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
 import org.constructx.policyhub.policies.domain.Policy;
 import org.springframework.stereotype.Component;
 
