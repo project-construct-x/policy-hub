@@ -14,7 +14,7 @@ describe('Policy – Löschen', () => {
 
     // Weiterleitung zur Übersicht + Erfolgs-Snackbar.
     cy.location('pathname').should('eq', '/policies');
-    cy.get('.cx-snackbar-success').should('exist');
+    cy.getByCy('snackbar-success').should('exist');
 
     // Policy ist weg (In-App-State nach client-seitiger Navigation erhalten).
     cy.getByCy('policy-row').should('have.length', 6);

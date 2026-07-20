@@ -85,9 +85,10 @@ export class PolicyBuilderComponent {
     return this.validationErrors().find((e) => e.field === 'policyId')?.messageKey ?? null;
   });
 
-  // Das policyId-Input hat kein NgControl (kein ngModel/formControl), daher würde Material die
-  // errorState nie selbst berechnen und <mat-error> nie anzeigen. Der Matcher koppelt die
-  // Fehleranzeige stattdessen an unsere eigene Validierung.
+  // Die Fehleranzeige des policyId-Felds wird exakt an unsere eigene Validierung gekoppelt:
+  // Materials native Validatoren (`required`) decken nicht alle Regeln ab (z.B. "zu lang").
+  // Damit der Matcher überhaupt greift, braucht das Feld ein NgControl — dafür ist im Template
+  // `[ngModel]` gesetzt; nur dann ruft MatInput `updateErrorState()` und damit diesen Matcher auf.
   readonly policyIdErrorStateMatcher: ErrorStateMatcher = {
     isErrorState: () => this.policyIdError() !== null,
   };

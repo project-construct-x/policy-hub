@@ -42,8 +42,8 @@ describe('Policies – Übersicht, Suche & Filter', () => {
   it('paginiert den "many"-Datensatz (pageSize 8 → 2 Seiten)', () => {
     cy.visitWithMode('/policies', 'many');
     cy.getByCy('policy-row').should('have.length', 8);
-    cy.get('.pagination').should('exist');
-    cy.get('.pagination .page-btn').contains('2').click();
+    cy.getByCy('pagination').should('exist');
+    cy.getByCy('page-2').click();
     cy.getByCy('policy-row').should('have.length', 2);
   });
 });

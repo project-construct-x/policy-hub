@@ -19,7 +19,7 @@ describe('Policy – Bearbeiten', () => {
     cy.getByCy('submit-policy').click();
 
     cy.getByCy('policy-title').should('have.text', updatedId);
-    cy.get('.cx-snackbar-success').should('exist');
+    cy.getByCy('snackbar-success').should('exist');
     cy.location('pathname').should('eq', `/policies/${POLICY_ID}`);
   });
 

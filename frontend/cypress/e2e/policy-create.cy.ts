@@ -20,7 +20,7 @@ describe('Policy – Erstellen', () => {
 
     // Erfolg: Weiterleitung auf die Detailseite der neuen Policy + Erfolgs-Snackbar.
     cy.getByCy('policy-title').should('have.text', newId);
-    cy.get('.cx-snackbar-success').should('exist');
+    cy.getByCy('snackbar-success').should('exist');
 
     // In der Übersicht wiederfinden (In-App-Navigation, damit Mirage-State erhalten bleibt).
     cy.getByCy('back-to-overview').click();

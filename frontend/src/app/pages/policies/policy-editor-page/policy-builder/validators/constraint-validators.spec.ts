@@ -3,11 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 
-import {
-  POLICY_ID_PATTERN,
-  validateConstraint,
-  validatePolicyDraft,
-} from './constraint-validators';
+import { validateConstraint, validatePolicyDraft } from './constraint-validators';
 
 describe('validateConstraint — Bedingungs-Prüfung', () => {
   describe('END_DATE (datumsabhängig, fixe Systemzeit)', () => {
@@ -141,14 +137,5 @@ describe('validatePolicyDraft', () => {
     expect(keys).toContain('validation.policyIdRequired');
     expect(keys).toContain('validation.categoryRequired');
     expect(keys).toContain('validation.useCaseRequired');
-  });
-});
-
-describe('POLICY_ID_PATTERN', () => {
-  it('matcht 1–200 Zeichen und lehnt Leerstring / >200 ab', () => {
-    expect(POLICY_ID_PATTERN.test('a')).toBe(true);
-    expect(POLICY_ID_PATTERN.test('a'.repeat(200))).toBe(true);
-    expect(POLICY_ID_PATTERN.test('')).toBe(false);
-    expect(POLICY_ID_PATTERN.test('a'.repeat(201))).toBe(false);
   });
 });

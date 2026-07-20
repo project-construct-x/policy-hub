@@ -86,7 +86,7 @@
     <app-cx-policy-table [policies]="paginatedPolicies()" />
 
     @if (totalPages() > 1) {
-      <div class="pagination">
+      <div class="pagination" data-cy="pagination">
         <span class="pagination-info">{{ paginationInfo() }}</span>
         <span class="pagination-spacer"></span>
         <div class="pagination-controls">
@@ -94,6 +94,7 @@
             class="page-btn"
             [disabled]="currentPage() === 1"
             (click)="goToPage(currentPage() - 1)"
+            data-cy="page-prev"
           >
             <span class="material-icons">chevron_left</span>
           </button>
@@ -102,6 +103,7 @@
               class="page-btn"
               [class.active]="currentPage() === $index + 1"
               (click)="goToPage($index + 1)"
+              [attr.data-cy]="'page-' + ($index + 1)"
             >
               {{ $index + 1 }}
             </button>
@@ -110,6 +112,7 @@
             class="page-btn"
             [disabled]="currentPage() === totalPages()"
             (click)="goToPage(currentPage() + 1)"
+            data-cy="page-next"
           >
             <span class="material-icons">chevron_right</span>
           </button>

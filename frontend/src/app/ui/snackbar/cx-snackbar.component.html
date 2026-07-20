@@ -1,4 +1,7 @@
-<span matSnackBarLabel>
+<span
+  matSnackBarLabel
+  [attr.data-cy]="'snackbar-' + snackBarRef.containerInstance.snackBarConfig.data.type"
+>
   {{ snackBarRef.containerInstance.snackBarConfig.data.message }}
 </span>
 <span matSnackBarActions>
