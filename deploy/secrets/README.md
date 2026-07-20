@@ -1,6 +1,6 @@
 # Secrets
 
-Two secrets must exist in the `policy-hub` namespace before the pods start. They
+Two secrets must exist in the `policyhub` namespace before the pods start. They
 are created **once, out-of-band, with `kubectl`** — never committed to git.
 Secrets are the standard exception to GitOps; ArgoCD manages everything else.
 
@@ -13,7 +13,7 @@ Keys must match `values.yaml → secret.keys` (`db-password`, `security-user-pas
 
 ```sh
 kubectl create secret generic policy-hub-secrets \
-  --namespace policy-hub \
+  --namespace policyhub \
   --from-literal=db-password='<strong-db-password>' \
   --from-literal=security-user-password='<strong-admin-password>'
 ```
@@ -28,7 +28,7 @@ token (classic PAT or fine-grained) with `read:packages`:
 
 ```sh
 kubectl create secret docker-registry ghcr-creds \
-  --namespace policy-hub \
+  --namespace policyhub \
   --docker-server=ghcr.io \
   --docker-username=<github-user> \
   --docker-password=<github-token-with-read:packages>
@@ -36,13 +36,13 @@ kubectl create secret docker-registry ghcr-creds \
 
 ## Notes
 
-- Run these once per namespace, after it exists (`kubectl create namespace policy-hub`,
+- Run these once per namespace, after it exists (`kubectl create namespace policyhub`,
   or let ArgoCD create it and add the secrets right after — pods stay in
   `CreateContainerConfigError` / `ImagePullBackOff` until the secrets exist, then
   recover on their own).
 - **Rotation**: re-create with
   `kubectl create secret ... --dry-run=client -o yaml | kubectl apply -f -`, then
-  restart the affected workloads (`kubectl rollout restart deploy -n policy-hub`).
+  restart the affected workloads (`kubectl rollout restart deploy -n policyhub`).
 - **Why not GitHub Actions secrets?** They are write-only — no API returns the
   plaintext value, so nothing outside a running workflow (neither ArgoCD nor the
   cluster) can read them. Using them would require the CI to push secrets into the

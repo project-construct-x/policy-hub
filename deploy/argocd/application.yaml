@@ -8,7 +8,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: policy-hub
+  project: policyhub
   source:
     repoURL: https://github.com/project-construct-x/policy-hub
     targetRevision: main
@@ -18,7 +18,7 @@ spec:
         - values.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: policy-hub
+    namespace: policyhub
   syncPolicy:
     automated:
       prune: true

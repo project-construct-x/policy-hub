@@ -15,7 +15,7 @@ GitHub Actions (.github/workflows/build-and-publish.yml)
    └─ commit-back   deploy/helm/policy-hub/values.yaml  (image tags = <sha>)
    │
    ▼
-ArgoCD (auto-sync, self-heal)  →  namespace "policy-hub"
+ArgoCD (auto-sync, self-heal)  →  namespace "policyhub"
    ├─ postgres StatefulSet + headless Service
    ├─ backend  Deployment + Service   (Spring Boot, prod profile)
    ├─ frontend Deployment + Service   (nginx)
@@ -29,7 +29,7 @@ ArgoCD (auto-sync, self-heal)  →  namespace "policy-hub"
 | Path | Purpose |
 |------|---------|
 | `helm/policy-hub/` | Umbrella Helm chart (backend, frontend, in-cluster postgres, ingress) |
-| `argocd/project.yaml` | ArgoCD `AppProject` `policy-hub` |
+| `argocd/project.yaml` | ArgoCD `AppProject` `policyhub` |
 | `argocd/application.yaml` | Workload `Application` → `helm/policy-hub` |
 | `secrets/` | Manual `kubectl` secret creation (see `secrets/README.md`) |
 
@@ -46,11 +46,11 @@ ArgoCD (auto-sync, self-heal)  →  namespace "policy-hub"
 
 ```sh
 # 1. Namespace + secrets (once, out-of-band — see deploy/secrets/README.md).
-kubectl create namespace policy-hub
-kubectl create secret generic policy-hub-secrets -n policy-hub \
+kubectl create namespace policyhub
+kubectl create secret generic policy-hub-secrets -n policyhub \
   --from-literal=db-password='<db-pw>' \
   --from-literal=security-user-password='<admin-pw>'
-kubectl create secret docker-registry ghcr-creds -n policy-hub \
+kubectl create secret docker-registry ghcr-creds -n policyhub \
   --docker-server=ghcr.io --docker-username=<user> --docker-password=<token>
 
 # 2. Register the ArgoCD project + application.
