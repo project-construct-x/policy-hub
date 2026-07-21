@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
+import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
 import org.constructx.policyhub.policies.application.PolicyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,13 @@ public class PolicyController {
             @PathVariable UUID id
     ) {
         return ResponseEntity.ok(policyService.getPolicyById(id));
+    }
+
+    @GetMapping("/{id}/odrl")
+    public ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(
+        @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(policyService.getOdrlPolicyDefinitionById(id));
     }
 
     @PostMapping
