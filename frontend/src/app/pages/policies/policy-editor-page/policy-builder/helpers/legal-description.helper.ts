@@ -52,7 +52,11 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
       );
     }
     case 'END_DATE':
-      return transloco.translate('legalDescription.clause.endDate', { date: formatDate(c.endDate) }, lang);
+      return transloco.translate(
+        'legalDescription.clause.endDate',
+        { date: formatDate(c.endDate) },
+        lang,
+      );
     case 'FRAMEWORK_AGREEMENT':
       return transloco.translate(
         'legalDescription.clause.frameworkAgreement',
@@ -78,6 +82,14 @@ function joinList(items: string[]): string {
 
 function formatDate(iso: string): string {
   if (!iso) return '—';
+  // Reine Datumsangaben (YYYY-MM-DD, das Format der END_DATE-Eingabe) direkt formatieren,
+  // ohne sie durch `new Date()` in UTC-Mitternacht zu wandeln. Sonst kippt der lokale Tag
+  // in Zeitzonen westlich von UTC um einen Tag — beim rechtlich maßgeblichen Text unzulässig.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
+    return `${day}.${month}.${year}`;
+  }
   const d = new Date(iso);
   if (isNaN(d.getTime())) return iso;
   const day = String(d.getDate()).padStart(2, '0');

@@ -11,6 +11,7 @@
         class="palette__btn"
         [class.palette__btn--active]="opt.active"
         (click)="onToggle(opt.type)"
+        [attr.data-cy]="'palette-' + opt.type"
       >
         <mat-icon>{{ opt.meta.icon }}</mat-icon>
         <span>{{ t(opt.meta.labelKey) }}</span>

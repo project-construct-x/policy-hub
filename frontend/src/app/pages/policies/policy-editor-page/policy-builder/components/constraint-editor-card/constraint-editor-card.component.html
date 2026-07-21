@@ -1,4 +1,4 @@
-<article class="ce-card" *transloco="let t">
+<article class="ce-card" *transloco="let t" [attr.data-cy]="'constraint-card-' + constraint().type">
   <header class="ce-card__header">
     <div class="ce-card__title">
       <mat-icon class="ce-card__icon">{{ meta().icon }}</mat-icon>
@@ -25,6 +25,7 @@
             [value]="asUseCase(constraint()).useCases"
             (valueChange)="onUseCaseChange($event)"
             [placeholder]="t('policyBuilder.constraint.USE_CASE.placeholder')"
+            data-cy="usecase-select"
           >
             @for (opt of useCaseOptions; track opt.id) {
               <mat-option [value]="opt.id">{{ t(opt.labelKey) }}</mat-option>
@@ -50,6 +51,7 @@
             (click)="picker.open()"
             (focus)="picker.open()"
             readonly
+            data-cy="enddate-input"
           />
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
           <mat-datepicker #picker />

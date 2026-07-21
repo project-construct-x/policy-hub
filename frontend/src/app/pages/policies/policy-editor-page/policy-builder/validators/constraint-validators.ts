@@ -7,8 +7,6 @@ export interface ValidationError {
   messageKey: string;
 }
 
-export const POLICY_ID_PATTERN = /^.{1,200}$/;
-
 export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   const errors: ValidationError[] = [];
 

@@ -10,14 +10,17 @@
       <input
         matInput
         type="text"
-        [value]="policyId()"
-        (input)="onPolicyIdInput($any($event.target).value)"
+        name="policyId"
+        [ngModel]="policyId()"
+        (ngModelChange)="onPolicyIdInput($event)"
         [placeholder]="t('policyBuilder.policyId.placeholder')"
+        [errorStateMatcher]="policyIdErrorStateMatcher"
         autocomplete="off"
         required
+        data-cy="policyId-input"
       />
       @if (policyIdError()) {
-        <mat-error>{{ t(policyIdError()!) }}</mat-error>
+        <mat-error data-cy="policyId-error">{{ t(policyIdError()!) }}</mat-error>
       } @else {
         <mat-hint>{{ t('policyBuilder.policyId.hint') }}</mat-hint>
       }
@@ -37,6 +40,7 @@
         class="pb__category-card"
         [class.is-active]="category() === 'ACCESS'"
         (click)="selectCategory('ACCESS')"
+        data-cy="category-access"
       >
         <mat-icon>lock_open</mat-icon>
         <div>
@@ -50,6 +54,7 @@
         class="pb__category-card"
         [class.is-active]="category() === 'CONTRACT'"
         (click)="selectCategory('CONTRACT')"
+        data-cy="category-contract"
       >
         <mat-icon>handshake</mat-icon>
         <div>
@@ -103,10 +108,17 @@
       type="button"
       (click)="onCancel()"
       [disabled]="submitting()"
+      data-cy="cancel-policy"
     >
       {{ t('policyBuilder.actions.cancel') }}
     </button>
-    <button cx-button type="submit" class="pb__submit" [disabled]="submitting()">
+    <button
+      cx-button
+      type="submit"
+      class="pb__submit"
+      [disabled]="submitting()"
+      data-cy="submit-policy"
+    >
       {{ t(submitLabelKey()) }}
     </button>
   </footer>

@@ -75,13 +75,19 @@ a {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   color: var(--cx-text-primary);
 }
 
-strong, b {
+strong,
+b {
   font-weight: 400;
 }
 
