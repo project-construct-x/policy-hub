@@ -6,16 +6,25 @@
   margin: 0 auto;
   padding: 1rem 0;
 
+  @media (max-width: 78rem) {
+    padding: 1rem 1.25rem;
+  }
+
   &__loading {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+
+    .skeleton-bar {
+      max-width: 100%;
+    }
   }
 
   &__actions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
   }
 
   &__spacer {
@@ -76,7 +85,7 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-    h4 {
+    .pd__info-title {
       margin: 0 0 1rem;
       font-size: 1rem;
       font-weight: 600;

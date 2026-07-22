@@ -1,30 +1,46 @@
 // ============================================================
 // Shared Policy Table — used in Overview + Home Page
 // ============================================================
-.cx-policy-table {
+
+// Data tables may scroll horizontally (WCAG 1.4.10 exception for content
+// that requires a two-dimensional layout), so we cap reflow with a scroller.
+.cx-policy-table-scroll {
+  overflow-x: auto;
   background: var(--cx-white);
   border: 0.0625rem solid var(--cx-border-color);
   border-radius: 0.625rem;
-  overflow: hidden;
 }
 
-.table-header {
-  display: flex;
-  align-items: center;
-  height: 3rem;
-  padding: 0 1.25rem;
-  border-bottom: 0.0625rem solid var(--cx-border-color);
-  gap: 1.125rem;
+.cx-policy-table {
+  width: 100%;
+  border-collapse: collapse;
 
-  span {
+  th,
+  td {
+    text-align: left;
+    padding: 0 0.5625rem;
+
+    &:first-child {
+      padding-left: 1.25rem;
+    }
+
+    &:last-child {
+      padding-right: 1.25rem;
+    }
+  }
+
+  thead th {
+    height: 3rem;
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--cx-text-tertiary);
+    border-bottom: 0.0625rem solid var(--cx-border-color);
+    white-space: nowrap;
   }
 }
 
 .col-name {
-  width: 24rem;
+  min-width: 16rem;
 }
 
 .col-category {
@@ -39,23 +55,18 @@
   font-size: 0.8125rem;
   font-weight: 400;
   color: var(--cx-text-tertiary);
+  white-space: nowrap;
 }
 
 .col-action {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
+  width: 3rem;
+  text-align: right;
 }
 
 .table-row {
-  display: flex;
-  align-items: center;
+  position: relative;
   height: 4.625rem;
-  padding: 0 1.25rem;
-  gap: 1.125rem;
   border-bottom: 0.0625rem solid var(--cx-border-color);
-  text-decoration: none;
-  cursor: pointer;
   transition: background-color 0.15s;
 
   &:last-child {
@@ -64,18 +75,27 @@
 
   &:hover {
     background-color: var(--cx-bg-page);
-    text-decoration: none;
   }
 
-  &:focus-visible {
+  // Row-level focus ring when the (only) focusable child — the link — is
+  // focused by keyboard.
+  &:has(.policy-link:focus-visible) {
     outline: 2px solid var(--cx-orange);
     outline-offset: -2px;
   }
+}
 
-  .col-name {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+.policy-link {
+  text-decoration: none;
+  color: var(--cx-text-primary);
+  outline: none;
+
+  // Stretched link: cover the whole row so the entire row stays clickable,
+  // while keeping a single focusable navigation target per row.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
   }
 }
 
@@ -83,16 +103,6 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--cx-text-primary);
-}
-
-.policy-desc {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--cx-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 28.125rem;
 }
 
 .view-icon {

@@ -7,6 +7,12 @@
   gap: 24px;
 }
 
+@media (max-width: 60rem) {
+  .policy-editor {
+    padding: 1.75rem 1.25rem;
+  }
+}
+
 .editor-header {
   h1 {
     margin: 0;
@@ -28,6 +34,7 @@
 }
 
 .skeleton-bar {
+  max-width: 100%;
   background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
   background-size: 200% 100%;
   animation: pulse 1.4s infinite;

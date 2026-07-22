@@ -31,7 +31,9 @@
 
   &__category-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    // min(...) keeps the grid from forcing a fixed 260px track wider than a
+    // narrow (320px) viewport — avoids horizontal overflow at 400% zoom.
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
     gap: 1rem;
   }
 

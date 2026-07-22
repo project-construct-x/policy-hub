@@ -6,7 +6,7 @@
       <p class="description">{{ t('home.description') }}</p>
       <div class="actions">
         <a routerLink="/policies/new" cx-button>
-          <span class="material-icons">add</span>
+          <span class="material-icons" aria-hidden="true">add</span>
           {{ t('home.ctaCreate') }}
         </a>
         <a routerLink="/policies" cx-button variant="outlined" color="neutral">
@@ -16,7 +16,7 @@
     </div>
 
     <div class="orientation-box">
-      <h3 class="orientation-title">{{ t('home.orientation.title') }}</h3>
+      <h2 class="orientation-title">{{ t('home.orientation.title') }}</h2>
       <p class="orientation-desc">{{ t('home.orientation.description') }}</p>
       <div class="orientation-step">
         <span class="step-number">1</span>
@@ -60,9 +60,9 @@
     @if (recentPolicies().length > 0) {
       <app-cx-policy-table [policies]="recentPolicies()" />
     } @else {
-      <app-cx-empty-state icon="description" [title]="t('policies.empty.title')">
+      <app-cx-empty-state icon="description" headingLevel="h3" [title]="t('policies.empty.title')">
         <a routerLink="/policies/new" cx-button cxCta>
-          <span class="material-icons">add</span>
+          <span class="material-icons" aria-hidden="true">add</span>
           {{ t('policies.empty.cta') }}
         </a>
       </app-cx-empty-state>

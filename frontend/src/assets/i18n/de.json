@@ -1,4 +1,48 @@
 {
+  "a11y": {
+    "skipToContent": "Zum Hauptinhalt springen",
+    "titleSuffix": "Policy Hub",
+    "pageTitle": {
+      "home": "Start",
+      "policies": "Policy-Übersicht",
+      "policyNew": "Neue Policy erstellen",
+      "policyDetail": "Policy-Details",
+      "policyEdit": "Policy bearbeiten"
+    },
+    "navigatedTo": "Navigiert zu {{title}}",
+    "mainNav": "Hauptnavigation",
+    "language": {
+      "group": "Sprache",
+      "switchTo": "Sprache auf {{lang}} umstellen"
+    },
+    "search": {
+      "label": "Nach Policy-ID suchen"
+    },
+    "filter": {
+      "category": "Nach Kategorie filtern"
+    },
+    "category": {
+      "group": "Kategorie wählen"
+    },
+    "pagination": {
+      "nav": "Seitennummerierung",
+      "previous": "Vorherige Seite",
+      "next": "Nächste Seite",
+      "goToPage": "Zu Seite {{page}}"
+    },
+    "table": {
+      "caption": "Liste der Policies"
+    },
+    "loading": "Inhalt wird geladen",
+    "requiredField": "Pflichtfeld",
+    "formInvalid": "Das Formular enthält Fehler. Bitte prüfen Sie die markierten Felder.",
+    "severity": {
+      "success": "Erfolg",
+      "error": "Fehler",
+      "info": "Hinweis",
+      "warning": "Warnung"
+    }
+  },
   "header": {
     "productLabel": "Policy Hub",
     "start": "Start",

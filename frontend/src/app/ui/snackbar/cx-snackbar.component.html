@@ -1,11 +1,12 @@
-<span
-  matSnackBarLabel
-  [attr.data-cy]="'snackbar-' + snackBarRef.containerInstance.snackBarConfig.data.type"
->
-  {{ snackBarRef.containerInstance.snackBarConfig.data.message }}
-</span>
-<span matSnackBarActions>
-  <button cx-button variant="text" matSnackBarAction (click)="snackBarRef.dismissWithAction()">
-    {{ snackBarRef.containerInstance.snackBarConfig.data.action || 'OK' }}
-  </button>
-</span>
+<ng-container *transloco="let t">
+  <span matSnackBarLabel>
+    <span class="material-icons" aria-hidden="true" style="margin-right: 0.5rem; font-size: 1.125rem; line-height: 1;">{{ icon }}</span>
+    <span class="cx-sr-only">{{ t('a11y.severity.' + data.type) }}: </span>
+    {{ data.message }}
+  </span>
+  <span matSnackBarActions>
+    <button cx-button variant="text" matSnackBarAction (click)="snackBarRef.dismissWithAction()">
+      {{ data.action || 'OK' }}
+    </button>
+  </span>
+</ng-container>

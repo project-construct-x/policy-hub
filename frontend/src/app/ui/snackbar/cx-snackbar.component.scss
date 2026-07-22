@@ -1,3 +1,8 @@
 :host {
   display: flex;
 }
+
+[matSnackBarLabel] {
+  display: flex;
+  align-items: center !important;
+}

@@ -3,7 +3,20 @@
     <span class="material-icons" aria-hidden="true">{{ icon() }}</span>
   </div>
 
-  <h2 class="empty-title">{{ title() }}</h2>
+  @switch (headingLevel()) {
+    @case ('h1') {
+      <h1 class="empty-title">{{ title() }}</h1>
+    }
+    @case ('h3') {
+      <h3 class="empty-title">{{ title() }}</h3>
+    }
+    @case ('h4') {
+      <h4 class="empty-title">{{ title() }}</h4>
+    }
+    @default {
+      <h2 class="empty-title">{{ title() }}</h2>
+    }
+  }
 
   <ng-content select="[cxCta]" />
 </div>

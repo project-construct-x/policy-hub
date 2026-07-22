@@ -1,7 +1,7 @@
 <article class="ce-card" *transloco="let t" [attr.data-cy]="'constraint-card-' + constraint().type">
   <header class="ce-card__header">
     <div class="ce-card__title">
-      <mat-icon class="ce-card__icon">{{ meta().icon }}</mat-icon>
+      <mat-icon class="ce-card__icon" aria-hidden="true">{{ meta().icon }}</mat-icon>
       <div>
         <h4>{{ t(meta().labelKey) }}</h4>
         <p>{{ t(meta().descriptionKey) }}</p>

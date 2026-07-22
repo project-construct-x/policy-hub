@@ -1,4 +1,48 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "titleSuffix": "Policy Hub",
+    "pageTitle": {
+      "home": "Home",
+      "policies": "Policies",
+      "policyNew": "Create new policy",
+      "policyDetail": "Policy details",
+      "policyEdit": "Edit policy"
+    },
+    "navigatedTo": "Navigated to {{title}}",
+    "mainNav": "Main navigation",
+    "language": {
+      "group": "Language",
+      "switchTo": "Switch language to {{lang}}"
+    },
+    "search": {
+      "label": "Search by policy ID"
+    },
+    "filter": {
+      "category": "Filter by category"
+    },
+    "category": {
+      "group": "Select category"
+    },
+    "pagination": {
+      "nav": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page",
+      "goToPage": "Go to page {{page}}"
+    },
+    "table": {
+      "caption": "List of policies"
+    },
+    "loading": "Loading content",
+    "requiredField": "Required field",
+    "formInvalid": "The form contains errors. Please review the highlighted fields.",
+    "severity": {
+      "success": "Success",
+      "error": "Error",
+      "info": "Information",
+      "warning": "Warning"
+    }
+  },
   "header": {
     "productLabel": "Policy Hub",
     "start": "Home",

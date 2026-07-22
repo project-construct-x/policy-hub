@@ -6,12 +6,13 @@ import {
 } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
-import { provideRouter } from '@angular/router';
+import { provideRouter, TitleStrategy } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 import { provideTransloco } from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './services/transloco-loader.service';
+import { CxTitleStrategy } from '@services/a11y/title-strategy.service';
 import { CxDateAdapter } from '@shared/adapters/cx-date.adapter';
 
 import { routes } from './app.routes';
@@ -36,6 +37,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideAnimationsAsync(),
+    { provide: TitleStrategy, useClass: CxTitleStrategy },
     { provide: LOCALE_ID, useValue: 'de-DE' },
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
     { provide: MAT_DATE_FORMATS, useValue: CX_DATE_FORMATS },

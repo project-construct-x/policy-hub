@@ -102,7 +102,7 @@ export class PolicyDetailPageComponent implements OnInit {
       if (confirmed) {
         this.policyService.deletePolicy(p.id).subscribe({
           next: () => {
-            this.notification.success(
+            this.notification.error(
               this.transloco.translate('policyDetail.notifications.deleteSuccess'),
             );
             this.router.navigate(['/policies']);

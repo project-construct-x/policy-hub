@@ -9,9 +9,10 @@
   </header>
 
   @if (loading()) {
-    <div class="loading">
-      <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
-      <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
+    <div class="loading" role="status">
+      <span class="cx-sr-only">{{ t('a11y.loading') }}</span>
+      <div class="skeleton-bar" style="width: 280px; height: 24px" aria-hidden="true"></div>
+      <div class="skeleton-bar" style="width: 520px; height: 14px" aria-hidden="true"></div>
     </div>
   } @else if (!isEditMode() || initialPolicy()) {
     <app-policy-builder

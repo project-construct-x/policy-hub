@@ -1,6 +1,8 @@
+<a class="cx-skip-link" href="#main-content" *transloco="let t">{{ t('a11y.skipToContent') }}</a>
+
 <app-header />
 
-<main class="app-content">
+<main id="main-content" class="app-content" tabindex="-1">
   <router-outlet />
 </main>
 

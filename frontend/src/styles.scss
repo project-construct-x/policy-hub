@@ -92,6 +92,58 @@ b {
 }
 
 // ============================================================
+// Accessibility utilities
+// ============================================================
+
+// Visually hidden, but available to screen readers (labels, live-region text).
+.cx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Skip link: off-screen until focused, then pinned to the top-left.
+.cx-skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  background-color: var(--cx-bg-card);
+  color: var(--cx-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--cx-orange);
+  border-radius: 0 0 4px 0;
+  transform: translateY(-120%);
+  transition: transform 0.15s ease-in-out;
+
+  &:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--cx-orange);
+    outline-offset: 2px;
+  }
+}
+
+// Respect the user's reduced-motion preference (WCAG-friendly default).
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ============================================================
 // Angular Material overlay overrides
 // (Select / Autocomplete / Menu panels are rendered at body
 //  level via CDK overlay — component-scoped styles cannot reach

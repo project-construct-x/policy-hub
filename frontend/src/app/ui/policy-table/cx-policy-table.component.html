@@ -1,33 +1,41 @@
-<div class="cx-policy-table" *transloco="let t">
-  @if (showHeader()) {
-    <div class="table-header">
-      <span class="col-name">{{ t('policies.table.policyId') }}</span>
-      <span class="col-category">{{ t('policies.table.category') }}</span>
-      <span class="col-date">{{ t('policies.table.lastChange') }}</span>
-      @if (showAction()) {
-        <span class="col-action"></span>
+<div class="cx-policy-table-scroll" *transloco="let t">
+  <table class="cx-policy-table">
+    <caption class="cx-sr-only">
+      {{
+        t('a11y.table.caption')
+      }}
+    </caption>
+    @if (showHeader()) {
+      <thead>
+        <tr>
+          <th scope="col" class="col-name">{{ t('policies.table.policyId') }}</th>
+          <th scope="col" class="col-category">{{ t('policies.table.category') }}</th>
+          <th scope="col" class="col-date">{{ t('policies.table.lastChange') }}</th>
+          @if (showAction()) {
+            <th scope="col" class="col-action"></th>
+          }
+        </tr>
+      </thead>
+    }
+    <tbody>
+      @for (policy of policies(); track policy.id) {
+        <tr class="table-row" [attr.aria-label]="policy.policyId" data-cy="policy-row">
+          <td class="col-name">
+            <a [routerLink]="['/policies', policy.id]" class="policy-link">
+              <span class="policy-name">{{ policy.policyId }}</span>
+            </a>
+          </td>
+          <td class="col-category">
+            <app-cx-category-badge [category]="policy.category" />
+          </td>
+          <td class="col-date">{{ policy.updatedAt | relativeDate }}</td>
+          @if (showAction()) {
+            <td class="col-action">
+              <span class="material-icons view-icon" aria-hidden="true">visibility</span>
+            </td>
+          }
+        </tr>
       }
-    </div>
-  }
-  @for (policy of policies(); track policy.id) {
-    <a
-      [routerLink]="['/policies', policy.id]"
-      class="table-row"
-      [attr.aria-label]="policy.policyId"
-      data-cy="policy-row"
-    >
-      <div class="col-name">
-        <span class="policy-name">{{ policy.policyId }}</span>
-      </div>
-      <span class="col-category">
-        <app-cx-category-badge [category]="policy.category" />
-      </span>
-      <span class="col-date">{{ policy.updatedAt | relativeDate }}</span>
-      @if (showAction()) {
-        <span class="col-action">
-          <span class="material-icons view-icon" aria-hidden="true">visibility</span>
-        </span>
-      }
-    </a>
-  }
+    </tbody>
+  </table>
 </div>

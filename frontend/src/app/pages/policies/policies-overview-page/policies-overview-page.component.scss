@@ -43,6 +43,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .search-field {
@@ -56,6 +57,14 @@
   background: var(--cx-white);
   border: 0.0625rem solid var(--cx-border-color);
   border-radius: 0.5rem;
+
+  // Visible keyboard focus indicator (the native input's own outline is
+  // suppressed, so the ring is shown on the wrapping field instead).
+  &:focus-within {
+    border-color: var(--cx-orange);
+    outline: 2px solid var(--cx-orange);
+    outline-offset: 1px;
+  }
 
   .search-icon {
     font-size: 1rem;
@@ -93,6 +102,12 @@
     appearance: none;
     cursor: pointer;
     outline: none;
+
+    &:focus-visible {
+      border-color: var(--cx-orange);
+      outline: 2px solid var(--cx-orange);
+      outline-offset: 1px;
+    }
   }
 
   .dropdown-icon {
@@ -215,6 +230,29 @@
   font-size: 0.8125rem;
   font-weight: 400;
   color: var(--cx-text-tertiary);
+}
+
+// ============================================================
+// Responsive / reflow (WCAG 1.4.10 — usable at 320px & 400% zoom)
+// ============================================================
+@media (max-width: 60rem) {
+  .policies-overview {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .page-top {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .search-field {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .filter-dropdown select {
+    width: 100%;
+  }
 }
 
 // Empty State styling handled by CxEmptyStateComponent
