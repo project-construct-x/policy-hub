@@ -27,7 +27,7 @@ backend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-backend
     # Tag is maintained by the CI commit-back step; "latest" is only a placeholder.
-    tag: c23def4
+    tag: 0b866e4
     pullPolicy: IfNotPresent
   replicaCount: 1
   # Spring profile driving application-prod.yaml.
@@ -46,7 +46,7 @@ backend:
 frontend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-frontend
-    tag: c23def4
+    tag: 0b866e4
     pullPolicy: IfNotPresent
   replicaCount: 2
   service:
