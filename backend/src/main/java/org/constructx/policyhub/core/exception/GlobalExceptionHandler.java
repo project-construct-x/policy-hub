@@ -1,9 +1,12 @@
 package org.constructx.policyhub.core.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.constructx.policyhub.policies.application.DuplicatePolicyIdException;
+import org.constructx.policyhub.policies.application.InvalidPolicyException;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,6 +64,66 @@ public class GlobalExceptionHandler {
                         HttpStatus.NOT_FOUND.value(),
                         "Not Found",
                         ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(InvalidPolicyException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPolicyException(
+            InvalidPolicyException ex,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "Invalid policy on {}: {}",
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Bad Request",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(DuplicatePolicyIdException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatePolicyIdException(
+            DuplicatePolicyIdException ex,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "Duplicate policyId on {}: {}",
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ErrorResponse.of(
+                        HttpStatus.CONFLICT.value(),
+                        "Conflict",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException ex,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "Unreadable request body on {}: {}",
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Bad Request",
+                        "Request body is malformed or contains unsupported values",
                         request.getRequestURI()
                 ));
     }

@@ -24,15 +24,18 @@ public class PolicyService {
 
     private final PolicyRepository policyRepository;
     private final PolicyMapper policyMapper;
+    private final PolicyValidator policyValidator;
     private final OdrlPolicyMapper odrlPolicyService;
 
     public PolicyService(
             PolicyRepository policyRepository,
             PolicyMapper policyMapper, 
-            OdrlPolicyMapper odrlPolicyService
+            OdrlPolicyMapper odrlPolicyService,
+            PolicyValidator policyValidator
     ) {
         this.policyRepository = policyRepository;
         this.policyMapper = policyMapper;
+        this.policyValidator = policyValidator;
         this.odrlPolicyService = odrlPolicyService;
     }
 
@@ -62,12 +65,21 @@ public class PolicyService {
         return policyRepository.findById(id)
                 .map(policyMapper::toDomain)
                 .map(odrlPolicyService::policyToOdrl)
-                .orElseThrow();
+                .orElseThrow(() -> new PolicyNotFoundException(id));
     }
 
     @Transactional
     public PolicyResponse createPolicy(CreatePolicyRequest request) {
         log.info("Creating policy with policyId {}", request.policyId());
+
+        policyValidator.validate(
+                request.category(),
+                request.constraints()
+        );
+
+        if (policyRepository.existsByPolicyId(request.policyId())) {
+            throw new DuplicatePolicyIdException(request.policyId());
+        }
 
         Policy policy = new Policy(
                 null,
@@ -93,8 +105,19 @@ public class PolicyService {
     ) {
         log.info("Updating policy with id {}", id);
 
+        policyValidator.validate(
+                request.category(),
+                request.constraints()
+        );
+
         PolicyEntity entity = policyRepository.findById(id)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
+
+        policyRepository.findByPolicyId(request.policyId())
+                .filter(existing -> !existing.getId().equals(id))
+                .ifPresent(existing -> {
+                    throw new DuplicatePolicyIdException(request.policyId());
+                });
 
         policyMapper.updateEntity(request, entity);
 

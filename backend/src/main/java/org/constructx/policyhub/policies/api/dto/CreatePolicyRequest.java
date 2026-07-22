@@ -9,17 +9,17 @@ import org.constructx.policyhub.policies.domain.PolicyCategory;
 import java.util.List;
 
 public record CreatePolicyRequest(
-        @NotBlank
-        @Size(max = 200)
+        @NotBlank(message = "policyId must not be blank")
+        @Size(max = 200, message = "policyId must not exceed 200 characters")
         String policyId,
 
-        @NotNull
+        @NotNull(message = "category is required")
         PolicyCategory category,
 
-        @NotNull
+        @NotNull(message = "constraints are required")
         List<JsonNode> constraints,
 
-        @NotBlank
+        @NotBlank(message = "legalText must not be blank")
         String legalText
 ) {
 }
