@@ -1,7 +1,7 @@
 <div class="pd" *transloco="let t">
   @if (loading()) {
     <div class="pd__loading" role="status">
-      <span class="cx-sr-only">{{ t('a11y.loading') }}</span>
+      <span class="con-x-sr-only">{{ t('a11y.loading') }}</span>
       <div class="skeleton-bar" style="width: 280px; height: 24px" aria-hidden="true"></div>
       <div class="skeleton-bar" style="width: 520px; height: 14px" aria-hidden="true"></div>
     </div>
@@ -10,7 +10,7 @@
     <div class="pd__actions">
       <a
         routerLink="/policies"
-        cx-button
+        con-x-button
         variant="outlined"
         color="neutral"
         data-cy="back-to-overview"
@@ -20,7 +20,7 @@
       </a>
       <span class="pd__spacer"></span>
       <button
-        cx-button
+        con-x-button
         variant="outlined"
         color="danger"
         (click)="deletePolicy()"
@@ -29,7 +29,7 @@
         <span class="material-icons" aria-hidden="true">delete</span>
         {{ t('policyDetail.delete') }}
       </button>
-      <a [routerLink]="['/policies', p.id, 'edit']" cx-button data-cy="edit-policy">
+      <a [routerLink]="['/policies', p.id, 'edit']" con-x-button data-cy="edit-policy">
         <span class="material-icons" aria-hidden="true">edit</span>
         {{ t('policyDetail.edit') }}
       </a>
@@ -38,7 +38,7 @@
     <!-- Hero -->
     <header class="pd__hero">
       <div class="pd__badges">
-        <app-cx-category-badge [category]="p.category" />
+        <app-con-x-category-badge [category]="p.category" />
       </div>
       <h1 class="pd__title" data-cy="policy-title">{{ p.policyId }}</h1>
     </header>

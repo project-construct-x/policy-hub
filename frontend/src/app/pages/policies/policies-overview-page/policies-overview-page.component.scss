@@ -24,7 +24,7 @@
   h1 {
     font-size: 1.625rem;
     font-weight: 600;
-    color: var(--cx-text-primary);
+    color: var(--con-x-text-primary);
     margin: 0;
   }
 }
@@ -32,7 +32,7 @@
 .page-subtitle {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   margin: 0;
 }
 
@@ -54,21 +54,21 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0 0.875rem;
-  background: var(--cx-white);
-  border: 0.0625rem solid var(--cx-border-color);
+  background: var(--con-x-white);
+  border: 0.0625rem solid var(--con-x-border-color);
   border-radius: 0.5rem;
 
   // Visible keyboard focus indicator (the native input's own outline is
   // suppressed, so the ring is shown on the wrapping field instead).
   &:focus-within {
-    border-color: var(--cx-orange);
-    outline: 2px solid var(--cx-orange);
+    border-color: var(--con-x-orange);
+    outline: 2px solid var(--con-x-orange);
     outline-offset: 1px;
   }
 
   .search-icon {
     font-size: 1rem;
-    color: var(--cx-text-tertiary);
+    color: var(--con-x-text-tertiary);
   }
 
   input {
@@ -78,10 +78,10 @@
     background: none;
     font-size: 0.8125rem;
     font-weight: 400;
-    color: var(--cx-text-primary);
+    color: var(--con-x-text-primary);
 
     &::placeholder {
-      color: var(--cx-text-tertiary);
+      color: var(--con-x-text-tertiary);
     }
   }
 }
@@ -93,19 +93,19 @@
   select {
     height: 2.625rem;
     padding: 0 2.25rem 0 1rem;
-    border: 0.0625rem solid var(--cx-border-color);
+    border: 0.0625rem solid var(--con-x-border-color);
     border-radius: 0.5rem;
-    background: var(--cx-white);
+    background: var(--con-x-white);
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--cx-text-secondary);
+    color: var(--con-x-text-secondary);
     appearance: none;
     cursor: pointer;
     outline: none;
 
     &:focus-visible {
-      border-color: var(--cx-orange);
-      outline: 2px solid var(--cx-orange);
+      border-color: var(--con-x-orange);
+      outline: 2px solid var(--con-x-orange);
       outline-offset: 1px;
     }
   }
@@ -116,7 +116,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 1rem;
-    color: var(--cx-text-tertiary);
+    color: var(--con-x-text-tertiary);
     pointer-events: none;
   }
 }
@@ -133,7 +133,7 @@
 .pagination-info {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--cx-text-tertiary);
+  color: var(--con-x-text-tertiary);
 }
 
 .pagination-spacer {
@@ -151,22 +151,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0.0625rem solid var(--cx-border-color);
+  border: 0.0625rem solid var(--con-x-border-color);
   border-radius: 0.5rem;
-  background: var(--cx-white);
+  background: var(--con-x-white);
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
   cursor: pointer;
 
   &:hover:not(:disabled):not(.active) {
-    background-color: var(--cx-bg-page);
+    background-color: var(--con-x-bg-page);
   }
 
   &.active {
-    background-color: var(--cx-light-orange);
-    border-color: var(--cx-light-orange);
-    color: var(--cx-orange);
+    background-color: var(--con-x-light-orange);
+    border-color: var(--con-x-light-orange);
+    color: var(--con-x-orange);
     font-weight: 600;
   }
 
@@ -184,8 +184,8 @@
 // Loading State (Skeleton)
 // ============================================================
 .skeleton-list {
-  background: var(--cx-white);
-  border: 0.0625rem solid var(--cx-border-color);
+  background: var(--con-x-white);
+  border: 0.0625rem solid var(--con-x-border-color);
   border-radius: 0.625rem;
   overflow: hidden;
 }
@@ -196,7 +196,7 @@
   gap: 0.625rem;
   padding: 1rem 1.25rem;
   height: 4.875rem;
-  border-bottom: 0.0625rem solid var(--cx-border-color);
+  border-bottom: 0.0625rem solid var(--con-x-border-color);
 
   &:last-child {
     border-bottom: none;
@@ -205,7 +205,7 @@
 
 .skeleton-bar {
   border-radius: 0.25rem;
-  background-color: var(--cx-light-gray);
+  background-color: var(--con-x-light-gray);
 
   &.skeleton-title {
     width: 22.5rem;
@@ -229,7 +229,7 @@
 .loading-hint {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--cx-text-tertiary);
+  color: var(--con-x-text-tertiary);
 }
 
 // ============================================================
@@ -255,7 +255,7 @@
   }
 }
 
-// Empty State styling handled by CxEmptyStateComponent
+// Empty State styling handled by ConXEmptyStateComponent
 
 // ============================================================
 // Error State
@@ -271,14 +271,14 @@
   h2 {
     font-size: 1.375rem;
     font-weight: 600;
-    color: var(--cx-text-primary);
+    color: var(--con-x-text-primary);
     margin: 0;
   }
 
   p {
     font-size: 0.875rem;
     font-weight: 400;
-    color: var(--cx-text-secondary);
+    color: var(--con-x-text-secondary);
     line-height: 1.55;
     text-align: center;
     max-width: 26.875rem;
@@ -290,14 +290,14 @@
   width: 5.25rem;
   height: 5.25rem;
   border-radius: 50%;
-  background-color: var(--cx-light-yellow);
+  background-color: var(--con-x-light-yellow);
   display: flex;
   align-items: center;
   justify-content: center;
 
   .material-icons {
     font-size: 2.375rem;
-    color: var(--cx-warning);
+    color: var(--con-x-warning);
   }
 }
 

@@ -14,12 +14,12 @@
       margin: 0 0 0.25rem;
       font-size: 1.25rem;
       font-weight: 600;
-      color: var(--cx-text-primary, #111111);
+      color: var(--con-x-text-primary, #111111);
     }
 
     p {
       margin: 0;
-      color: var(--cx-text-secondary, #555555);
+      color: var(--con-x-text-secondary, #555555);
       font-size: 0.875rem;
     }
   }
@@ -50,7 +50,7 @@
     transition: all 0.15s ease-in-out;
 
     mat-icon {
-      color: var(--cx-orange, #e53d17);
+      color: var(--con-x-orange, #e53d17);
       font-size: 32px;
       width: 32px;
       height: 32px;
@@ -70,13 +70,13 @@
     }
 
     &:hover:not(.is-active) {
-      border-color: var(--cx-light-blue, #c9d8e0);
+      border-color: var(--con-x-light-blue, #c9d8e0);
       background: #f9fbfd;
     }
 
     &.is-active {
-      border-color: var(--cx-orange, #e53d17);
-      background: var(--cx-light-orange, #ebd8d0);
+      border-color: var(--con-x-orange, #e53d17);
+      background: var(--con-x-light-orange, #ebd8d0);
       box-shadow: 0 2px 6px rgba(229, 61, 23, 0.1);
     }
   }
@@ -96,8 +96,8 @@
 
     span {
       padding: 0.25rem 0.75rem;
-      background: var(--cx-light-orange, #ebd8d0);
-      color: var(--cx-orange, #e53d17);
+      background: var(--con-x-light-orange, #ebd8d0);
+      color: var(--con-x-orange, #e53d17);
       border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 700;

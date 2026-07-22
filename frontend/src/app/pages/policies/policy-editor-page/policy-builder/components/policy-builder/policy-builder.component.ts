@@ -17,7 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
 import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import {
@@ -45,7 +45,7 @@ export interface PolicyDraft {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    CxButtonComponent,
+    ConXButtonComponent,
     ConstraintPaletteComponent,
     ConstraintEditorCardComponent,
   ],

@@ -12,7 +12,7 @@ import { filter } from 'rxjs';
  * translation file finishes loading.
  */
 @Injectable({ providedIn: 'root' })
-export class CxTitleStrategy extends TitleStrategy {
+export class ConXTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
   private readonly transloco = inject(TranslocoService);
 

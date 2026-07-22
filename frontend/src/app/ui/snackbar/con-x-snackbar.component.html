@@ -1,11 +1,11 @@
 <ng-container *transloco="let t">
-  <span matSnackBarLabel>
+  <span matSnackBarLabel [attr.data-cy]="'snackbar-' + data.type">
     <span class="material-icons" aria-hidden="true" style="margin-right: 0.5rem; font-size: 1.125rem; line-height: 1;">{{ icon }}</span>
-    <span class="cx-sr-only">{{ t('a11y.severity.' + data.type) }}: </span>
+    <span class="con-x-sr-only">{{ t('a11y.severity.' + data.type) }}: </span>
     {{ data.message }}
   </span>
   <span matSnackBarActions>
-    <button cx-button variant="text" matSnackBarAction (click)="snackBarRef.dismissWithAction()">
+    <button con-x-button variant="text" matSnackBarAction (click)="snackBarRef.dismissWithAction()">
       {{ data.action || 'OK' }}
     </button>
   </span>

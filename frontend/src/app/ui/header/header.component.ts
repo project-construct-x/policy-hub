@@ -2,11 +2,11 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NotificationService } from '@services/notification/notification.service';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, TranslocoDirective, CxButtonComponent],
+  imports: [RouterLink, RouterLinkActive, TranslocoDirective, ConXButtonComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })

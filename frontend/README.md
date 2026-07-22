@@ -110,7 +110,7 @@ frontend/
 │     │     └─ policy-editor-page/            # Policy erstellen/bearbeiten
 │     │        └─ policy-builder/             # Kern-Feature: Wizard (components/metadata/validators/helpers)
 │     │
-│     ├─ ui/                                  # Wiederverwendbares Design-System (cx-*)
+│     ├─ ui/                                  # Wiederverwendbares Design-System (con-x-*)
 │     │  ├─ button/  category-badge/  empty-state/  snackbar/  policy-table/
 │     │  ├─ confirm-delete-dialog/
 │     │  ├─ header/                           # App-Header mit Navigation
@@ -123,7 +123,7 @@ frontend/
 │     ├─ shared/                              # Gemeinsame Types & Utilities
 │     │  ├─ types/                            # TypeScript-Interfaces (policy.model, constraint.model)
 │     │  ├─ pipes/                            # Pipes (RelativeDatePipe, etc.)
-│     │  └─ adapters/                         # z.B. CxDateAdapter
+│     │  └─ adapters/                         # z.B. ConXDateAdapter
 │     │
 │     └─ mocks/                               # MirageJS-Server + Mock-Daten (empty/few/many)
 │
@@ -143,7 +143,7 @@ frontend/
 | Ordner            | Zweck                                                                              |
 | ----------------- | ---------------------------------------------------------------------------------- |
 | **pages/**        | Page-Komponenten für Routes (Selektor-Präfix `app-`). Jede Page ist eine Seite.    |
-| **ui/**           | Wiederverwendbare, präsentationsnahe UI-Komponenten (Design-System, Präfix `cx-`). |
+| **ui/**           | Wiederverwendbare, präsentationsnahe UI-Komponenten (Design-System, Präfix `con-x-`). |
 | **services/**     | Services für API-Calls & abgeleitete Logik (z.B. ODRL/EDC-Mapping).                |
 | **shared/**       | Gemeinsame Types (String-Union-/Discriminated-Union-Modelle), Pipes, Adapters.     |
 | **mocks/**        | MirageJS-Mock-Server samt Beispieldaten für die lokale Entwicklung.                |

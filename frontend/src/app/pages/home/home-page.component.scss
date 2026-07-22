@@ -26,13 +26,13 @@
 .eyebrow {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--cx-orange);
+  color: var(--con-x-orange);
 }
 
 .title {
   font-size: 2.125rem;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
   margin: 0;
   line-height: 1.2;
 }
@@ -40,7 +40,7 @@
 .description {
   font-size: 0.9375rem;
   font-weight: 400;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   line-height: 1.6;
   margin: 0;
 }
@@ -58,8 +58,8 @@
 .orientation-box {
   flex: 0 1 26.25rem;
   min-width: 0;
-  background-color: var(--cx-bg-page);
-  border: 0.0625rem solid var(--cx-border-color);
+  background-color: var(--con-x-bg-page);
+  border: 0.0625rem solid var(--con-x-border-color);
   border-radius: 0.75rem;
   padding: 1.75rem;
   display: flex;
@@ -70,14 +70,14 @@
 .orientation-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
   margin: 0;
 }
 
 .orientation-desc {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   line-height: 1.55;
   margin: 0;
 }
@@ -95,16 +95,16 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background-color: var(--cx-light-orange);
+  background-color: var(--con-x-light-orange);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--cx-orange);
+  color: var(--con-x-orange);
 }
 
 .step-text {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
 }
 
 // ============================================================
@@ -118,8 +118,8 @@
 .summary-card {
   flex: 1;
   height: 8.25rem;
-  background: var(--cx-white);
-  border: 0.0625rem solid var(--cx-border-color);
+  background: var(--con-x-white);
+  border: 0.0625rem solid var(--con-x-border-color);
   border-radius: 0.5rem;
   padding: 1.125rem;
   display: flex;
@@ -130,19 +130,19 @@
 .card-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
 }
 
 .card-value {
   font-size: 1.875rem;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
 }
 
 .card-desc {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   line-height: 1.45;
 }
 
@@ -163,7 +163,7 @@
 .recent-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
   margin: 0;
   flex: 1;
 }
@@ -171,7 +171,7 @@
 .recent-link {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--cx-orange);
+  color: var(--con-x-orange);
   text-decoration: none;
 
   &:hover {
@@ -179,7 +179,7 @@
   }
 }
 
-// Table styling handled by CxPolicyTableComponent
+// Table styling handled by ConXPolicyTableComponent
 
 // ============================================================
 // Responsive / reflow (WCAG 1.4.10 — usable at 320px & 400% zoom)

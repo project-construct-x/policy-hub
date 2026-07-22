@@ -8,9 +8,9 @@ und über den **European Accessibility Act** (in Kraft seit Juni 2025) auch rech
 - **App-Shell:** Skip-Link („Zum Hauptinhalt springen"), `<main id="main-content" tabindex="-1">`,
   Fokus wandert bei Routenwechsel auf `<main>`, neuer Seitentitel wird per CDK `LiveAnnouncer`
   angesagt.
-- **Seitentitel:** pro Route via `CxTitleStrategy` (übersetzt, Format `"<Seite> · Policy Hub"`).
+- **Seitentitel:** pro Route via `ConXTitleStrategy` (übersetzt, Format `"<Seite> · Policy Hub"`).
 - **Sprache:** `<html lang>` wird bei DE/EN-Wechsel dynamisch aktualisiert; Titel neu übersetzt.
-- **Struktur:** semantische Tabelle in `cx-policy-table` (`<table>`/`<th scope>`/`<caption>`),
+- **Struktur:** semantische Tabelle in `con-x-policy-table` (`<table>`/`<th scope>`/`<caption>`),
   lückenlose Überschriften-Reihenfolge, `aria-current` in der Navigation.
 - **Formulare:** Labels/ARIA für Suche & Filter, Kategorie-Auswahl als `radiogroup` (Pfeiltasten),
   Palette-Toggles mit `aria-pressed`, Fehler-Ansage + Fokus auf erstes ungültiges Feld beim Absenden.
@@ -18,7 +18,7 @@ und über den **European Accessibility Act** (in Kraft seit Juni 2025) auch rech
   Snackbar mit Icon + verstecktem Severity-Wort (nicht nur Farbe) und assertive Politeness für
   Fehler/Warnungen.
 - **Icons:** dekorative Icons durchgängig `aria-hidden`; Icon-only-Buttons benannt; Dev-Guard in
-  `cx-button` warnt bei fehlendem Accessible Name.
+  `con-x-button` warnt bei fehlendem Accessible Name.
 - **Fokus:** sichtbare `:focus-visible`-Indikatoren (inkl. Suche/Filter, die vorher `outline:none`
   ohne Ersatz hatten).
 - **Motion:** globaler `prefers-reduced-motion`-Guard.

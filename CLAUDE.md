@@ -60,7 +60,7 @@ Environments: `src/environments/environment.ts` (`useMocks:false`), `environment
 - `pages/` — Routen-Ziele: `home`, `policies/{policies-overview-page, policy-detail-page,
   policy-editor-page}`; darunter `policy-editor-page/policy-builder/` (**Kern-Feature**, Wizard mit
   `components/`, `metadata/`, `validators/`, `helpers/`).
-- `ui/` — wiederverwendbares Design-System auf Angular Material (`cx-*`-Komponenten).
+- `ui/` — wiederverwendbares Design-System auf Angular Material (`con-x-*`-Komponenten).
 - `services/` — u.a. `services/policies/policy.service.ts` (HTTP-CRUD) und
   `services/policies/policy-mapper/policy-odrl.mapper.ts` (Domänenmodell → ODRL/EDC).
 - `shared/` — `types/` (Modelle), `pipes/`, `adapters/`.
@@ -74,9 +74,9 @@ Routing ist **lazy** (`app.routes.ts`). **Pfad-Aliase** statt Relativimporte:
   `inject()` statt Constructor-DI, `input()/input.required()/output()` statt `@Input/@Output`,
   `signal()/computed()/effect()`, `toSignal()` an der RxJS-Grenze. Templates: `@if/@for` mit `track`
   (kein `*ngIf/*ngFor`).
-- **Selektoren & Namen (ESLint erzwingt Präfixe `app` und `cx`, kebab-case):**
+- **Selektoren & Namen (ESLint erzwingt Präfixe `app` und `con-x`, kebab-case):**
   - `app-` = Pages/Features. Page-Dateien `*-page.component.ts`, Klasse `*PageComponent`.
-  - `cx-` = Design-System-UI. Klassen `Cx*Component`.
+  - `con-x-` = Design-System-UI. Klassen `ConX*Component`.
 - **Dateisuffixe:** `*.component/.service/.model/.mapper/.helper/.data/.pipe/.adapter.ts`,
   `*-metadata.ts`, `*-validators.ts`.
 - **Typisierung:** `strict` (+ verschärfte Flags). **String-Union-Types statt `enum`**; Domänentypen
@@ -90,20 +90,20 @@ Routing ist **lazy** (`app.routes.ts`). **Pfad-Aliase** statt Relativimporte:
     → `Observable<T>`, **keine** Business-Logik.
 - **i18n:** **keine literalen UI-Strings** — alles über Transloco-Keys (verschachteltes camelCase-
   Namespacing in `de.json`/`en.json`).
-- **Styling:** SCSS pro Komponente; globale `--cx-*`-Tokens in `styles.scss`; BEM-artige `cx-`-Klassen.
+- **Styling:** SCSS pro Komponente; globale `--con-x-*`-Tokens in `styles.scss`; BEM-artige `con-x-`-Klassen.
 - **Format:** Prettier `printWidth 100`, single quotes, 2 Spaces.
 
 ### Barrierefreiheit (a11y) — Konventionen
 Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/accessibility.md`.
 - **Keine literalen a11y-Texte:** alle `aria-label`/versteckten Texte/Seitentitel als Transloco-Keys
   im Namespace **`a11y`** (in `de.json` UND `en.json`).
-- **`.cx-sr-only`** (in `styles.scss`) für visuell versteckte, aber vorlesbare Texte nutzen.
-- **Seitentitel** pro Route über `CxTitleStrategy` (`services/a11y/`), Titel-Key in `app.routes.ts`
+- **`.con-x-sr-only`** (in `styles.scss`) für visuell versteckte, aber vorlesbare Texte nutzen.
+- **Seitentitel** pro Route über `ConXTitleStrategy` (`services/a11y/`), Titel-Key in `app.routes.ts`
   (`title: 'a11y.pageTitle.*'`). `<html lang>` wird in `App` bei Sprachwechsel gesetzt.
 - **Ansagen** dynamischer Änderungen (Routenwechsel, Formularfehler) via CDK **`LiveAnnouncer`**
   (`@angular/cdk/a11y`); Fokus-Trap in Dialogen liefert Angular Material.
 - **Muster:** dekorative Icons `aria-hidden="true"`; Icon-only-Buttons brauchen `aria-label`
-  (Dev-Guard in `cx-button` warnt); Toggle-Zustände über `aria-pressed`/`aria-checked`/
+  (Dev-Guard in `con-x-button` warnt); Toggle-Zustände über `aria-pressed`/`aria-checked`/
   `aria-current`; Lade-/Fehlerzustände als `role="status"`/`role="alert"`; sichtbare
   `:focus-visible`-Indikatoren (nie `outline:none` ohne Ersatz); globaler
   `prefers-reduced-motion`-Guard; Layouts reflow-fähig (320px / 400% Zoom).
@@ -118,7 +118,7 @@ Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/acce
   `policy-odrl.mapper.ts` (CX-Namespace `https://w3id.org/catenax/2025/9/policy/`).
 - **Mock-first:** `policy.service.ts` ruft echte HTTP-CRUD-Endpunkte auf; MirageJS fängt exakt diese
   ab, wenn `useMocks` gesetzt ist. Ein Mock-Data-Switcher bietet Datensatzgrößen `empty`/`few`/`many`.
-- **`cx-`-Design-System** als dünne, tokenbasierte Schicht über Angular Material.
+- **`con-x-`-Design-System** als dünne, tokenbasierte Schicht über Angular Material.
 - **Deutsch ist rechtlich maßgeblich** (z.B. generierter legalText wird immer auf Deutsch erzeugt),
   unabhängig von der aktiven UI-Sprache.
 
@@ -209,7 +209,7 @@ Diese Datei immer aktualisieren, wenn:
 
 ### Code-Review vor Submission
 Immer prüfen:
-- Naming-Conventions eingehalten (Selektor-Präfixe `app`/`cx`, Dateisuffixe, `*PageComponent`/`Cx*`)?
+- Naming-Conventions eingehalten (Selektor-Präfixe `app`/`con-x`, Dateisuffixe, `*PageComponent`/`ConX*`)?
 - Error Handling vorhanden (HTTP-Fehlerpfade, Nutzer-Feedback via NotificationService/Snackbar)?
 - Keine `console.log` im Production-Code?
 - TypeScript-Types vollständig?

@@ -12,14 +12,14 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 import { provideTransloco } from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './services/transloco-loader.service';
-import { CxTitleStrategy } from '@services/a11y/title-strategy.service';
-import { CxDateAdapter } from '@shared/adapters/cx-date.adapter';
+import { ConXTitleStrategy } from '@services/a11y/title-strategy.service';
+import { ConXDateAdapter } from '@shared/adapters/con-x-date.adapter';
 
 import { routes } from './app.routes';
 
 registerLocaleData(localeDe);
 
-export const CX_DATE_FORMATS = {
+export const CONX_DATE_FORMATS = {
   parse: {
     dateInput: 'DD.MM.YYYY',
   },
@@ -37,11 +37,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideAnimationsAsync(),
-    { provide: TitleStrategy, useClass: CxTitleStrategy },
+    { provide: TitleStrategy, useClass: ConXTitleStrategy },
     { provide: LOCALE_ID, useValue: 'de-DE' },
     { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
-    { provide: MAT_DATE_FORMATS, useValue: CX_DATE_FORMATS },
-    { provide: DateAdapter, useClass: CxDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CONX_DATE_FORMATS },
+    { provide: DateAdapter, useClass: ConXDateAdapter },
     provideTransloco({
       config: {
         availableLangs: ['de', 'en'],

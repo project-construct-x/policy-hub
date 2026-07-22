@@ -1,6 +1,6 @@
-<div class="cx-policy-table-scroll" *transloco="let t">
-  <table class="cx-policy-table">
-    <caption class="cx-sr-only">
+<div class="con-x-policy-table-scroll" *transloco="let t">
+  <table class="con-x-policy-table">
+    <caption class="con-x-sr-only">
       {{
         t('a11y.table.caption')
       }}
@@ -26,7 +26,7 @@
             </a>
           </td>
           <td class="col-category">
-            <app-cx-category-badge [category]="policy.category" />
+            <app-con-x-category-badge [category]="policy.category" />
           </td>
           <td class="col-date">{{ policy.updatedAt | relativeDate }}</td>
           @if (showAction()) {

@@ -9,21 +9,21 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'button[cx-button], a[cx-button]',
-  templateUrl: './cx-button.component.html',
-  styleUrl: './cx-button.component.scss',
+  selector: 'button[con-x-button], a[con-x-button]',
+  templateUrl: './con-x-button.component.html',
+  styleUrl: './con-x-button.component.scss',
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'cx-btn',
-    '[class.cx-btn--filled]': 'variant() === "filled"',
-    '[class.cx-btn--outlined]': 'variant() === "outlined"',
-    '[class.cx-btn--text]': 'variant() === "text"',
-    '[class.cx-btn--icon-only]': 'variant() === "icon"',
-    '[class.cx-btn--neutral]': 'color() === "neutral"',
-    '[class.cx-btn--danger]': 'color() === "danger"',
+    class: 'con-x-btn',
+    '[class.con-x-btn--filled]': 'variant() === "filled"',
+    '[class.con-x-btn--outlined]': 'variant() === "outlined"',
+    '[class.con-x-btn--text]': 'variant() === "text"',
+    '[class.con-x-btn--icon-only]': 'variant() === "icon"',
+    '[class.con-x-btn--neutral]': 'color() === "neutral"',
+    '[class.con-x-btn--danger]': 'color() === "danger"',
   },
 })
-export class CxButtonComponent {
+export class ConXButtonComponent {
   variant = input<'filled' | 'outlined' | 'text' | 'icon'>('filled');
   color = input<'primary' | 'neutral' | 'danger'>('primary');
 
@@ -39,7 +39,7 @@ export class CxButtonComponent {
           host.hasAttribute('aria-labelledby') ||
           host.hasAttribute('title');
         if (!hasName) {
-          console.warn('[cx-button] Icon-only button is missing an accessible name:', host);
+          console.warn('[con-x-button] Icon-only button is missing an accessible name:', host);
         }
       });
     }

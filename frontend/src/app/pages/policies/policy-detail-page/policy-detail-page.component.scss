@@ -36,7 +36,7 @@
     flex-direction: column;
     gap: 0.75rem;
     padding: 1.5rem 1.75rem;
-    background: var(--cx-bg-page, #fafafa);
+    background: var(--con-x-bg-page, #fafafa);
     border-radius: 14px;
   }
 
@@ -49,7 +49,7 @@
     margin: 0;
     font-size: 1.625rem;
     font-weight: 700;
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
     word-break: break-word;
   }
 
@@ -79,9 +79,9 @@
   // Info card (right sidebar)
   &__info-card {
     padding: 1.5rem;
-    background: var(--cx-bg-page, #fafafa);
-    border: 1px solid var(--cx-border-color, #e5e5e5);
-    border-top: 3px solid var(--cx-orange, #e53d17);
+    background: var(--con-x-bg-page, #fafafa);
+    border: 1px solid var(--con-x-border-color, #e5e5e5);
+    border-top: 3px solid var(--con-x-orange, #e53d17);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
@@ -89,7 +89,7 @@
       margin: 0 0 1rem;
       font-size: 1rem;
       font-weight: 600;
-      color: var(--cx-text-primary, #111111);
+      color: var(--con-x-text-primary, #111111);
     }
   }
 
@@ -98,7 +98,7 @@
     justify-content: space-between;
     align-items: baseline;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--cx-light-gray, #f4f3f3);
+    border-bottom: 1px solid var(--con-x-light-gray, #f4f3f3);
 
     &:last-child {
       border-bottom: none;
@@ -107,13 +107,13 @@
 
   &__info-label {
     font-size: 0.8125rem;
-    color: var(--cx-text-secondary, #555555);
+    color: var(--con-x-text-secondary, #555555);
   }
 
   &__info-value {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
   }
 
   // Content sections
@@ -127,7 +127,7 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
   }
 
   &__constraint-list {
@@ -143,8 +143,8 @@
 
     span {
       padding: 0.25rem 0.75rem;
-      background: var(--cx-light-orange, #ebd8d0);
-      color: var(--cx-orange, #e53d17);
+      background: var(--con-x-light-orange, #ebd8d0);
+      color: var(--con-x-orange, #e53d17);
       border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 700;
@@ -157,13 +157,13 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1.5rem;
-    border: 1px dashed var(--cx-light-blue, #c9d8e0);
+    border: 1px dashed var(--con-x-light-blue, #c9d8e0);
     border-radius: 10px;
-    background: var(--cx-light-gray, #f4f3f3);
-    color: var(--cx-text-secondary, #555555);
+    background: var(--con-x-light-gray, #f4f3f3);
+    color: var(--con-x-text-secondary, #555555);
 
     .material-icons {
-      color: var(--cx-orange, #e53d17);
+      color: var(--con-x-orange, #e53d17);
     }
 
     p {
@@ -178,18 +178,18 @@
 
   &__panel {
     border-radius: 12px !important;
-    border: 1px solid var(--cx-border-color, #e5e5e5) !important;
+    border: 1px solid var(--con-x-border-color, #e5e5e5) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
   }
 
   &__panel-icon {
     margin-right: 0.5rem;
-    color: var(--cx-orange, #e53d17);
+    color: var(--con-x-orange, #e53d17);
   }
 
   &__legal-text {
     margin: 0;
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
     line-height: 1.7;
     font-size: 0.9375rem;
   }

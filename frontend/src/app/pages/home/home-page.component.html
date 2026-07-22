@@ -5,11 +5,11 @@
       <h1 class="title">{{ t('home.title') }}</h1>
       <p class="description">{{ t('home.description') }}</p>
       <div class="actions">
-        <a routerLink="/policies/new" cx-button>
+        <a routerLink="/policies/new" con-x-button>
           <span class="material-icons" aria-hidden="true">add</span>
           {{ t('home.ctaCreate') }}
         </a>
-        <a routerLink="/policies" cx-button variant="outlined" color="neutral">
+        <a routerLink="/policies" con-x-button variant="outlined" color="neutral">
           {{ t('home.ctaAll') }}
         </a>
       </div>
@@ -58,14 +58,14 @@
     </div>
 
     @if (recentPolicies().length > 0) {
-      <app-cx-policy-table [policies]="recentPolicies()" />
+      <app-con-x-policy-table [policies]="recentPolicies()" />
     } @else {
-      <app-cx-empty-state icon="description" headingLevel="h3" [title]="t('policies.empty.title')">
-        <a routerLink="/policies/new" cx-button cxCta>
+      <app-con-x-empty-state icon="description" headingLevel="h3" [title]="t('policies.empty.title')">
+        <a routerLink="/policies/new" con-x-button cxCta>
           <span class="material-icons" aria-hidden="true">add</span>
           {{ t('policies.empty.cta') }}
         </a>
-      </app-cx-empty-state>
+      </app-con-x-empty-state>
     }
   </section>
 </div>

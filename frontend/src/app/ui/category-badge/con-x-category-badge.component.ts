@@ -3,12 +3,12 @@ import { TranslocoDirective } from '@jsverse/transloco';
 import { PolicyCategory } from '@shared/types/policy.model';
 
 @Component({
-  selector: 'app-cx-category-badge',
+  selector: 'app-con-x-category-badge',
   imports: [TranslocoDirective],
-  templateUrl: './cx-category-badge.component.html',
-  styleUrl: './cx-category-badge.component.scss',
+  templateUrl: './con-x-category-badge.component.html',
+  styleUrl: './con-x-category-badge.component.scss',
 })
-export class CxCategoryBadgeComponent {
+export class ConXCategoryBadgeComponent {
   category = input.required<PolicyCategory>();
 
   labelKey = computed(() => `policyCategory.${this.category()}.label`);

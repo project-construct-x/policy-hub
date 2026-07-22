@@ -1,7 +1,7 @@
 // ============================================================
 // Shared Empty State — used in Overview, Home, and future pages
 // ============================================================
-.cx-empty-state {
+.con-x-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,21 +14,21 @@
   width: 5.25rem;
   height: 5.25rem;
   border-radius: 50%;
-  background-color: var(--cx-light-orange);
+  background-color: var(--con-x-light-orange);
   display: flex;
   align-items: center;
   justify-content: center;
 
   .material-icons {
     font-size: 2.375rem;
-    color: var(--cx-orange);
+    color: var(--con-x-orange);
   }
 }
 
 .empty-title {
   font-size: 1.375rem;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
   margin: 0;
   text-align: center;
 }
@@ -36,7 +36,7 @@
 .empty-description {
   font-size: 0.875rem;
   font-weight: 400;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   line-height: 1.55;
   text-align: center;
   max-width: 26.875rem;
@@ -46,5 +46,5 @@
 .empty-hint {
   font-size: 0.8125rem;
   font-weight: 400;
-  color: var(--cx-text-tertiary);
+  color: var(--con-x-text-tertiary);
 }

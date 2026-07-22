@@ -4,7 +4,7 @@
       <h1>{{ t('policies.title') }}</h1>
       <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
     </div>
-    <a routerLink="/policies/new" cx-button data-cy="create-policy">
+    <a routerLink="/policies/new" con-x-button data-cy="create-policy">
       <span class="material-icons" aria-hidden="true">add</span>
       {{ t('policies.createNew') }}
     </a>
@@ -62,30 +62,30 @@
       <h2>{{ t('policies.error.title') }}</h2>
       <p>{{ t('policies.error.description') }}</p>
       <div class="error-actions">
-        <button cx-button (click)="loadPolicies()" data-cy="retry">
+        <button con-x-button (click)="loadPolicies()" data-cy="retry">
           <span class="material-icons" aria-hidden="true">refresh</span>
           {{ t('policies.error.retry') }}
         </button>
-        <a routerLink="/" cx-button variant="outlined" color="neutral">{{
+        <a routerLink="/" con-x-button variant="outlined" color="neutral">{{
           t('policies.error.home')
         }}</a>
       </div>
     </div>
   } @else if (filteredPolicies().length === 0 && policies().length === 0) {
-    <app-cx-empty-state
+    <app-con-x-empty-state
       icon="description"
       [title]="t('policies.empty.title')"
       data-cy="empty-state"
     >
-      <a routerLink="/policies/new" cx-button cxCta data-cy="create-policy-empty">
+      <a routerLink="/policies/new" con-x-button cxCta data-cy="create-policy-empty">
         <span class="material-icons" aria-hidden="true">add</span>
         {{ t('policies.empty.cta') }}
       </a>
-    </app-cx-empty-state>
+    </app-con-x-empty-state>
   } @else if (filteredPolicies().length === 0) {
-    <app-cx-empty-state icon="search_off" [title]="t('policies.noResults')" data-cy="no-results" />
+    <app-con-x-empty-state icon="search_off" [title]="t('policies.noResults')" data-cy="no-results" />
   } @else {
-    <app-cx-policy-table [policies]="paginatedPolicies()" />
+    <app-con-x-policy-table [policies]="paginatedPolicies()" />
 
     @if (totalPages() > 1) {
       <nav class="pagination" [attr.aria-label]="t('a11y.pagination.nav')" data-cy="pagination">

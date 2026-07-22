@@ -1,9 +1,9 @@
 // ============================================================
 // Header Layout
 // ============================================================
-.cx-header {
-  background: var(--cx-white);
-  border-bottom: 1px solid var(--cx-border-color);
+.con-x-header {
+  background: var(--con-x-white);
+  border-bottom: 1px solid var(--con-x-border-color);
   padding: 0 3.5rem;
   height: 4.5rem;
   display: flex;
@@ -25,13 +25,13 @@
 .divider {
   width: 0.0625rem;
   height: 1.5rem;
-  background-color: var(--cx-text-tertiary);
+  background-color: var(--con-x-text-tertiary);
 }
 
 .product-label {
   font-weight: 500;
   font-size: 0.9375rem;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
 }
 
 .spacer {
@@ -51,7 +51,7 @@
   position: relative;
   font-weight: 500;
   font-size: 0.875rem;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   text-decoration: none;
   padding-bottom: 0.25rem;
   transition: color 0.2s ease;
@@ -63,14 +63,14 @@
     bottom: -0.25rem;
     width: 100%;
     height: 2px;
-    background-color: var(--cx-orange);
+    background-color: var(--con-x-orange);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
   }
 
   &:hover {
-    color: var(--cx-orange);
+    color: var(--con-x-orange);
     text-decoration: none;
 
     &::after {
@@ -79,7 +79,7 @@
   }
 
   &.active {
-    color: var(--cx-orange);
+    color: var(--con-x-orange);
     font-weight: 600;
 
     &::after {
@@ -88,7 +88,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--cx-orange);
+    outline: 2px solid var(--con-x-orange);
     outline-offset: 4px;
     border-radius: 2px;
   }
@@ -113,7 +113,7 @@
 .lang-btn {
   background: transparent;
   border: none;
-  color: var(--cx-text-tertiary);
+  color: var(--con-x-text-tertiary);
   font-size: 0.8125rem;
   font-weight: 600;
   font-family: inherit;
@@ -126,23 +126,23 @@
   letter-spacing: 0.05em;
 
   &:hover {
-    color: var(--cx-text-primary);
+    color: var(--con-x-text-primary);
     background: rgba(0, 0, 0, 0.04);
   }
 
   &--active {
-    color: var(--cx-text-primary);
+    color: var(--con-x-text-primary);
     font-weight: 700;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--cx-orange);
+    outline: 2px solid var(--con-x-orange);
     outline-offset: 2px;
   }
 }
 
 .lang-divider {
-  color: var(--cx-text-tertiary);
+  color: var(--con-x-text-tertiary);
   font-size: 0.8125rem;
   line-height: 1;
   user-select: none;

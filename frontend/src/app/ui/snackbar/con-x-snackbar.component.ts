@@ -7,17 +7,17 @@ import {
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 
-export type CxSnackbarType = 'success' | 'error' | 'info' | 'warning';
+export type ConXSnackbarType = 'success' | 'error' | 'info' | 'warning';
 
-export interface CxSnackbarData {
+export interface ConXSnackbarData {
   message: string;
   action: string;
-  type: CxSnackbarType;
+  type: ConXSnackbarType;
 }
 
-const SEVERITY_ICONS: Record<CxSnackbarType, string> = {
+const SEVERITY_ICONS: Record<ConXSnackbarType, string> = {
   success: 'check_circle',
   error: 'error',
   warning: 'warning',
@@ -25,20 +25,20 @@ const SEVERITY_ICONS: Record<CxSnackbarType, string> = {
 };
 
 @Component({
-  selector: 'app-cx-snackbar',
+  selector: 'app-con-x-snackbar',
   imports: [
-    CxButtonComponent,
+    ConXButtonComponent,
     MatSnackBarLabel,
     MatSnackBarActions,
     MatSnackBarAction,
     TranslocoDirective,
   ],
-  templateUrl: './cx-snackbar.component.html',
-  styleUrl: './cx-snackbar.component.scss',
+  templateUrl: './con-x-snackbar.component.html',
+  styleUrl: './con-x-snackbar.component.scss',
 })
-export class CxSnackbarComponent {
+export class ConXSnackbarComponent {
   readonly snackBarRef = inject(MatSnackBarRef);
-  readonly data = inject<CxSnackbarData>(MAT_SNACK_BAR_DATA);
+  readonly data = inject<ConXSnackbarData>(MAT_SNACK_BAR_DATA);
 
   get icon(): string {
     return SEVERITY_ICONS[this.data.type];

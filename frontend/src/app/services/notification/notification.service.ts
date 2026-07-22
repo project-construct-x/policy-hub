@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { CxSnackbarComponent, CxSnackbarType } from '@ui/snackbar/cx-snackbar.component';
+import { ConXSnackbarComponent, ConXSnackbarType } from '@ui/snackbar/con-x-snackbar.component';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -22,15 +22,15 @@ export class NotificationService {
     this.show(message, 'warning');
   }
 
-  private show(message: string, type: CxSnackbarType): void {
+  private show(message: string, type: ConXSnackbarType): void {
     const config: MatSnackBarConfig = {
       duration: 5000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
-      panelClass: [`cx-snackbar-${type}`],
+      panelClass: [`con-x-snackbar-${type}`],
       politeness: type === 'error' || type === 'warning' ? 'assertive' : 'polite',
       data: { message, action: 'OK', type },
     };
-    this.snackBar.openFromComponent(CxSnackbarComponent, config);
+    this.snackBar.openFromComponent(ConXSnackbarComponent, config);
   }
 }

@@ -4,7 +4,7 @@
 // Colors: primary (orange), neutral (gray), danger (red)
 // ============================================================
 
-.cx-btn {
+.con-x-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -31,7 +31,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--cx-orange);
+    outline: 2px solid var(--con-x-orange);
     outline-offset: 2px;
   }
 
@@ -52,18 +52,18 @@
 // ============================================================
 // Variant: Filled (default)
 // ============================================================
-.cx-btn--filled {
-  background-color: var(--cx-orange);
+.con-x-btn--filled {
+  background-color: var(--con-x-orange);
   color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: var(--cx-dark-orange);
+    background-color: var(--con-x-dark-orange);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   &:active {
-    background-color: var(--cx-dark-orange);
+    background-color: var(--con-x-dark-orange);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
   }
 }
@@ -71,26 +71,26 @@
 // ============================================================
 // Variant: Outlined
 // ============================================================
-.cx-btn--outlined {
+.con-x-btn--outlined {
   background-color: transparent;
-  color: var(--cx-orange);
-  border: 1px solid var(--cx-orange);
+  color: var(--con-x-orange);
+  border: 1px solid var(--con-x-orange);
 
   &:hover {
-    background-color: var(--cx-light-orange);
+    background-color: var(--con-x-light-orange);
   }
 
   &:active {
-    background-color: var(--cx-light-orange);
+    background-color: var(--con-x-light-orange);
   }
 }
 
 // ============================================================
 // Variant: Text
 // ============================================================
-.cx-btn--text {
+.con-x-btn--text {
   background-color: transparent;
-  color: var(--cx-orange);
+  color: var(--con-x-orange);
   border: none;
   padding: 0 0.75rem;
 
@@ -102,9 +102,9 @@
 // ============================================================
 // Variant: Icon-only
 // ============================================================
-.cx-btn--icon-only {
+.con-x-btn--icon-only {
   background-color: transparent;
-  color: var(--cx-text-secondary);
+  color: var(--con-x-text-secondary);
   border: none;
   padding: 0;
   width: 2.5rem;
@@ -118,36 +118,36 @@
 // ============================================================
 // Color: Neutral (secondary/back actions)
 // ============================================================
-.cx-btn--neutral {
-  &.cx-btn--filled {
-    background-color: var(--cx-text-secondary);
+.con-x-btn--neutral {
+  &.con-x-btn--filled {
+    background-color: var(--con-x-text-secondary);
     color: #ffffff;
 
     &:hover {
-      background-color: var(--cx-text-primary);
+      background-color: var(--con-x-text-primary);
     }
   }
 
-  &.cx-btn--outlined {
-    color: var(--cx-text-secondary);
-    border-color: var(--cx-text-secondary);
+  &.con-x-btn--outlined {
+    color: var(--con-x-text-secondary);
+    border-color: var(--con-x-text-secondary);
 
     &:hover {
-      background-color: var(--cx-light-gray);
+      background-color: var(--con-x-light-gray);
     }
   }
 
-  &.cx-btn--text {
-    color: var(--cx-text-secondary);
+  &.con-x-btn--text {
+    color: var(--con-x-text-secondary);
   }
 }
 
 // ============================================================
 // Color: Danger (destructive actions)
 // ============================================================
-.cx-btn--danger {
-  &.cx-btn--filled {
-    background-color: var(--cx-error);
+.con-x-btn--danger {
+  &.con-x-btn--filled {
+    background-color: var(--con-x-error);
     color: #ffffff;
 
     &:hover {
@@ -155,16 +155,16 @@
     }
   }
 
-  &.cx-btn--outlined {
-    color: var(--cx-error);
-    border-color: var(--cx-error);
+  &.con-x-btn--outlined {
+    color: var(--con-x-error);
+    border-color: var(--con-x-error);
 
     &:hover {
       background-color: #fde8e8;
     }
   }
 
-  &.cx-btn--text {
-    color: var(--cx-error);
+  &.con-x-btn--text {
+    color: var(--con-x-error);
   }
 }

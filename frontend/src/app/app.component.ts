@@ -46,7 +46,7 @@ export class App implements OnInit {
   }
 
   private onNavigationEnd(): void {
-    // Defer so the new view is rendered and CxTitleStrategy has set the title.
+    // Defer so the new view is rendered and ConXTitleStrategy has set the title.
     setTimeout(() => {
       this.document.getElementById('main-content')?.focus({ preventScroll: false });
       const title = this.document.title;
