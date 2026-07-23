@@ -4,7 +4,7 @@
 // Angular Material — Minimal config
 // Kept for Dialog + Snackbar infrastructure only.
 // No color palette needed — Snackbar colors are fully overridden
-// via .cx-snackbar-* classes. Dialog uses default MDC styles.
+// via .con-x-snackbar-* classes. Dialog uses default MDC styles.
 // ============================================================
 html {
   @include mat.theme(
@@ -18,32 +18,32 @@ html {
 // ============================================================
 // Snackbar Styles — Construct-X branded
 // ============================================================
-.cx-snackbar-success .mdc-snackbar__surface {
-  background-color: var(--cx-success) !important;
+.con-x-snackbar-success .mdc-snackbar__surface {
+  background-color: var(--con-x-success) !important;
   color: #ffffff !important;
 }
 
-.cx-snackbar-error .mdc-snackbar__surface {
+.con-x-snackbar-error .mdc-snackbar__surface {
   background-color: #d32f2f !important;
   color: #ffffff !important;
 }
 
-.cx-snackbar-warning .mdc-snackbar__surface {
+.con-x-snackbar-warning .mdc-snackbar__surface {
   background-color: #b06000 !important;
   color: #ffffff !important;
 }
 
-.cx-snackbar-info .mdc-snackbar__surface {
-  background-color: var(--cx-info) !important;
+.con-x-snackbar-info .mdc-snackbar__surface {
+  background-color: var(--con-x-info) !important;
   color: #ffffff !important;
 }
 
 // Snackbar action button styling
-.cx-snackbar-success,
-.cx-snackbar-error,
-.cx-snackbar-warning,
-.cx-snackbar-info {
-  .mdc-snackbar__surface .cx-btn {
+.con-x-snackbar-success,
+.con-x-snackbar-error,
+.con-x-snackbar-warning,
+.con-x-snackbar-info {
+  .mdc-snackbar__surface .con-x-btn {
     color: #ffffff !important;
   }
 }

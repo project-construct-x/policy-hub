@@ -30,19 +30,23 @@
   <!-- Section: Category -->
   <section class="pb__section">
     <header class="pb__section-header">
-      <h2>{{ t('policyBuilder.sections.category') }}</h2>
+      <h2 id="pb-category-heading">{{ t('policyBuilder.sections.category') }}</h2>
       <p>{{ t('policyBuilder.sections.categoryHint') }}</p>
     </header>
 
-    <div class="pb__category-grid">
+    <div class="pb__category-grid" role="radiogroup" aria-labelledby="pb-category-heading">
       <button
         type="button"
+        role="radio"
         class="pb__category-card"
         [class.is-active]="category() === 'ACCESS'"
+        [attr.aria-checked]="category() === 'ACCESS'"
+        [attr.tabindex]="category() === 'ACCESS' ? 0 : -1"
         (click)="selectCategory('ACCESS')"
+        (keydown)="onCategoryKeydown($event)"
         data-cy="category-access"
       >
-        <mat-icon>lock_open</mat-icon>
+        <mat-icon aria-hidden="true">lock_open</mat-icon>
         <div>
           <strong>{{ t('policyCategory.ACCESS.label') }}</strong>
           <small>{{ t('policyCategory.ACCESS.description') }}</small>
@@ -51,12 +55,16 @@
 
       <button
         type="button"
+        role="radio"
         class="pb__category-card"
         [class.is-active]="category() === 'CONTRACT'"
+        [attr.aria-checked]="category() === 'CONTRACT'"
+        [attr.tabindex]="category() === 'CONTRACT' ? 0 : -1"
         (click)="selectCategory('CONTRACT')"
+        (keydown)="onCategoryKeydown($event)"
         data-cy="category-contract"
       >
-        <mat-icon>handshake</mat-icon>
+        <mat-icon aria-hidden="true">handshake</mat-icon>
         <div>
           <strong>{{ t('policyCategory.CONTRACT.label') }}</strong>
           <small>{{ t('policyCategory.CONTRACT.description') }}</small>
@@ -102,7 +110,7 @@
   <!-- Footer actions -->
   <footer class="pb__footer">
     <button
-      cx-button
+      con-x-button
       variant="outlined"
       color="neutral"
       type="button"
@@ -113,7 +121,7 @@
       {{ t('policyBuilder.actions.cancel') }}
     </button>
     <button
-      cx-button
+      con-x-button
       type="submit"
       class="pb__submit"
       [disabled]="submitting()"

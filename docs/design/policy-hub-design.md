@@ -125,9 +125,9 @@ Kein Entwurf speichern.
 
 ### Farben
 
-- CX Blue: `rgb(10, 59, 147)`
-- CX Orange: `rgb(229, 61, 23)`
-- CX Yellow: `rgb(240, 129, 9)`
+- Con-X Blue: `rgb(10, 59, 147)`
+- Con-X Orange: `rgb(229, 61, 23)`
+- Con-X Yellow: `rgb(240, 129, 9)`
 - Light Blue: `rgb(201, 216, 224)`
 - Dark Blue: `rgb(52, 85, 161)`
 - Light Orange: `rgb(235, 216, 208)`

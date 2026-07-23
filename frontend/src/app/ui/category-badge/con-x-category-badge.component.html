@@ -1,0 +1,8 @@
+<span
+  class="con-x-badge con-x-badge--category"
+  [class.con-x-badge--access]="category() === 'ACCESS'"
+  [class.con-x-badge--contract]="category() === 'CONTRACT'"
+  *transloco="let t"
+>
+  <span class="con-x-badge__label">{{ t(labelKey()) }}</span>
+</span>

@@ -4,18 +4,19 @@
       <h1>{{ t('policies.title') }}</h1>
       <p class="page-subtitle">{{ t('policies.subtitle') }}</p>
     </div>
-    <a routerLink="/policies/new" cx-button data-cy="create-policy">
-      <span class="material-icons">add</span>
+    <a routerLink="/policies/new" con-x-button data-cy="create-policy">
+      <span class="material-icons" aria-hidden="true">add</span>
       {{ t('policies.createNew') }}
     </a>
   </div>
 
   <div class="filters">
     <div class="search-field">
-      <span class="material-icons search-icon">search</span>
+      <span class="material-icons search-icon" aria-hidden="true">search</span>
       <input
         type="text"
         [placeholder]="t('policies.searchPlaceholder')"
+        [attr.aria-label]="t('a11y.search.label')"
         [ngModel]="searchQuery()"
         (ngModelChange)="onSearch($event)"
         data-cy="search-input"
@@ -25,6 +26,7 @@
       <select
         [ngModel]="selectedCategory()"
         (ngModelChange)="onCategoryFilter($event)"
+        [attr.aria-label]="t('a11y.filter.category')"
         data-cy="category-filter"
       >
         <option value="">{{ t('policies.filters.category') }}</option>
@@ -32,12 +34,12 @@
           <option [value]="cat">{{ t('policyCategory.' + cat + '.label') }}</option>
         }
       </select>
-      <span class="material-icons dropdown-icon">expand_more</span>
+      <span class="material-icons dropdown-icon" aria-hidden="true">expand_more</span>
     </div>
   </div>
 
   @if (loading()) {
-    <div class="skeleton-list">
+    <div class="skeleton-list" aria-hidden="true">
       <div class="skeleton-row">
         <div class="skeleton-bar skeleton-title"></div>
         <div class="skeleton-bar skeleton-desc"></div>
@@ -51,42 +53,42 @@
         <div class="skeleton-bar skeleton-desc short"></div>
       </div>
     </div>
-    <span class="loading-hint">{{ t('policies.loadingHint') }}</span>
+    <span class="loading-hint" role="status">{{ t('policies.loadingHint') }}</span>
   } @else if (error()) {
-    <div class="error-state">
+    <div class="error-state" role="alert">
       <div class="error-icon-wrap">
-        <span class="material-icons">warning</span>
+        <span class="material-icons" aria-hidden="true">warning</span>
       </div>
       <h2>{{ t('policies.error.title') }}</h2>
       <p>{{ t('policies.error.description') }}</p>
       <div class="error-actions">
-        <button cx-button (click)="loadPolicies()" data-cy="retry">
-          <span class="material-icons">refresh</span>
+        <button con-x-button (click)="loadPolicies()" data-cy="retry">
+          <span class="material-icons" aria-hidden="true">refresh</span>
           {{ t('policies.error.retry') }}
         </button>
-        <a routerLink="/" cx-button variant="outlined" color="neutral">{{
+        <a routerLink="/" con-x-button variant="outlined" color="neutral">{{
           t('policies.error.home')
         }}</a>
       </div>
     </div>
   } @else if (filteredPolicies().length === 0 && policies().length === 0) {
-    <app-cx-empty-state
+    <app-con-x-empty-state
       icon="description"
       [title]="t('policies.empty.title')"
       data-cy="empty-state"
     >
-      <a routerLink="/policies/new" cx-button cxCta data-cy="create-policy-empty">
-        <span class="material-icons">add</span>
+      <a routerLink="/policies/new" con-x-button conXCta data-cy="create-policy-empty">
+        <span class="material-icons" aria-hidden="true">add</span>
         {{ t('policies.empty.cta') }}
       </a>
-    </app-cx-empty-state>
+    </app-con-x-empty-state>
   } @else if (filteredPolicies().length === 0) {
-    <app-cx-empty-state icon="search_off" [title]="t('policies.noResults')" data-cy="no-results" />
+    <app-con-x-empty-state icon="search_off" [title]="t('policies.noResults')" data-cy="no-results" />
   } @else {
-    <app-cx-policy-table [policies]="paginatedPolicies()" />
+    <app-con-x-policy-table [policies]="paginatedPolicies()" />
 
     @if (totalPages() > 1) {
-      <div class="pagination" data-cy="pagination">
+      <nav class="pagination" [attr.aria-label]="t('a11y.pagination.nav')" data-cy="pagination">
         <span class="pagination-info">{{ paginationInfo() }}</span>
         <span class="pagination-spacer"></span>
         <div class="pagination-controls">
@@ -94,14 +96,17 @@
             class="page-btn"
             [disabled]="currentPage() === 1"
             (click)="goToPage(currentPage() - 1)"
+            [attr.aria-label]="t('a11y.pagination.previous')"
             data-cy="page-prev"
           >
-            <span class="material-icons">chevron_left</span>
+            <span class="material-icons" aria-hidden="true">chevron_left</span>
           </button>
           @for (page of [].constructor(totalPages()); track $index) {
             <button
               class="page-btn"
               [class.active]="currentPage() === $index + 1"
+              [attr.aria-current]="currentPage() === $index + 1 ? 'page' : null"
+              [attr.aria-label]="t('a11y.pagination.goToPage', { page: $index + 1 })"
               (click)="goToPage($index + 1)"
               [attr.data-cy]="'page-' + ($index + 1)"
             >
@@ -112,12 +117,13 @@
             class="page-btn"
             [disabled]="currentPage() === totalPages()"
             (click)="goToPage(currentPage() + 1)"
+            [attr.aria-label]="t('a11y.pagination.next')"
             data-cy="page-next"
           >
-            <span class="material-icons">chevron_right</span>
+            <span class="material-icons" aria-hidden="true">chevron_right</span>
           </button>
         </div>
-      </div>
+      </nav>
     }
   }
 </div>

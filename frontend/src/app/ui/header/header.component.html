@@ -1,4 +1,4 @@
-<header class="cx-header" *transloco="let t">
+<header class="con-x-header" *transloco="let t">
   <a routerLink="/" class="logo-link">
     <img src="assets/images/CX-BWM-quer-RGB.jpg" alt="Construct-X" class="logo" />
   </a>
@@ -9,38 +9,47 @@
 
   <span class="spacer"></span>
 
-  <nav class="global-nav">
+  <nav class="global-nav" [attr.aria-label]="t('a11y.mainNav')">
     <a
       routerLink="/"
       routerLinkActive="active"
+      #startLink="routerLinkActive"
       [routerLinkActiveOptions]="{ exact: true }"
+      [attr.aria-current]="startLink.isActive ? 'page' : null"
       class="nav-link"
     >
       {{ t('header.start') }}
     </a>
-    <a routerLink="/policies" routerLinkActive="active" class="nav-link">
+    <a
+      routerLink="/policies"
+      routerLinkActive="active"
+      #policiesLink="routerLinkActive"
+      [attr.aria-current]="policiesLink.isActive ? 'page' : null"
+      class="nav-link"
+    >
       {{ t('header.policies') }}
     </a>
   </nav>
 
   <div class="header-actions">
-    <div class="lang-switcher">
+    <div class="lang-switcher" role="group" [attr.aria-label]="t('a11y.language.group')">
       @for (lang of availableLangs; track lang; let last = $last) {
         <button
           class="lang-btn"
           [class.lang-btn--active]="lang === activeLang"
           (click)="switchLang(lang)"
-          [title]="lang.toUpperCase()"
+          [attr.aria-pressed]="lang === activeLang"
+          [attr.aria-label]="t('a11y.language.switchTo', { lang: lang.toUpperCase() })"
         >
           {{ lang.toUpperCase() }}
         </button>
         @if (!last) {
-          <span class="lang-divider">|</span>
+          <span class="lang-divider" aria-hidden="true">|</span>
         }
       }
     </div>
 
-    <button cx-button class="login-btn" (click)="onLoginClick()">
+    <button con-x-button class="login-btn" (click)="onLoginClick()">
       {{ t('header.login') }}
     </button>
   </div>

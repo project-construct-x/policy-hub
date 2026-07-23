@@ -16,8 +16,8 @@ import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
-import { CxCategoryBadgeComponent } from '@ui/category-badge/cx-category-badge.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
+import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-badge.component';
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
@@ -32,8 +32,8 @@ import { buildLegalDescription } from '@features/policies/builder/helpers/legal-
     MatIconModule,
     TranslocoDirective,
     RelativeDatePipe,
-    CxButtonComponent,
-    CxCategoryBadgeComponent,
+    ConXButtonComponent,
+    ConXCategoryBadgeComponent,
     ConstraintCardComponent,
   ],
   templateUrl: './policy-detail-page.component.html',

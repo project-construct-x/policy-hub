@@ -6,47 +6,47 @@
 // ============================================================
 :root {
   // Primary Colors
-  --cx-blue: #0a3b93;
-  --cx-orange: #e53d17;
-  --cx-yellow: #f08109;
+  --con-x-blue: #0a3b93;
+  --con-x-orange: #e53d17;
+  --con-x-yellow: #f08109;
 
   // Light Variants
-  --cx-light-blue: #c9d8e0;
-  --cx-light-orange: #ebd8d0;
-  --cx-light-yellow: #f4e7d4;
+  --con-x-light-blue: #c9d8e0;
+  --con-x-light-orange: #ebd8d0;
+  --con-x-light-yellow: #f4e7d4;
 
   // Dark Variants
-  --cx-dark-blue: #3455a1;
-  --cx-dark-orange: #ca4a25;
-  --cx-dark-yellow: #ec9c49;
+  --con-x-dark-blue: #3455a1;
+  --con-x-dark-orange: #ca4a25;
+  --con-x-dark-yellow: #ec9c49;
 
   // Neutrals
-  --cx-dark-gray: #818386;
-  --cx-light-gray: #f4f3f3;
-  --cx-white: #ffffff;
-  --cx-black: #000000;
+  --con-x-dark-gray: #818386;
+  --con-x-light-gray: #f4f3f3;
+  --con-x-white: #ffffff;
+  --con-x-black: #000000;
 
   // Text
-  --cx-text-primary: #111111;
-  --cx-text-secondary: #555555;
-  --cx-text-tertiary: #767676;
+  --con-x-text-primary: #111111;
+  --con-x-text-secondary: #555555;
+  --con-x-text-tertiary: #767676;
 
   // Backgrounds
-  --cx-bg-primary: #ffffff;
-  --cx-bg-page: #fafafa;
-  --cx-bg-card: #ffffff;
+  --con-x-bg-primary: #ffffff;
+  --con-x-bg-page: #fafafa;
+  --con-x-bg-card: #ffffff;
 
   // Borders
-  --cx-border-color: #e5e5e5;
+  --con-x-border-color: #e5e5e5;
 
   // Accent
-  --cx-accent: #e53d17;
+  --con-x-accent: #e53d17;
 
   // Semantic / Feedback
-  --cx-success: #2e7d32;
-  --cx-error: #d32f2f;
-  --cx-warning: #f08109;
-  --cx-info: #0a3b93;
+  --con-x-success: #2e7d32;
+  --con-x-error: #d32f2f;
+  --con-x-warning: #f08109;
+  --con-x-info: #0a3b93;
 }
 
 html {
@@ -55,8 +55,8 @@ html {
 
 body {
   color-scheme: light;
-  background-color: var(--cx-bg-primary);
-  color: var(--cx-text-primary);
+  background-color: var(--con-x-bg-primary);
+  color: var(--con-x-text-primary);
   font-family: 'Montserrat', sans-serif;
   font-weight: 300;
   margin: 0;
@@ -67,7 +67,7 @@ body {
 // Global Utility Styles
 // ============================================================
 a {
-  color: var(--cx-orange);
+  color: var(--con-x-orange);
   text-decoration: none;
 
   &:hover {
@@ -83,12 +83,64 @@ h5,
 h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  color: var(--cx-text-primary);
+  color: var(--con-x-text-primary);
 }
 
 strong,
 b {
   font-weight: 400;
+}
+
+// ============================================================
+// Accessibility utilities
+// ============================================================
+
+// Visually hidden, but available to screen readers (labels, live-region text).
+.con-x-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Skip link: off-screen until focused, then pinned to the top-left.
+.con-x-skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.5rem 1rem;
+  background-color: var(--con-x-bg-card);
+  color: var(--con-x-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--con-x-orange);
+  border-radius: 0 0 4px 0;
+  transform: translateY(-120%);
+  transition: transform 0.15s ease-in-out;
+
+  &:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--con-x-orange);
+    outline-offset: 2px;
+  }
+}
+
+// Respect the user's reduced-motion preference (WCAG-friendly default).
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 // ============================================================
@@ -100,31 +152,31 @@ b {
 .mat-mdc-select-panel,
 .mat-mdc-autocomplete-panel,
 .mat-mdc-menu-panel {
-  background-color: var(--cx-bg-card, #ffffff) !important;
+  background-color: var(--con-x-bg-card, #ffffff) !important;
 }
 
 .mat-datepicker-content {
-  background-color: var(--cx-bg-card, #ffffff) !important;
-  color: var(--cx-text-primary, #111111) !important;
+  background-color: var(--con-x-bg-card, #ffffff) !important;
+  color: var(--con-x-text-primary, #111111) !important;
 
   .mat-calendar-body-cell-content {
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
   }
 
   .mat-calendar-body-selected {
-    background-color: var(--cx-orange, #e53d17) !important;
+    background-color: var(--con-x-orange, #e53d17) !important;
     color: #ffffff !important;
   }
 
   .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    border-color: var(--cx-orange, #e53d17);
+    border-color: var(--con-x-orange, #e53d17);
   }
 
   .mat-calendar-body-disabled {
     pointer-events: none;
 
     .mat-calendar-body-cell-content {
-      color: var(--cx-text-tertiary, #767676) !important;
+      color: var(--con-x-text-tertiary, #767676) !important;
       opacity: 0.4;
       text-decoration: line-through;
       background-color: transparent !important;
@@ -138,9 +190,9 @@ b {
 
 .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background-color: var(--cx-light-orange, #ebd8d0) !important;
+  background-color: var(--con-x-light-orange, #ebd8d0) !important;
 
   .mdc-list-item__primary-text {
-    color: var(--cx-text-primary, #111111) !important;
+    color: var(--con-x-text-primary, #111111) !important;
   }
 }
