@@ -4,6 +4,8 @@ package org.constructx.policyhub.policies.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
+import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
+import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyResponse;
 import org.constructx.policyhub.policies.application.PolicyService;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.json.JSONArray;
@@ -57,6 +59,22 @@ class PolicyControllerTest {
                 .andExpect(jsonPath("$[0].constraints[0].odrl:leftOperand.@id").value("https://w3id.org/catenax/2025/9/policy/Membership"))
                 .andExpect(jsonPath("$[0].constraints[0].odrl:operator.@id").value("odrl:eq"));
 
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void getOdrlPolicyDefinitionById_returnsOkWithOdrlPolicies() throws Exception {
+        UUID uuid = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        
+        OdrlPolicyResponse odrlPolicyResponse = new OdrlPolicyResponse(null, null, null, null, null);
+
+        when(policyService.getOdrlPolicyDefinitionById(uuid)).thenReturn(
+                new OdrlPolicyDefinitionResponse(null,  null, null, odrlPolicyResponse)
+        );
+
+        mockMvc.perform(get("/api/v1/policies/{id}/odrl", uuid))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.policy").exists());
     }
 
     @Test
