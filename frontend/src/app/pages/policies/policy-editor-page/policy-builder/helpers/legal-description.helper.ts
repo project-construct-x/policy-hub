@@ -3,22 +3,31 @@ import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
 
+export interface LegalClauses {
+  /** Einleitungssatz (kategorieabhängig, bzw. der "unrestricted"-Text ohne Bedingungen). */
+  intro: string;
+  /** Je Constraint eine eigenständige Klausel; leer, wenn die Policy keine Bedingungen hat. */
+  clauses: string[];
+}
+
 /**
- * Erzeugt aus den Constraints einer Policy einen zusammenhängenden juristischen
- * Beschreibungstext. Jede Bedingung wird in einen Satz gewandelt; alle Sätze
- * werden zu einem lesbaren Absatz verknüpft.
+ * Zerlegt eine Policy in ihren juristischen Einleitungssatz und je Constraint eine eigenständige
+ * Klausel. Grundlage für die Listendarstellung (ein Unterpunkt pro Bedingung) und für den
+ * gespeicherten Text.
  *
- * Mit `lang` kann eine feste Sprache erzwungen werden (z.B. 'de' für den zu
- * speichernden Text, unabhängig von der aktiven UI-Sprache). Ohne `lang` wird
- * die aktuell aktive Sprache verwendet (für die Anzeige).
+ * Mit `lang` kann eine feste Sprache erzwungen werden (z.B. 'de' für den zu speichernden Text,
+ * unabhängig von der aktiven UI-Sprache). Ohne `lang` wird die aktuell aktive Sprache verwendet.
  */
-export function buildLegalDescription(
+export function buildLegalClauses(
   policy: Pick<Policy, 'category' | 'constraints'>,
   transloco: TranslocoService,
   lang?: string,
-): string {
+): LegalClauses {
   if (!policy.constraints.length) {
-    return transloco.translate('legalDescription.unrestricted', undefined, lang);
+    return {
+      intro: transloco.translate('legalDescription.unrestricted', undefined, lang),
+      clauses: [],
+    };
   }
 
   const intro = transloco.translate(
@@ -30,9 +39,28 @@ export function buildLegalDescription(
   );
 
   const clauses = policy.constraints.map((c) => buildClause(c, transloco, lang));
-  const body = joinClauses(clauses, transloco, lang);
 
-  return `${intro} ${body}`;
+  return { intro, clauses };
+}
+
+/**
+ * Erzeugt aus den Constraints einer Policy den zu speichernden juristischen Text als nummerierte
+ * Liste: Einleitungssatz, danach je Bedingung eine nummerierte Zeile (`1. …`, `2. …`). Ohne
+ * Bedingungen wird nur der "unrestricted"-Einleitungstext geliefert.
+ *
+ * Rückgabe bleibt ein String (Backend-Vertrag `legalText`); die Nummerierung ist locale-neutral.
+ */
+export function buildLegalDescription(
+  policy: Pick<Policy, 'category' | 'constraints'>,
+  transloco: TranslocoService,
+  lang?: string,
+): string {
+  const { intro, clauses } = buildLegalClauses(policy, transloco, lang);
+  if (!clauses.length) {
+    return intro;
+  }
+  const list = clauses.map((clause, i) => `${i + 1}. ${clause}`).join('\n');
+  return `${intro}\n${list}`;
 }
 
 function buildClause(c: Constraint, transloco: TranslocoService, lang?: string): string {
@@ -67,12 +95,6 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
     default:
       return base;
   }
-}
-
-function joinClauses(clauses: string[], transloco: TranslocoService, lang?: string): string {
-  if (clauses.length === 1) return clauses[0];
-  const separator = ` ${transloco.translate('legalDescription.and', undefined, lang)} `;
-  return clauses.join(separator);
 }
 
 function joinList(items: string[]): string {

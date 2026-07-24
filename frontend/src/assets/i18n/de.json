@@ -253,7 +253,6 @@
     "unrestricted": "Diese Policy enthält keine Einschränkungen. Der Zugriff auf die bereitgestellten Daten ist uneingeschränkt gestattet.",
     "introAccess": "Der Zugriff auf die bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
     "introContract": "Die Nutzung der bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
-    "and": "Darüber hinaus gilt:",
     "clause": {
       "useCase": "Die Daten dürfen ausschließlich im Rahmen der folgenden Use-Cases verarbeitet werden: {{list}}. Eine Nutzung zu anderen Zwecken ist nicht gestattet.",
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",

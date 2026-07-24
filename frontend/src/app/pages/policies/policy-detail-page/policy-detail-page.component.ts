@@ -21,7 +21,7 @@ import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-ba
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
-import { buildLegalDescription } from '@features/policies/builder/helpers/legal-description.helper';
+import { buildLegalClauses } from '@features/policies/builder/helpers/legal-description.helper';
 
 @Component({
   selector: 'app-policy-detail-page',
@@ -66,8 +66,8 @@ export class PolicyDetailPageComponent implements OnInit {
     // Abhängigkeit auf die aktive Sprache: Anzeige folgt dem UI-Sprachwechsel (z.B. Englisch).
     this.activeLang();
     const p = this.policy();
-    if (!p) return '';
-    return buildLegalDescription(p, this.transloco);
+    if (!p) return { intro: '', clauses: [] };
+    return buildLegalClauses(p, this.transloco);
   });
 
   ngOnInit(): void {

@@ -28,8 +28,10 @@ describe('Policy – Detailansicht', () => {
       .and('contain', 'Membership');
   });
 
-  it('zeigt einen generierten Rechtstext an', () => {
+  it('zeigt einen generierten Rechtstext als Liste (ein Unterpunkt je Bedingung) an', () => {
     cy.getByCy('legal-text').invoke('text').should('have.length.greaterThan', 0);
+    // MEMBERSHIP + DATE_RANGE → zwei nummerierte Unterpunkte, kein Block-Text.
+    cy.getByCy('legal-text').find('ol li').should('have.length', 2);
   });
 
   it('navigiert per Klick auf eine Tabellenzeile in die Detailansicht', () => {

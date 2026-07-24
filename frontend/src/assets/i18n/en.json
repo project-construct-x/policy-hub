@@ -253,7 +253,6 @@
     "unrestricted": "This policy contains no restrictions. Access to and usage of the provided data is permitted without limitation.",
     "introAccess": "Access to the provided data is only permitted under the following conditions:",
     "introContract": "Usage of the provided data is only permitted under the following conditions:",
-    "and": "Furthermore:",
     "clause": {
       "useCase": "The data may only be processed within the scope of the following use cases: {{list}}. Any usage for other purposes is prohibited.",
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
