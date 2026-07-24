@@ -36,6 +36,10 @@
     "loading": "Inhalt wird geladen",
     "requiredField": "Pflichtfeld",
     "formInvalid": "Das Formular enthält Fehler. Bitte prüfen Sie die markierten Felder.",
+    "dateRange": {
+      "startInput": "Startdatum des Gültigkeitszeitraums",
+      "endInput": "Enddatum des Gültigkeitszeitraums"
+    },
     "severity": {
       "success": "Erfolg",
       "error": "Fehler",
@@ -187,9 +191,11 @@
         "placeholder": "Use-Cases auswählen",
         "hint": "Wählen Sie einen oder mehrere Use-Cases aus."
       },
-      "END_DATE": {
-        "label": "Gültig bis",
-        "hint": "Wählen Sie ein Datum in der Zukunft."
+      "DATE_RANGE": {
+        "label": "Zeitraum",
+        "startLabel": "Startdatum",
+        "endLabel": "Enddatum",
+        "hint": "Wählen Sie Start- und Enddatum in der Zukunft."
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "Der Datenkonsument muss diesem Rahmenvertrag zugestimmt haben:"
@@ -225,10 +231,10 @@
       "legalText": "Die Datennutzung ist auf die ausgewählten Use-Cases beschränkt.",
       "summaryEmpty": "noch keine Use-Cases gewählt"
     },
-    "END_DATE": {
-      "label": "Enddatum",
-      "description": "Gültigkeit endet zum angegebenen Datum.",
-      "legalText": "Die Nutzungsberechtigung erlischt zum angegebenen Datum."
+    "DATE_RANGE": {
+      "label": "Zeitraum",
+      "description": "Gültigkeit auf einen Zeitraum von Start- bis Enddatum begrenzt.",
+      "legalText": "Die Nutzungsberechtigung gilt nur innerhalb des angegebenen Zeitraums."
     },
     "FRAMEWORK_AGREEMENT": {
       "label": "Rahmenvertrag",
@@ -250,7 +256,7 @@
     "and": "Darüber hinaus gilt:",
     "clause": {
       "useCase": "Die Daten dürfen ausschließlich im Rahmen der folgenden Use-Cases verarbeitet werden: {{list}}. Eine Nutzung zu anderen Zwecken ist nicht gestattet.",
-      "endDate": "Die erteilte Berechtigung ist zeitlich befristet und endet automatisch am {{date}}. Nach diesem Datum ist jegliche weitere Nutzung der Daten unzulässig.",
+      "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
       "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf."
     }
   },
@@ -260,9 +266,13 @@
     "categoryRequired": "Kategorie muss gewählt werden",
     "constraintNotAllowedInCategory": "Diese Bedingung ist für die gewählte Kategorie nicht zulässig.",
     "useCaseRequired": "Mindestens ein Use-Case muss gewählt werden",
-    "endDateRequired": "Enddatum ist erforderlich",
-    "endDateInvalid": "Datum ist ungültig",
-    "endDateInPast": "Enddatum muss in der Zukunft liegen"
+    "dateRangeStartRequired": "Startdatum ist erforderlich",
+    "dateRangeStartInvalid": "Startdatum ist ungültig",
+    "dateRangeStartInPast": "Startdatum muss in der Zukunft liegen",
+    "dateRangeEndRequired": "Enddatum ist erforderlich",
+    "dateRangeEndInvalid": "Enddatum ist ungültig",
+    "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
+    "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen"
   },
   "deleteDialog": {
     "title": "Policy löschen",

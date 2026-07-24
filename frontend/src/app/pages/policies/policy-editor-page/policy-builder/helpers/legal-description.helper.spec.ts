@@ -75,12 +75,12 @@ describe('buildLegalDescription', () => {
       );
     });
 
-    it('END_DATE → interpoliert das formatierte Datum', () => {
+    it('DATE_RANGE → interpoliert Start- und Enddatum formatiert', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'END_DATE', endDate: '2027-12-31' }]),
+        draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' }]),
         makeTransloco(),
       );
-      expect(text).toContain('legalDescription.clause.endDate[date=31.12.2027]');
+      expect(text).toContain('legalDescription.clause.dateRange[start=01.06.2026;end=31.12.2027]');
     });
   });
 
@@ -113,44 +113,44 @@ describe('buildLegalDescription', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [
           { type: 'MEMBERSHIP', value: 'active' },
-          { type: 'END_DATE', endDate: '2027-12-31' },
+          { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
         ]),
         makeTransloco(),
       );
       expect(text).toContain('legalDescription.and');
       const membershipPos = text.indexOf('constraint.MEMBERSHIP.legalText');
-      const endDatePos = text.indexOf('legalDescription.clause.endDate');
+      const dateRangePos = text.indexOf('legalDescription.clause.dateRange');
       const andPos = text.indexOf('legalDescription.and');
       expect(membershipPos).toBeGreaterThan(-1);
       expect(andPos).toBeGreaterThan(membershipPos);
-      expect(endDatePos).toBeGreaterThan(andPos);
+      expect(dateRangePos).toBeGreaterThan(andPos);
     });
   });
 
   describe('formatDate — Randfälle des rechtlich maßgeblichen Datums', () => {
     it('formatiert YYYY-MM-DD zeitzonenunabhängig zu dd.mm.yyyy', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'END_DATE', endDate: '2027-01-05' }]),
+        draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: '2027-01-05', endDate: '2027-02-10' }]),
         makeTransloco(),
       );
       // Regressionsschutz gegen UTC→lokal-Verschiebung (kein Off-by-one auf den 04.01.).
-      expect(text).toContain('date=05.01.2027');
+      expect(text).toContain('start=05.01.2027;end=10.02.2027');
     });
 
-    it('leeres Datum → Platzhalter "—"', () => {
+    it('leere Datumsangaben → Platzhalter "—"', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'END_DATE', endDate: '' }]),
+        draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: '', endDate: '' }]),
         makeTransloco(),
       );
-      expect(text).toContain('date=—');
+      expect(text).toContain('start=—;end=—');
     });
 
     it('unparsebares Datum → unverändert durchgereicht', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'END_DATE', endDate: 'not-a-date' }]),
+        draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: 'not-a-date', endDate: 'not-a-date' }]),
         makeTransloco(),
       );
-      expect(text).toContain('date=not-a-date');
+      expect(text).toContain('start=not-a-date;end=not-a-date');
     });
   });
 

@@ -51,10 +51,10 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
         lang,
       );
     }
-    case 'END_DATE':
+    case 'DATE_RANGE':
       return transloco.translate(
-        'legalDescription.clause.endDate',
-        { date: formatDate(c.endDate) },
+        'legalDescription.clause.dateRange',
+        { start: formatDate(c.startDate), end: formatDate(c.endDate) },
         lang,
       );
     case 'FRAMEWORK_AGREEMENT':
@@ -82,7 +82,7 @@ function joinList(items: string[]): string {
 
 function formatDate(iso: string): string {
   if (!iso) return '—';
-  // Reine Datumsangaben (YYYY-MM-DD, das Format der END_DATE-Eingabe) direkt formatieren,
+  // Reine Datumsangaben (YYYY-MM-DD, das Format der DATE_RANGE-Eingabe) direkt formatieren,
   // ohne sie durch `new Date()` in UTC-Mitternacht zu wandeln. Sonst kippt der lokale Tag
   // in Zeitzonen westlich von UTC um einen Tag — beim rechtlich maßgeblichen Text unzulässig.
   const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);

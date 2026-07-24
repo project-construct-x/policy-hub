@@ -36,6 +36,10 @@
     "loading": "Loading content",
     "requiredField": "Required field",
     "formInvalid": "The form contains errors. Please review the highlighted fields.",
+    "dateRange": {
+      "startInput": "Start date of the validity period",
+      "endInput": "End date of the validity period"
+    },
     "severity": {
       "success": "Success",
       "error": "Error",
@@ -187,9 +191,11 @@
         "placeholder": "Select use cases",
         "hint": "Select one or more use cases."
       },
-      "END_DATE": {
-        "label": "Valid until",
-        "hint": "Choose a date in the future."
+      "DATE_RANGE": {
+        "label": "Time period",
+        "startLabel": "Start date",
+        "endLabel": "End date",
+        "hint": "Choose a start and end date in the future."
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "The consumer must have agreed to this framework agreement:"
@@ -225,10 +231,10 @@
       "legalText": "Data usage is restricted to the selected use cases.",
       "summaryEmpty": "no use cases selected yet"
     },
-    "END_DATE": {
-      "label": "End date",
-      "description": "Validity ends on the given date.",
-      "legalText": "The usage right expires on the given date."
+    "DATE_RANGE": {
+      "label": "Time period",
+      "description": "Validity limited to a period from start to end date.",
+      "legalText": "The usage right applies only within the given time period."
     },
     "FRAMEWORK_AGREEMENT": {
       "label": "Framework agreement",
@@ -250,7 +256,7 @@
     "and": "Furthermore:",
     "clause": {
       "useCase": "The data may only be processed within the scope of the following use cases: {{list}}. Any usage for other purposes is prohibited.",
-      "endDate": "The granted permission is time-limited and expires automatically on {{date}}. After this date, any further usage of the data is prohibited.",
+      "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
       "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place."
     }
   },
@@ -260,9 +266,13 @@
     "categoryRequired": "A category must be selected",
     "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
     "useCaseRequired": "At least one use case must be selected",
-    "endDateRequired": "End date is required",
-    "endDateInvalid": "Date is invalid",
-    "endDateInPast": "End date must be in the future"
+    "dateRangeStartRequired": "Start date is required",
+    "dateRangeStartInvalid": "Start date is invalid",
+    "dateRangeStartInPast": "Start date must be in the future",
+    "dateRangeEndRequired": "End date is required",
+    "dateRangeEndInvalid": "End date is invalid",
+    "dateRangeEndInPast": "End date must be in the future",
+    "dateRangeStartAfterEnd": "The start date must be before the end date"
   },
   "deleteDialog": {
     "title": "Delete policy",

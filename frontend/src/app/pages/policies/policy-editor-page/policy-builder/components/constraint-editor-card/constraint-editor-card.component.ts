@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { FormsModule } from '@angular/forms';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import {
   Constraint,
-  EndDateConstraint,
+  DateRangeConstraint,
   FrameworkAgreementConstraint,
   MembershipConstraint,
   UseCaseConstraint,
@@ -27,7 +26,6 @@ import {
     FormsModule,
     TranslocoDirective,
     MatFormFieldModule,
-    MatInputModule,
     MatSelectModule,
     MatIconModule,
     MatDatepickerModule,
@@ -52,12 +50,19 @@ export class ConstraintEditorCardComponent {
     this.showErrors() ? validateConstraint(this.constraint(), this.index()) : [],
   );
 
-  readonly endDateValue = computed<Date | null>(() => {
+  readonly startDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.startDate));
+  readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate));
+
+  private dateRange(): DateRangeConstraint | null {
     const c = this.constraint();
-    if (c.type !== 'END_DATE' || !c.endDate) return null;
-    const d = new Date(c.endDate);
+    return c.type === 'DATE_RANGE' ? c : null;
+  }
+
+  private parseDate(iso: string | undefined): Date | null {
+    if (!iso) return null;
+    const d = new Date(iso);
     return isNaN(d.getTime()) ? null : d;
-  });
+  }
 
   hasError(field: string): boolean {
     return this.errors().some((e) => e.field.endsWith(field));
@@ -73,8 +78,8 @@ export class ConstraintEditorCardComponent {
   asUseCase(c: Constraint): UseCaseConstraint {
     return c as UseCaseConstraint;
   }
-  asEndDate(c: Constraint): EndDateConstraint {
-    return c as EndDateConstraint;
+  asDateRange(c: Constraint): DateRangeConstraint {
+    return c as DateRangeConstraint;
   }
   asFramework(c: Constraint): FrameworkAgreementConstraint {
     return c as FrameworkAgreementConstraint;
@@ -85,10 +90,14 @@ export class ConstraintEditorCardComponent {
     this.constraintChange.emit({ ...current, useCases: values });
   }
 
+  onStartDateChange(value: Date | null): void {
+    const current = this.asDateRange(this.constraint());
+    this.constraintChange.emit({ ...current, startDate: value ? this.toIsoDate(value) : '' });
+  }
+
   onEndDateChange(value: Date | null): void {
-    const current = this.asEndDate(this.constraint());
-    const iso = value ? this.toIsoDate(value) : '';
-    this.constraintChange.emit({ ...current, endDate: iso });
+    const current = this.asDateRange(this.constraint());
+    this.constraintChange.emit({ ...current, endDate: value ? this.toIsoDate(value) : '' });
   }
 
   private toIsoDate(d: Date): string {

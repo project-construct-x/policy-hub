@@ -40,18 +40,32 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
   const prefix = `constraint[${index}]`;
 
   switch (constraint.type) {
-    case 'END_DATE': {
-      if (!constraint.endDate) {
-        errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateRequired' });
-      } else {
-        const date = new Date(constraint.endDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (isNaN(date.getTime())) {
-          errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateInvalid' });
-        } else if (date < today) {
-          errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.endDateInPast' });
-        }
+    case 'DATE_RANGE': {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const start = validateDate(
+        constraint.startDate,
+        `${prefix}.startDate`,
+        'dateRangeStartRequired',
+        'dateRangeStartInvalid',
+        'dateRangeStartInPast',
+        today,
+        errors,
+      );
+      const end = validateDate(
+        constraint.endDate,
+        `${prefix}.endDate`,
+        'dateRangeEndRequired',
+        'dateRangeEndInvalid',
+        'dateRangeEndInPast',
+        today,
+        errors,
+      );
+
+      // Cross-Field: Start darf nicht nach dem Ende liegen (nur prüfen, wenn beide gültig sind).
+      if (start && end && start > end) {
+        errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.dateRangeStartAfterEnd' });
       }
       break;
     }
@@ -67,4 +81,34 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
   }
 
   return errors;
+}
+
+/**
+ * Validiert ein einzelnes Pflicht-Datum (required + parsebar + nicht in der Vergangenheit)
+ * und hängt gefundene Fehler an `errors`. Gibt bei gültigem Wert das `Date` zurück, sonst `null`
+ * (für die anschließende Start-≤-Ende-Prüfung).
+ */
+function validateDate(
+  value: string,
+  field: string,
+  requiredKey: string,
+  invalidKey: string,
+  inPastKey: string,
+  today: Date,
+  errors: ValidationError[],
+): Date | null {
+  if (!value) {
+    errors.push({ field, messageKey: `validation.${requiredKey}` });
+    return null;
+  }
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    errors.push({ field, messageKey: `validation.${invalidKey}` });
+    return null;
+  }
+  if (date < today) {
+    errors.push({ field, messageKey: `validation.${inPastKey}` });
+    return null;
+  }
+  return date;
 }

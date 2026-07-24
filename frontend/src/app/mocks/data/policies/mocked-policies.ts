@@ -77,7 +77,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           category: 'CONTRACT',
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
-            { type: 'END_DATE', endDate: '2027-12-31' },
+            { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
           ],
           createdAt: '2026-02-05T13:15:00Z',
           updatedAt: '2026-04-02T10:00:00Z',
@@ -97,7 +97,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
-            { type: 'END_DATE', endDate: '2027-06-30' },
+            { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: '2027-06-30' },
           ],
           createdAt: '2026-04-15T16:00:00Z',
           updatedAt: '2026-04-15T16:00:00Z',
@@ -112,6 +112,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
               type: 'USE_CASE',
               useCases: ['UC.quality-assurance', 'UC.material-testing'],
             },
+            { type: 'DATE_RANGE', startDate: '2026-08-01', endDate: '2027-07-31' },
           ],
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
@@ -128,7 +129,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'USE_CASE', useCases: ['UC.site-documentation', 'UC.bim-coordination'] },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
-            { type: 'END_DATE', endDate: '2028-03-31' },
+            { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
           ],
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
@@ -150,7 +151,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           category: 'CONTRACT',
           constraints: [
             { type: 'USE_CASE', useCases: ['UC.quality-assurance'] },
-            { type: 'END_DATE', endDate: '2027-12-31' },
+            { type: 'DATE_RANGE', startDate: '2026-07-01', endDate: '2027-12-31' },
           ],
           createdAt: '2026-02-15T10:00:00Z',
           updatedAt: '2026-04-18T08:45:00Z',

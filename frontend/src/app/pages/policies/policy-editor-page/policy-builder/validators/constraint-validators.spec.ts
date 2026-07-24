@@ -6,7 +6,7 @@ import { Policy } from '@shared/types/policy.model';
 import { validateConstraint, validatePolicyDraft } from './constraint-validators';
 
 describe('validateConstraint — Bedingungs-Prüfung', () => {
-  describe('END_DATE (datumsabhängig, fixe Systemzeit)', () => {
+  describe('DATE_RANGE (datumsabhängig, fixe Systemzeit)', () => {
     beforeEach(() => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date('2026-07-17T12:00:00'));
@@ -16,35 +16,89 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
       vi.useRealTimers();
     });
 
-    it('meldet endDateRequired bei leerem Datum', () => {
-      const errors = validateConstraint({ type: 'END_DATE', endDate: '' });
+    it('meldet Start- und Ende-Required bei leeren Datumsangaben', () => {
+      const errors = validateConstraint({ type: 'DATE_RANGE', startDate: '', endDate: '' });
       expect(errors).toEqual([
-        { field: 'constraint[0].endDate', messageKey: 'validation.endDateRequired' },
+        { field: 'constraint[0].startDate', messageKey: 'validation.dateRangeStartRequired' },
+        { field: 'constraint[0].endDate', messageKey: 'validation.dateRangeEndRequired' },
       ]);
     });
 
-    it('meldet endDateInvalid bei unparsebarem Datum', () => {
-      const errors = validateConstraint({ type: 'END_DATE', endDate: 'not-a-date' });
+    it('meldet dateRangeStartInvalid bei unparsebarem Startdatum', () => {
+      const errors = validateConstraint({
+        type: 'DATE_RANGE',
+        startDate: 'not-a-date',
+        endDate: '2099-12-31',
+      });
       expect(errors).toContainEqual({
-        field: 'constraint[0].endDate',
-        messageKey: 'validation.endDateInvalid',
+        field: 'constraint[0].startDate',
+        messageKey: 'validation.dateRangeStartInvalid',
       });
     });
 
-    it('meldet endDateInPast für ein Datum in der Vergangenheit', () => {
-      const errors = validateConstraint({ type: 'END_DATE', endDate: '2020-01-01' });
+    it('meldet dateRangeEndInvalid bei unparsebarem Enddatum', () => {
+      const errors = validateConstraint({
+        type: 'DATE_RANGE',
+        startDate: '2099-01-01',
+        endDate: 'not-a-date',
+      });
       expect(errors).toContainEqual({
         field: 'constraint[0].endDate',
-        messageKey: 'validation.endDateInPast',
+        messageKey: 'validation.dateRangeEndInvalid',
       });
     });
 
-    it('akzeptiert das heutige Datum (today auf 00:00 gefloort)', () => {
-      expect(validateConstraint({ type: 'END_DATE', endDate: '2026-07-17' })).toEqual([]);
+    it('meldet dateRangeStartInPast für ein Startdatum in der Vergangenheit', () => {
+      const errors = validateConstraint({
+        type: 'DATE_RANGE',
+        startDate: '2020-01-01',
+        endDate: '2099-12-31',
+      });
+      expect(errors).toContainEqual({
+        field: 'constraint[0].startDate',
+        messageKey: 'validation.dateRangeStartInPast',
+      });
     });
 
-    it('akzeptiert ein Datum in der Zukunft', () => {
-      expect(validateConstraint({ type: 'END_DATE', endDate: '2099-12-31' })).toEqual([]);
+    it('meldet dateRangeEndInPast für ein Enddatum in der Vergangenheit', () => {
+      const errors = validateConstraint({
+        type: 'DATE_RANGE',
+        startDate: '2026-07-17',
+        endDate: '2020-01-01',
+      });
+      expect(errors).toContainEqual({
+        field: 'constraint[0].endDate',
+        messageKey: 'validation.dateRangeEndInPast',
+      });
+    });
+
+    it('meldet dateRangeStartAfterEnd, wenn der Start nach dem Ende liegt (beide gültig)', () => {
+      const errors = validateConstraint({
+        type: 'DATE_RANGE',
+        startDate: '2099-12-31',
+        endDate: '2099-01-01',
+      });
+      expect(errors).toEqual([
+        { field: 'constraint[0].endDate', messageKey: 'validation.dateRangeStartAfterEnd' },
+      ]);
+    });
+
+    it('akzeptiert das heutige Datum als Start (today auf 00:00 gefloort)', () => {
+      expect(
+        validateConstraint({ type: 'DATE_RANGE', startDate: '2026-07-17', endDate: '2099-12-31' }),
+      ).toEqual([]);
+    });
+
+    it('akzeptiert einen gültigen zukünftigen Zeitraum', () => {
+      expect(
+        validateConstraint({ type: 'DATE_RANGE', startDate: '2027-01-01', endDate: '2027-12-31' }),
+      ).toEqual([]);
+    });
+
+    it('akzeptiert Start = Ende (gleicher Tag)', () => {
+      expect(
+        validateConstraint({ type: 'DATE_RANGE', startDate: '2027-05-05', endDate: '2027-05-05' }),
+      ).toEqual([]);
     });
   });
 
@@ -118,14 +172,19 @@ describe('validatePolicyDraft', () => {
     });
   });
 
-  it('meldet constraintNotAllowedInCategory für END_DATE unter ACCESS', () => {
-    const errors = validatePolicyDraft(
-      draft({ category: 'ACCESS', constraints: [{ type: 'END_DATE', endDate: '2099-12-31' }] }),
-    );
-    expect(errors).toContainEqual({
-      field: 'constraint[0]',
-      messageKey: 'validation.constraintNotAllowedInCategory',
-    });
+  it('erlaubt DATE_RANGE sowohl unter ACCESS als auch unter CONTRACT', () => {
+    for (const category of ['ACCESS', 'CONTRACT'] as const) {
+      const errors = validatePolicyDraft(
+        draft({
+          category,
+          constraints: [{ type: 'DATE_RANGE', startDate: '2099-01-01', endDate: '2099-12-31' }],
+        }),
+      );
+      expect(errors).not.toContainEqual({
+        field: 'constraint[0]',
+        messageKey: 'validation.constraintNotAllowedInCategory',
+      });
+    }
   });
 
   it('aggregiert mehrere Fehler (ID + Kategorie + Bedingung)', () => {

@@ -3,17 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { buildDefaultConstraint, getAllowedConstraintTypes } from './constraint-metadata';
 
 describe('getAllowedConstraintTypes', () => {
-  it('schließt END_DATE für ACCESS aus', () => {
-    const allowed = getAllowedConstraintTypes('ACCESS');
-    expect(allowed).toEqual(['MEMBERSHIP', 'USE_CASE', 'FRAMEWORK_AGREEMENT']);
-    expect(allowed).not.toContain('END_DATE');
+  it('erlaubt alle vier Typen (inkl. DATE_RANGE) für ACCESS', () => {
+    expect(getAllowedConstraintTypes('ACCESS')).toEqual([
+      'MEMBERSHIP',
+      'USE_CASE',
+      'DATE_RANGE',
+      'FRAMEWORK_AGREEMENT',
+    ]);
   });
 
   it('erlaubt alle vier Typen für CONTRACT', () => {
     expect(getAllowedConstraintTypes('CONTRACT')).toEqual([
       'MEMBERSHIP',
       'USE_CASE',
-      'END_DATE',
+      'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
     ]);
   });
@@ -28,8 +31,12 @@ describe('buildDefaultConstraint', () => {
     expect(buildDefaultConstraint('USE_CASE')).toEqual({ type: 'USE_CASE', useCases: [] });
   });
 
-  it('END_DATE → leeres Datum (per Validator ungültig, bis Nutzer eins wählt)', () => {
-    expect(buildDefaultConstraint('END_DATE')).toEqual({ type: 'END_DATE', endDate: '' });
+  it('DATE_RANGE → leere Datumsangaben (per Validator ungültig, bis Nutzer welche wählt)', () => {
+    expect(buildDefaultConstraint('DATE_RANGE')).toEqual({
+      type: 'DATE_RANGE',
+      startDate: '',
+      endDate: '',
+    });
   });
 
   it('FRAMEWORK_AGREEMENT → Default-Agreement DataExchangeGovernance', () => {

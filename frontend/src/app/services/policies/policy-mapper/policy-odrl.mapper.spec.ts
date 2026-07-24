@@ -33,38 +33,49 @@ describe('actionForCategory', () => {
 describe('constraintToOdrl — alle Bedingungstypen', () => {
   it('MEMBERSHIP → Membership / odrl:eq / String-rightOperand', () => {
     const c: Constraint = { type: 'MEMBERSHIP', value: 'active' };
-    expect(constraintToOdrl(c)).toEqual({
-      'odrl:leftOperand': { '@id': `${CX_NS}Membership` },
-      'odrl:operator': { '@id': 'odrl:eq' },
-      'odrl:rightOperand': 'active',
-    });
+    expect(constraintToOdrl(c)).toEqual([
+      {
+        'odrl:leftOperand': { '@id': `${CX_NS}Membership` },
+        'odrl:operator': { '@id': 'odrl:eq' },
+        'odrl:rightOperand': 'active',
+      },
+    ]);
   });
 
   it('USE_CASE → UsagePurpose / odrl:isAnyOf / Array-rightOperand', () => {
     const c: Constraint = { type: 'USE_CASE', useCases: ['UC.quality-assurance', 'UC.geodata'] };
-    const result = constraintToOdrl(c);
+    const [result] = constraintToOdrl(c);
     expect(result['odrl:leftOperand']).toEqual({ '@id': `${CX_NS}UsagePurpose` });
     expect(result['odrl:operator']).toEqual({ '@id': 'odrl:isAnyOf' });
     expect(result['odrl:rightOperand']).toEqual(['UC.quality-assurance', 'UC.geodata']);
     expect(Array.isArray(result['odrl:rightOperand'])).toBe(true);
   });
 
-  it('END_DATE → DataUsageEndDate / odrl:eq / String-rightOperand', () => {
-    const c: Constraint = { type: 'END_DATE', endDate: '2027-12-31' };
-    expect(constraintToOdrl(c)).toEqual({
-      'odrl:leftOperand': { '@id': `${CX_NS}DataUsageEndDate` },
-      'odrl:operator': { '@id': 'odrl:eq' },
-      'odrl:rightOperand': '2027-12-31',
-    });
+  it('DATE_RANGE → zwei Atomics: Start (gteq) und Ende (lteq)', () => {
+    const c: Constraint = { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' };
+    expect(constraintToOdrl(c)).toEqual([
+      {
+        'odrl:leftOperand': { '@id': `${CX_NS}DataUsageStartDate` },
+        'odrl:operator': { '@id': 'odrl:gteq' },
+        'odrl:rightOperand': '2026-06-01',
+      },
+      {
+        'odrl:leftOperand': { '@id': `${CX_NS}DataUsageEndDate` },
+        'odrl:operator': { '@id': 'odrl:lteq' },
+        'odrl:rightOperand': '2027-12-31',
+      },
+    ]);
   });
 
   it('FRAMEWORK_AGREEMENT → FrameworkAgreement / odrl:eq / String-rightOperand', () => {
     const c: Constraint = { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
-    expect(constraintToOdrl(c)).toEqual({
-      'odrl:leftOperand': { '@id': `${CX_NS}FrameworkAgreement` },
-      'odrl:operator': { '@id': 'odrl:eq' },
-      'odrl:rightOperand': 'DataExchangeGovernance',
-    });
+    expect(constraintToOdrl(c)).toEqual([
+      {
+        'odrl:leftOperand': { '@id': `${CX_NS}FrameworkAgreement` },
+        'odrl:operator': { '@id': 'odrl:eq' },
+        'odrl:rightOperand': 'DataExchangeGovernance',
+      },
+    ]);
   });
 });
 
@@ -121,24 +132,26 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
       { type: 'MEMBERSHIP', value: 'active' },
       { type: 'USE_CASE', useCases: ['UC.geodata'] },
       { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' },
-      { type: 'END_DATE', endDate: '2028-03-31' },
+      { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
     ];
     const policy = buildPolicy({ category: 'CONTRACT', constraints });
     const group = policyToOdrl(policy).policy['odrl:permission'][0]['odrl:constraint']!;
 
-    expect(group['odrl:and']).toHaveLength(4);
+    // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 5 gesamt.
+    expect(group['odrl:and']).toHaveLength(5);
     expect(group['odrl:and'].map((a) => a['odrl:leftOperand']['@id'])).toEqual([
       `${CX_NS}Membership`,
       `${CX_NS}UsagePurpose`,
       `${CX_NS}FrameworkAgreement`,
+      `${CX_NS}DataUsageStartDate`,
       `${CX_NS}DataUsageEndDate`,
     ]);
-    // Jede Bedingung wird zu genau einem Atomic gemappt.
     expect(group['odrl:and'].map((a) => a['odrl:operator']['@id'])).toEqual([
       'odrl:eq',
       'odrl:isAnyOf',
       'odrl:eq',
-      'odrl:eq',
+      'odrl:gteq',
+      'odrl:lteq',
     ]);
   });
 });

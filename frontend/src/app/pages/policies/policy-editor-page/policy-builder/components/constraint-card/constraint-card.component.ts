@@ -33,15 +33,22 @@ function formatSummary(c: Constraint, transloco: TranslocoService): string {
       });
       return labels.join(', ');
     }
-    case 'END_DATE': {
-      if (!c.endDate) return '—';
-      try {
-        return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' }).format(new Date(c.endDate));
-      } catch {
-        return c.endDate;
-      }
+    case 'DATE_RANGE': {
+      if (!c.startDate && !c.endDate) return '—';
+      const start = formatDisplayDate(c.startDate);
+      const end = formatDisplayDate(c.endDate);
+      return `${start} – ${end}`;
     }
     case 'FRAMEWORK_AGREEMENT':
       return c.agreement;
+  }
+}
+
+function formatDisplayDate(iso: string): string {
+  if (!iso) return '…';
+  try {
+    return new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' }).format(new Date(iso));
+  } catch {
+    return iso;
   }
 }
