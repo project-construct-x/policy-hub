@@ -21,10 +21,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.UUID;
 
+@Tag(
+        name = "Policies",
+        description = "Create, retrieve, update and delete Policy Hub policies"
+)
 @RestController
 @RequestMapping("/api/v1/policies")
 public class PolicyController {
@@ -35,11 +41,33 @@ public class PolicyController {
         this.policyService = policyService;
     }
 
+    @Operation(
+            summary = "Get all policies",
+            description = "Returns all stored policies."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Policies returned successfully"
+    )
     @GetMapping
     public ResponseEntity<List<PolicyResponse>> getAllPolicies() {
         return ResponseEntity.ok(policyService.getAllPolicies());
     }
 
+    @Operation(
+            summary = "Get a policy by ID",
+            description = "Returns a single policy identified by its backend-generated UUID."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Policy returned successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Policy not found"
+            )
+    })
     @GetMapping("/{id}")
     public ResponseEntity<PolicyResponse> getPolicyById(
             @PathVariable UUID id
@@ -63,6 +91,24 @@ public class PolicyController {
         return ResponseEntity.ok(policyService.getOdrlPolicyDefinitionById(id));
     }
 
+    @Operation(
+            summary = "Create a policy",
+            description = "Creates and persistently stores a new policy."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Policy created successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Policy request is incomplete or invalid"
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "A policy with the same policyId already exists"
+            )
+    })
     @PostMapping
     public ResponseEntity<PolicyResponse> createPolicy(
             @Valid @RequestBody CreatePolicyRequest request
@@ -74,6 +120,28 @@ public class PolicyController {
                 .body(created);
     }
 
+    @Operation(
+            summary = "Update a policy",
+            description = "Replaces the editable fields of an existing policy."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Policy updated successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Policy request is incomplete or invalid"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Policy not found"
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "The requested policyId belongs to another policy"
+            )
+    })
     @PutMapping("/{id}")
     public ResponseEntity<PolicyResponse> updatePolicy(
             @PathVariable UUID id,
@@ -82,6 +150,20 @@ public class PolicyController {
         return ResponseEntity.ok(policyService.updatePolicy(id, request));
     }
 
+    @Operation(
+            summary = "Delete a policy",
+            description = "Deletes an existing policy permanently."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Policy deleted successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Policy not found"
+            )
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePolicy(
             @PathVariable UUID id
