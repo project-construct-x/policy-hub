@@ -19,6 +19,7 @@ Monorepo:
 | `frontend/` | Angular-21-App (Hauptfokus, siehe unten)           |
 | `backend/`  | Spring-Boot-Service (Java 21, wird parallel gebaut) |
 | `docs/`     | Design-Brief, Screens, Pencil-Quelle               |
+| `deploy/`   | GitOps-Deployment: Helm-Chart + ArgoCD (siehe §5)  |
 
 Maßgebliche fachliche Referenz: `docs/design/policy-hub-design.md` + `docs/design/screens/`.
 (Die Root-`README.md` und `docs/README.md` sind aktuell nur Platzhalter.)
@@ -193,19 +194,49 @@ Kompakter Überblick; Details in `backend/README.md`.
 
 ---
 
-## 5. Beitrag & Git-Konventionen
+## 5. CI/CD, Docker & Deployment
+
+> ⚠️ Staging-Infrastruktur, **nicht** produktiv. Details in `deploy/README.md`.
+
+### Docker (lokal)
+- **Root `docker-compose.yml`** — voller Stack **ohne** Mocks (Postgres + Backend + Frontend):
+  `docker compose up --build`. Frontend `:4200` (Dev-Image mit Live-Mount), Backend `:8080`,
+  Postgres `:5432`. Aus `frontend/` auch via `npm run docker:dev`.
+- **Dockerfiles:** Backend `backend/Dockerfile`; Frontend `frontend/cicd/docker/Dockerfile.development`
+  (Dev) und `Dockerfile.production` (nginx, SPA-Fallback, Port 8080, `nginx.conf` daneben).
+
+### GitHub Actions (`.github/workflows/`)
+- **`test.yml`** — CI-Gate: `backend-test` (`./gradlew test`, JUnit 5 + Testcontainers/Docker),
+  `frontend-unit-test` (`npm test`, Vitest), `frontend-e2e-test` (`npm run e2e`, Cypress gegen
+  Mock-Modus). Trigger: PRs gegen `main`, Push auf `main` (ignoriert `deploy/**` und `**/*.md`),
+  `workflow_dispatch`.
+- **`build-and-publish.yml`** — baut Backend- & Frontend-Images, pusht nach
+  `ghcr.io/project-construct-x/policy-hub-{backend,frontend}` (Tags `<short-sha>` + `main`) und
+  **committet die neuen Image-Tags zurück** in `deploy/helm/policy-hub/values.yaml`
+  (Commit `ci: … [skip ci]`). Trigger: Push auf `main` (ohne `deploy/**`, `**/*.md`).
+
+### Deployment (GitOps)
+- **ArgoCD** (auto-sync, self-heal) rendert das Umbrella-Helm-Chart `deploy/helm/policy-hub/`
+  in Namespace `policyhub`: Postgres-StatefulSet, Backend- & Frontend-Deployment + Services, Ingress
+  `policy-hub.staging.construct-x.net` (`/` → Frontend, `/api` → Backend).
+- **Flow:** Push auf `main` → Images gebaut/gepusht → Tags in `values.yaml` gebumpt → ArgoCD rollt aus.
+- Layout: `helm/policy-hub/` (Chart), `argocd/{project,application}.yaml`, `secrets/` (manuell via
+  `kubectl`, siehe `secrets/README.md`).
+
+## 6. Beitrag & Git-Konventionen
 
 - PRs gegen `main`; jeden PR möglichst an ein Issue verlinken (Templates unter `.github/`).
 - **Conventional Commits** (bevorzugt), **signierte Commits** (bevorzugt), **License-Header** pro Datei.
 - Branch-Namen: `feature/*`, `fix/*`.
 - Dual-License: Apache-2.0 (Code) / CC-BY-4.0 (Non-Code).
 
-## 6. Dokumentation
+## 7. Dokumentation
 
 - UI-Referenz: `docs/design/policy-hub-design.md` + `docs/design/screens/`.
 - Barrierefreiheit: `docs/accessibility.md` (WCAG-2.2-AA-Stand + bekannte Restrisiken).
 - Design-Quelle: `docs/design/Policy_hub.pen` (Pencil).
 - Backend-Details: `backend/README.md`. Frontend-Details: `frontend/README.md`.
+  Deployment-Details: `deploy/README.md`.
 
 ---
 
