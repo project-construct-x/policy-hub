@@ -78,7 +78,19 @@
                 <span>{{ t('policyDetail.sections.legalDescription') }}</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <p class="pd__legal-text" data-cy="legal-text">{{ legalDescription() }}</p>
+            <div class="pd__legal-text" data-cy="legal-text">
+              <p class="pd__legal-intro">{{ legalDescription().intro }}</p>
+              @if (legalDescription().clauses.length) {
+                <ol class="pd__legal-list">
+                  @for (clause of legalDescription().clauses; track $index) {
+                    <li class="pd__legal-item">
+                      <span class="pd__legal-item-title">{{ clause.title }}</span>
+                      <span class="pd__legal-item-text">{{ clause.text }}</span>
+                    </li>
+                  }
+                </ol>
+              }
+            </div>
           </mat-expansion-panel>
         </section>
 

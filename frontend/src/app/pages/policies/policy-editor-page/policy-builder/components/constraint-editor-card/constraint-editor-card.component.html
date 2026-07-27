@@ -39,26 +39,35 @@
         </mat-form-field>
       }
 
-      @case ('END_DATE') {
+      @case ('DATE_RANGE') {
         <mat-form-field appearance="outline" class="ce-card__field ce-card__field--datepicker">
-          <mat-label>{{ t('policyBuilder.constraint.END_DATE.label') }}</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            [min]="minDate"
-            [value]="endDateValue()"
-            (dateChange)="onEndDateChange($event.value)"
-            (click)="picker.open()"
-            (focus)="picker.open()"
-            readonly
-            data-cy="enddate-input"
-          />
+          <mat-label>{{ t('policyBuilder.constraint.DATE_RANGE.label') }}</mat-label>
+          <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+            <input
+              matStartDate
+              [value]="startDateValue()"
+              (dateChange)="onStartDateChange($event.value)"
+              [placeholder]="t('policyBuilder.constraint.DATE_RANGE.startLabel')"
+              [attr.aria-label]="t('a11y.dateRange.startInput')"
+              data-cy="daterange-start-input"
+            />
+            <input
+              matEndDate
+              [value]="endDateValue()"
+              (dateChange)="onEndDateChange($event.value)"
+              [placeholder]="t('policyBuilder.constraint.DATE_RANGE.endLabel')"
+              [attr.aria-label]="t('a11y.dateRange.endInput')"
+              data-cy="daterange-end-input"
+            />
+          </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
-          <mat-datepicker #picker />
-          @if (hasError('.endDate')) {
+          <mat-date-range-picker #picker />
+          @if (hasError('.startDate')) {
+            <mat-error>{{ t(errorKey('.startDate')!) }}</mat-error>
+          } @else if (hasError('.endDate')) {
             <mat-error>{{ t(errorKey('.endDate')!) }}</mat-error>
           } @else {
-            <mat-hint>{{ t('policyBuilder.constraint.END_DATE.hint') }}</mat-hint>
+            <mat-hint>{{ t('policyBuilder.constraint.DATE_RANGE.hint') }}</mat-hint>
           }
         </mat-form-field>
       }
