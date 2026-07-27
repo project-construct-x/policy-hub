@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -42,8 +47,17 @@ public class PolicyController {
         return ResponseEntity.ok(policyService.getPolicyById(id));
     }
 
+    @Operation(description = "Get the ODRL representation of a Policy.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "The ODRL representation of the Policy with the given ID"),
+            @ApiResponse(responseCode = "404", description = "The Policy with the given ID was not found", content = @Content)
+        })
     @GetMapping("/{id}/odrl")
     public ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(
+        @Parameter(
+            description = "UUID of the Policy to retrieve",
+            example = "00000000-0000-0000-0000-000000000001"
+        )
         @PathVariable UUID id
     ) {
         return ResponseEntity.ok(policyService.getOdrlPolicyDefinitionById(id));
