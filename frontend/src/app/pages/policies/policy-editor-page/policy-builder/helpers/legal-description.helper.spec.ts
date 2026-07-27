@@ -108,8 +108,8 @@ describe('buildLegalDescription', () => {
     });
   });
 
-  describe('mehrere Bedingungen (nummerierte Liste)', () => {
-    it('rendert je Bedingung eine nummerierte Zeile in Reihenfolge, ohne "and"-Konnektor', () => {
+  describe('mehrere Bedingungen (nummerierte Liste mit Titel + Text)', () => {
+    it('rendert je Bedingung einen nummerierten Unterpunkt (Titel) mit Text, in Reihenfolge', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [
           { type: 'MEMBERSHIP', value: 'active' },
@@ -117,17 +117,19 @@ describe('buildLegalDescription', () => {
         ]),
         makeTransloco(),
       );
-      // Intro auf eigener Zeile, danach nummerierte Unterpunkte.
-      expect(text).toContain('1. constraint.MEMBERSHIP.legalText');
-      expect(text).toContain('2. legalDescription.clause.dateRange');
+      // Nummer + Constraint-Name als Überschrift, darunter der Beschreibungstext.
+      expect(text).toContain('1. constraint.MEMBERSHIP.label');
+      expect(text).toContain('2. constraint.DATE_RANGE.label');
+      expect(text).toContain('constraint.MEMBERSHIP.legalText');
+      expect(text).toContain('legalDescription.clause.dateRange');
       expect(text).not.toContain('legalDescription.and');
-      const clause1Pos = text.indexOf('1. constraint.MEMBERSHIP.legalText');
-      const clause2Pos = text.indexOf('2. legalDescription.clause.dateRange');
+      const clause1Pos = text.indexOf('1. constraint.MEMBERSHIP.label');
+      const clause2Pos = text.indexOf('2. constraint.DATE_RANGE.label');
       expect(clause1Pos).toBeGreaterThan(-1);
       expect(clause2Pos).toBeGreaterThan(clause1Pos);
     });
 
-    it('trennt Einleitung und Klauseln durch Zeilenumbrüche (kein Block-Text)', () => {
+    it('trennt Einleitung, Titel und Text durch Zeilenumbrüche (kein Block-Text)', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [
           { type: 'MEMBERSHIP', value: 'active' },
@@ -137,13 +139,17 @@ describe('buildLegalDescription', () => {
       );
       const lines = text.split('\n');
       expect(lines[0]).toBe('legalDescription.introContract');
-      expect(lines[1]).toBe('1. constraint.MEMBERSHIP.legalText');
-      expect(lines[2].startsWith('2. legalDescription.clause.frameworkAgreement')).toBe(true);
+      expect(lines[1]).toBe(''); // Leerzeile zwischen Intro und erstem Unterpunkt
+      expect(lines[2]).toBe('1. constraint.MEMBERSHIP.label');
+      expect(lines[3]).toBe('constraint.MEMBERSHIP.legalText');
+      expect(lines[4]).toBe(''); // Leerzeile zwischen den Unterpunkten
+      expect(lines[5]).toBe('2. constraint.FRAMEWORK_AGREEMENT.label');
+      expect(lines[6].startsWith('legalDescription.clause.frameworkAgreement')).toBe(true);
     });
   });
 
   describe('buildLegalClauses (strukturiert für die Listendarstellung)', () => {
-    it('liefert Intro nach Kategorie und je Constraint eine Klausel in Reihenfolge', () => {
+    it('liefert Intro nach Kategorie und je Constraint Titel + Text in Reihenfolge', () => {
       const result = buildLegalClauses(
         draft('ACCESS', [
           { type: 'MEMBERSHIP', value: 'active' },
@@ -153,8 +159,12 @@ describe('buildLegalDescription', () => {
       );
       expect(result.intro).toBe('legalDescription.introAccess');
       expect(result.clauses).toHaveLength(2);
-      expect(result.clauses[0]).toBe('constraint.MEMBERSHIP.legalText');
-      expect(result.clauses[1]).toContain('legalDescription.clause.dateRange');
+      expect(result.clauses[0]).toEqual({
+        title: 'constraint.MEMBERSHIP.label',
+        text: 'constraint.MEMBERSHIP.legalText',
+      });
+      expect(result.clauses[1].title).toBe('constraint.DATE_RANGE.label');
+      expect(result.clauses[1].text).toContain('legalDescription.clause.dateRange');
     });
 
     it('liefert bei fehlenden Bedingungen den unrestricted-Text und keine Klauseln', () => {
@@ -163,10 +173,11 @@ describe('buildLegalDescription', () => {
       expect(result.clauses).toEqual([]);
     });
 
-    it('reicht den lang-Parameter durch', () => {
+    it('reicht den lang-Parameter durch (Titel und Text)', () => {
       const t = makeTransloco();
       buildLegalClauses(draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]), t, 'de');
       expect(t.translate).toHaveBeenCalledWith('legalDescription.introAccess', undefined, 'de');
+      expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.label', undefined, 'de');
       expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.legalText', undefined, 'de');
     });
   });

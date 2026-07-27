@@ -203,11 +203,22 @@
     padding-left: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+  }
 
-    li {
-      padding-left: 0.25rem;
-    }
+  &__legal-item {
+    padding-left: 0.25rem;
+  }
+
+  &__legal-item-title {
+    display: block;
+    font-weight: 600;
+    color: var(--con-x-text-primary, #111111);
+  }
+
+  &__legal-item-text {
+    display: block;
+    margin-top: 0.125rem;
   }
 
   &__json {

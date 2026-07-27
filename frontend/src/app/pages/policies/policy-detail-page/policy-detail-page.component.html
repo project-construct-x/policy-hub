@@ -83,7 +83,10 @@
               @if (legalDescription().clauses.length) {
                 <ol class="pd__legal-list">
                   @for (clause of legalDescription().clauses; track $index) {
-                    <li>{{ clause }}</li>
+                    <li class="pd__legal-item">
+                      <span class="pd__legal-item-title">{{ clause.title }}</span>
+                      <span class="pd__legal-item-text">{{ clause.text }}</span>
+                    </li>
                   }
                 </ol>
               }

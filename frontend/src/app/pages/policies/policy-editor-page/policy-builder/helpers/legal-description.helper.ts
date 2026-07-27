@@ -3,11 +3,18 @@ import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
 
+export interface LegalClause {
+  /** Anzeigename des Constraints (Metadaten-Label), dient als Überschrift des Unterpunkts. */
+  title: string;
+  /** Juristischer Beschreibungssatz des Constraints. */
+  text: string;
+}
+
 export interface LegalClauses {
   /** Einleitungssatz (kategorieabhängig, bzw. der "unrestricted"-Text ohne Bedingungen). */
   intro: string;
-  /** Je Constraint eine eigenständige Klausel; leer, wenn die Policy keine Bedingungen hat. */
-  clauses: string[];
+  /** Je Constraint eine eigenständige Klausel (Titel + Text); leer ohne Bedingungen. */
+  clauses: LegalClause[];
 }
 
 /**
@@ -38,15 +45,19 @@ export function buildLegalClauses(
     lang,
   );
 
-  const clauses = policy.constraints.map((c) => buildClause(c, transloco, lang));
+  const clauses = policy.constraints.map((c) => ({
+    title: transloco.translate(CONSTRAINT_METADATA[c.type].labelKey, undefined, lang),
+    text: buildClause(c, transloco, lang),
+  }));
 
   return { intro, clauses };
 }
 
 /**
  * Erzeugt aus den Constraints einer Policy den zu speichernden juristischen Text als nummerierte
- * Liste: Einleitungssatz, danach je Bedingung eine nummerierte Zeile (`1. …`, `2. …`). Ohne
- * Bedingungen wird nur der "unrestricted"-Einleitungstext geliefert.
+ * Liste: Einleitungssatz, danach je Bedingung ein nummerierter Unterpunkt aus Überschrift
+ * (`1. <Name>`) und darunter dem Beschreibungstext. Ohne Bedingungen wird nur der
+ * "unrestricted"-Einleitungstext geliefert.
  *
  * Rückgabe bleibt ein String (Backend-Vertrag `legalText`); die Nummerierung ist locale-neutral.
  */
@@ -59,8 +70,8 @@ export function buildLegalDescription(
   if (!clauses.length) {
     return intro;
   }
-  const list = clauses.map((clause, i) => `${i + 1}. ${clause}`).join('\n');
-  return `${intro}\n${list}`;
+  const list = clauses.map((clause, i) => `${i + 1}. ${clause.title}\n${clause.text}`).join('\n\n');
+  return `${intro}\n\n${list}`;
 }
 
 function buildClause(c: Constraint, transloco: TranslocoService, lang?: string): string {
