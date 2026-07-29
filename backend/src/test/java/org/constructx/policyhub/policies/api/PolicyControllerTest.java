@@ -53,6 +53,7 @@ class PolicyControllerTest {
     private static final String UPDATED_AT_STRING =
             "2026-04-29T09:40:00Z";
 
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -270,6 +271,44 @@ class PolicyControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withDateRange_returnsCreatedPolicy() throws Exception {
+        JsonNode dateRange = dateRangeConstraint();
+
+        CreatePolicyRequest request = new CreatePolicyRequest(
+                "zugriff-im-zeitraum",
+                PolicyCategory.ACCESS,
+                List.of(dateRange),
+                "Der Zugriff ist im angegebenen Zeitraum gestattet."
+        );
+
+        PolicyResponse response = new PolicyResponse(
+                POLICY_ID,
+                request.policyId(),
+                request.category(),
+                request.constraints(),
+                request.legalText(),
+                CREATED_AT,
+                UPDATED_AT
+        );
+
+        when(policyService.createPolicy(eq(request)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.constraints[0].type")
+                        .value("DATE_RANGE"))
+                .andExpect(jsonPath("$.constraints[0].startDate")
+                        .value("2026-08-01"))
+                .andExpect(jsonPath("$.constraints[0].endDate")
+                        .value("2027-12-31"));
+    }
+
+    @Test
     void getAllPolicies_withoutAuth_returnsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/v1/policies"))
                 .andExpect(status().isUnauthorized());
@@ -289,6 +328,16 @@ class PolicyControllerTest {
                 CREATED_AT,
                 UPDATED_AT
         );
+    }
+
+    private JsonNode dateRangeConstraint() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "DATE_RANGE",
+              "startDate": "2026-08-01",
+              "endDate": "2027-12-31"
+            }
+            """);
     }
 
     private JsonNode membershipConstraint() throws Exception {
