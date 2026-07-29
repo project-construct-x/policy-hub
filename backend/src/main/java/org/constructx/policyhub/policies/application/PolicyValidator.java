@@ -93,11 +93,11 @@ public class PolicyValidator {
             String fieldName,
             int index
     ) {
-        JsonNode dateNode = constraint.get(fieldName);
+        JsonNode value = constraint.get(fieldName);
 
-        if (dateNode == null
-                || !dateNode.isTextual()
-                || dateNode.asText().isBlank()) {
+        if (value == null
+                || !value.isTextual()
+                || value.asText().isBlank()) {
             throw new InvalidPolicyException(
                     "constraints[" + index + "]."
                             + fieldName + " is required"
@@ -105,8 +105,8 @@ public class PolicyValidator {
         }
 
         try {
-            return LocalDate.parse(dateNode.asText());
-        } catch (DateTimeParseException ex) {
+            return LocalDate.parse(value.asText());
+        } catch (DateTimeParseException exception) {
             throw new InvalidPolicyException(
                     "constraints[" + index + "]."
                             + fieldName
@@ -119,6 +119,8 @@ public class PolicyValidator {
             JsonNode constraint,
             int index
     ) {
+        LocalDate today = LocalDate.now();
+
         LocalDate startDate = readRequiredDate(
                 constraint,
                 "startDate",
@@ -130,6 +132,20 @@ public class PolicyValidator {
                 "endDate",
                 index
         );
+
+        if (startDate.isBefore(today)) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].startDate must not be in the past"
+            );
+        }
+
+        if (endDate.isBefore(today)) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].endDate must not be in the past"
+            );
+        }
 
         if (startDate.isAfter(endDate)) {
             throw new InvalidPolicyException(
