@@ -22,7 +22,7 @@
   gap: 0.5rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, var(--cx-orange), var(--cx-dark-orange));
+  background: linear-gradient(135deg, var(--con-x-orange), var(--con-x-dark-orange));
   color: #fff;
   border: none;
   cursor: pointer;
@@ -31,7 +31,7 @@
   font-weight: 600;
 
   &:hover {
-    background: linear-gradient(135deg, var(--cx-dark-orange), var(--cx-orange));
+    background: linear-gradient(135deg, var(--con-x-dark-orange), var(--con-x-orange));
   }
 }
 
@@ -110,8 +110,8 @@
   }
 
   &.active {
-    background: var(--cx-orange, #e53d17);
-    border-color: var(--cx-orange, #e53d17);
+    background: var(--con-x-orange, #e53d17);
+    border-color: var(--con-x-orange, #e53d17);
     color: #fff;
     font-weight: 600;
   }

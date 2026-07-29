@@ -1,0 +1,116 @@
+// ============================================================
+// Shared Policy Table — used in Overview + Home Page
+// ============================================================
+
+// Data tables may scroll horizontally (WCAG 1.4.10 exception for content
+// that requires a two-dimensional layout), so we cap reflow with a scroller.
+.con-x-policy-table-scroll {
+  overflow-x: auto;
+  background: var(--con-x-white);
+  border: 0.0625rem solid var(--con-x-border-color);
+  border-radius: 0.625rem;
+}
+
+.con-x-policy-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0 0.5625rem;
+
+    &:first-child {
+      padding-left: 1.25rem;
+    }
+
+    &:last-child {
+      padding-right: 1.25rem;
+    }
+  }
+
+  thead th {
+    height: 3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--con-x-text-tertiary);
+    border-bottom: 0.0625rem solid var(--con-x-border-color);
+    white-space: nowrap;
+  }
+}
+
+.col-name {
+  min-width: 16rem;
+}
+
+.col-category {
+  width: 8.5rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--con-x-text-secondary);
+}
+
+.col-date {
+  width: 11.25rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--con-x-text-tertiary);
+  white-space: nowrap;
+}
+
+.col-action {
+  width: 3rem;
+  text-align: right;
+}
+
+.table-row {
+  position: relative;
+  height: 4.625rem;
+  border-bottom: 0.0625rem solid var(--con-x-border-color);
+  transition: background-color 0.15s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--con-x-bg-page);
+  }
+
+  // Row-level focus ring when the (only) focusable child — the link — is
+  // focused by keyboard.
+  &:has(.policy-link:focus-visible) {
+    outline: 2px solid var(--con-x-orange);
+    outline-offset: -2px;
+  }
+}
+
+.policy-link {
+  text-decoration: none;
+  color: var(--con-x-text-primary);
+  outline: none;
+
+  // Stretched link: cover the whole row so the entire row stays clickable,
+  // while keeping a single focusable navigation target per row.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.policy-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--con-x-text-primary);
+}
+
+.view-icon {
+  font-size: 1.25rem;
+  color: var(--con-x-text-tertiary);
+  transition: color 0.15s;
+}
+
+.table-row:hover .view-icon {
+  color: var(--con-x-orange);
+}

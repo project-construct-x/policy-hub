@@ -1,11 +1,11 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslocoDirective } from '@jsverse/transloco';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 
 @Component({
   selector: 'app-confirm-delete-dialog',
-  imports: [MatDialogModule, TranslocoDirective, CxButtonComponent],
+  imports: [MatDialogModule, TranslocoDirective, ConXButtonComponent],
   templateUrl: './confirm-delete-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
 })

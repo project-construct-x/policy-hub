@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   output,
@@ -10,11 +11,13 @@ import {
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
 import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import {
@@ -42,7 +45,7 @@ export interface PolicyDraft {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    CxButtonComponent,
+    ConXButtonComponent,
     ConstraintPaletteComponent,
     ConstraintEditorCardComponent,
   ],
@@ -59,6 +62,11 @@ export class PolicyBuilderComponent {
   readonly cancelled = output<void>();
 
   private readonly transloco = inject(TranslocoService);
+  private readonly liveAnnouncer = inject(LiveAnnouncer);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  /** Category options in visual order — drives radiogroup arrow-key navigation. */
+  private readonly categoryOrder: PolicyCategory[] = ['ACCESS', 'CONTRACT'];
 
   readonly policyId = signal('');
   readonly category = signal<PolicyCategory>('ACCESS');
@@ -84,6 +92,14 @@ export class PolicyBuilderComponent {
     return this.validationErrors().find((e) => e.field === 'policyId')?.messageKey ?? null;
   });
 
+  // Die Fehleranzeige des policyId-Felds wird exakt an unsere eigene Validierung gekoppelt:
+  // Materials native Validatoren (`required`) decken nicht alle Regeln ab (z.B. "zu lang").
+  // Damit der Matcher überhaupt greift, braucht das Feld ein NgControl — dafür ist im Template
+  // `[ngModel]` gesetzt; nur dann ruft MatInput `updateErrorState()` und damit diesen Matcher auf.
+  readonly policyIdErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => this.policyIdError() !== null,
+  };
+
   constructor() {
     effect(() => {
       const initial = this.initialPolicy();
@@ -101,6 +117,25 @@ export class PolicyBuilderComponent {
     this.category.set(c);
     // Filter out constraints not allowed in the new category
     this.constraints.update((list) => list.filter((cn) => this.isConstraintAllowed(cn.type, c)));
+  }
+
+  /** Arrow-key navigation for the category radiogroup (WAI-ARIA radio pattern). */
+  onCategoryKeydown(event: KeyboardEvent): void {
+    const forwardKeys = ['ArrowRight', 'ArrowDown'];
+    const backwardKeys = ['ArrowLeft', 'ArrowUp'];
+    if (!forwardKeys.includes(event.key) && !backwardKeys.includes(event.key)) return;
+    event.preventDefault();
+
+    const count = this.categoryOrder.length;
+    const currentIndex = this.categoryOrder.indexOf(this.category());
+    const step = forwardKeys.includes(event.key) ? 1 : -1;
+    const nextIndex = (currentIndex + step + count) % count;
+
+    this.selectCategory(this.categoryOrder[nextIndex]);
+
+    const group = (event.currentTarget as HTMLElement).parentElement;
+    const radios = group?.querySelectorAll<HTMLElement>('[role="radio"]');
+    radios?.[nextIndex]?.focus();
   }
 
   private isConstraintAllowed(type: ConstraintType, cat: PolicyCategory): boolean {
@@ -135,7 +170,10 @@ export class PolicyBuilderComponent {
 
   submit(): void {
     this.submitted.set(true);
-    if (!this.isValid()) return;
+    if (!this.isValid()) {
+      this.announceAndFocusFirstError();
+      return;
+    }
     const category = this.category();
     const constraints = this.constraints();
     this.save.emit({
@@ -150,5 +188,16 @@ export class PolicyBuilderComponent {
 
   onCancel(): void {
     this.cancelled.emit();
+  }
+
+  /** Announce the invalid-submit summary and move focus to the first invalid control. */
+  private announceAndFocusFirstError(): void {
+    void this.liveAnnouncer.announce(this.transloco.translate('a11y.formInvalid'), 'assertive');
+    // Defer so error states (aria-invalid) are reflected in the DOM first.
+    setTimeout(() => {
+      const firstInvalid =
+        this.host.nativeElement.querySelector<HTMLElement>('[aria-invalid="true"]');
+      firstInvalid?.focus();
+    });
   }
 }

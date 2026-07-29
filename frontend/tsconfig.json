@@ -22,7 +22,9 @@
       "@core/*": ["./src/app/core/*"],
       "@shared/*": ["./src/app/shared/*"],
       "@mocks/*": ["./src/app/mocks/*"],
-      "@features/policies/builder/*": ["./src/app/pages/policies/policy-editor-page/policy-builder/*"],
+      "@features/policies/builder/*": [
+        "./src/app/pages/policies/policy-editor-page/policy-builder/*"
+      ],
       "@features/*": ["./src/app/features/*"],
       "@env": ["./src/environments"],
       "@env/*": ["./src/environments/*"]

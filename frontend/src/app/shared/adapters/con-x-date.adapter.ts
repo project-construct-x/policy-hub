@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NativeDateAdapter } from '@angular/material/core';
 
 @Injectable()
-export class CxDateAdapter extends NativeDateAdapter {
+export class ConXDateAdapter extends NativeDateAdapter {
   override format(date: Date, displayFormat: unknown): string {
     if (displayFormat === 'DD.MM.YYYY') {
       const day = String(date.getDate()).padStart(2, '0');

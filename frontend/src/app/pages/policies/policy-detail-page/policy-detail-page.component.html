@@ -1,23 +1,36 @@
 <div class="pd" *transloco="let t">
   @if (loading()) {
-    <div class="pd__loading">
-      <div class="skeleton-bar" style="width: 280px; height: 24px"></div>
-      <div class="skeleton-bar" style="width: 520px; height: 14px"></div>
+    <div class="pd__loading" role="status">
+      <span class="con-x-sr-only">{{ t('a11y.loading') }}</span>
+      <div class="skeleton-bar" style="width: 280px; height: 24px" aria-hidden="true"></div>
+      <div class="skeleton-bar" style="width: 520px; height: 14px" aria-hidden="true"></div>
     </div>
   } @else if (policy(); as p) {
     <!-- Action bar -->
     <div class="pd__actions">
-      <a routerLink="/policies" cx-button variant="outlined" color="neutral">
-        <span class="material-icons">arrow_back</span>
+      <a
+        routerLink="/policies"
+        con-x-button
+        variant="outlined"
+        color="neutral"
+        data-cy="back-to-overview"
+      >
+        <span class="material-icons" aria-hidden="true">arrow_back</span>
         {{ t('policyDetail.backToOverview') }}
       </a>
       <span class="pd__spacer"></span>
-      <button cx-button variant="outlined" color="danger" (click)="deletePolicy()">
-        <span class="material-icons">delete</span>
+      <button
+        con-x-button
+        variant="outlined"
+        color="danger"
+        (click)="deletePolicy()"
+        data-cy="delete-policy"
+      >
+        <span class="material-icons" aria-hidden="true">delete</span>
         {{ t('policyDetail.delete') }}
       </button>
-      <a [routerLink]="['/policies', p.id, 'edit']" cx-button>
-        <span class="material-icons">edit</span>
+      <a [routerLink]="['/policies', p.id, 'edit']" con-x-button data-cy="edit-policy">
+        <span class="material-icons" aria-hidden="true">edit</span>
         {{ t('policyDetail.edit') }}
       </a>
     </div>
@@ -25,9 +38,9 @@
     <!-- Hero -->
     <header class="pd__hero">
       <div class="pd__badges">
-        <app-cx-category-badge [category]="p.category" />
+        <app-con-x-category-badge [category]="p.category" />
       </div>
-      <h1 class="pd__title">{{ p.policyId }}</h1>
+      <h1 class="pd__title" data-cy="policy-title">{{ p.policyId }}</h1>
     </header>
 
     <!-- Two-column layout -->
@@ -61,11 +74,23 @@
           <mat-expansion-panel class="pd__panel">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <mat-icon class="pd__panel-icon">gavel</mat-icon>
+                <mat-icon class="pd__panel-icon" aria-hidden="true">gavel</mat-icon>
                 <span>{{ t('policyDetail.sections.legalDescription') }}</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <p class="pd__legal-text">{{ legalDescription() }}</p>
+            <div class="pd__legal-text" data-cy="legal-text">
+              <p class="pd__legal-intro">{{ legalDescription().intro }}</p>
+              @if (legalDescription().clauses.length) {
+                <ol class="pd__legal-list">
+                  @for (clause of legalDescription().clauses; track $index) {
+                    <li class="pd__legal-item">
+                      <span class="pd__legal-item-title">{{ clause.title }}</span>
+                      <span class="pd__legal-item-text">{{ clause.text }}</span>
+                    </li>
+                  }
+                </ol>
+              }
+            </div>
           </mat-expansion-panel>
         </section>
 
@@ -74,11 +99,11 @@
           <mat-expansion-panel class="pd__panel">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <mat-icon class="pd__panel-icon">code</mat-icon>
+                <mat-icon class="pd__panel-icon" aria-hidden="true">code</mat-icon>
                 <span>{{ t('policyDetail.sections.technical') }}</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <pre class="pd__json">{{ odrlJson() }}</pre>
+            <pre class="pd__json" data-cy="odrl-json">{{ odrlJson() }}</pre>
           </mat-expansion-panel>
         </section>
       </div>
@@ -86,7 +111,7 @@
       <!-- Right: details card -->
       <div class="pd__col-right">
         <div class="pd__info-card">
-          <h4>{{ t('policyDetail.details') }}</h4>
+          <h2 class="pd__info-title">{{ t('policyDetail.details') }}</h2>
           <div class="pd__info-row">
             <span class="pd__info-label">{{ t('policyDetail.category') }}</span>
             <span class="pd__info-value">{{ t('policyCategory.' + p.category + '.label') }}</span>

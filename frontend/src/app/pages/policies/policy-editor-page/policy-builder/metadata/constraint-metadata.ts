@@ -30,14 +30,14 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     defaultOperator: 'isAnyOf',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
-  END_DATE: {
-    type: 'END_DATE',
-    labelKey: 'constraint.END_DATE.label',
-    descriptionKey: 'constraint.END_DATE.description',
-    legalTextKey: 'constraint.END_DATE.legalText',
-    icon: 'event_busy',
-    defaultOperator: 'eq',
-    allowedIn: ['CONTRACT'],
+  DATE_RANGE: {
+    type: 'DATE_RANGE',
+    labelKey: 'constraint.DATE_RANGE.label',
+    descriptionKey: 'constraint.DATE_RANGE.description',
+    legalTextKey: 'constraint.DATE_RANGE.legalText',
+    icon: 'date_range',
+    defaultOperator: 'lteq',
+    allowedIn: ['ACCESS', 'CONTRACT'],
   },
   FRAMEWORK_AGREEMENT: {
     type: 'FRAMEWORK_AGREEMENT',
@@ -53,7 +53,7 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
 export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
   'MEMBERSHIP',
   'USE_CASE',
-  'END_DATE',
+  'DATE_RANGE',
   'FRAMEWORK_AGREEMENT',
 ];
 
@@ -69,8 +69,8 @@ export function buildDefaultConstraint(
       return { type: 'MEMBERSHIP', value: 'active' };
     case 'USE_CASE':
       return { type: 'USE_CASE', useCases: [] };
-    case 'END_DATE':
-      return { type: 'END_DATE', endDate: '' };
+    case 'DATE_RANGE':
+      return { type: 'DATE_RANGE', startDate: '', endDate: '' };
     case 'FRAMEWORK_AGREEMENT':
       return { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
   }

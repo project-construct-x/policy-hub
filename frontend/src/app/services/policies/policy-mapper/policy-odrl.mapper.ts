@@ -50,37 +50,55 @@ export function actionForCategory(category: PolicyCategory): string {
   return category === 'ACCESS' ? CX_ACCESS : ODRL_USE;
 }
 
-export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint {
+/**
+ * Übersetzt einen fachlichen Constraint in ein oder mehrere atomare ODRL-Constraints.
+ * Die meisten Typen liefern genau eines; ein `DATE_RANGE` liefert zwei (Start via `gteq`,
+ * Ende via `lteq`), die in `policyToOdrl` per `flatMap` zusammengeführt werden.
+ */
+export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
   switch (c.type) {
     case 'MEMBERSHIP':
-      return {
-        'odrl:leftOperand': { '@id': `${CX_POLICY_NS}Membership` },
-        'odrl:operator': { '@id': 'odrl:eq' },
-        'odrl:rightOperand': c.value,
-      };
+      return [
+        {
+          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}Membership` },
+          'odrl:operator': { '@id': 'odrl:eq' },
+          'odrl:rightOperand': c.value,
+        },
+      ];
     case 'USE_CASE':
-      return {
-        'odrl:leftOperand': { '@id': `${CX_POLICY_NS}UsagePurpose` },
-        'odrl:operator': { '@id': 'odrl:isAnyOf' },
-        'odrl:rightOperand': c.useCases,
-      };
-    case 'END_DATE':
-      return {
-        'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageEndDate` },
-        'odrl:operator': { '@id': 'odrl:eq' },
-        'odrl:rightOperand': c.endDate,
-      };
+      return [
+        {
+          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}UsagePurpose` },
+          'odrl:operator': { '@id': 'odrl:isAnyOf' },
+          'odrl:rightOperand': c.useCases,
+        },
+      ];
+    case 'DATE_RANGE':
+      return [
+        {
+          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageStartDate` },
+          'odrl:operator': { '@id': 'odrl:gteq' },
+          'odrl:rightOperand': c.startDate,
+        },
+        {
+          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageEndDate` },
+          'odrl:operator': { '@id': 'odrl:lteq' },
+          'odrl:rightOperand': c.endDate,
+        },
+      ];
     case 'FRAMEWORK_AGREEMENT':
-      return {
-        'odrl:leftOperand': { '@id': `${CX_POLICY_NS}FrameworkAgreement` },
-        'odrl:operator': { '@id': 'odrl:eq' },
-        'odrl:rightOperand': c.agreement,
-      };
+      return [
+        {
+          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}FrameworkAgreement` },
+          'odrl:operator': { '@id': 'odrl:eq' },
+          'odrl:rightOperand': c.agreement,
+        },
+      ];
   }
 }
 
 export function policyToOdrl(policy: Policy): OdrlPolicyDefinition {
-  const atomics = policy.constraints.map(constraintToOdrl);
+  const atomics = policy.constraints.flatMap(constraintToOdrl);
 
   const permissionObj: OdrlPermission = {
     'odrl:action': { '@id': actionForCategory(policy.category) },

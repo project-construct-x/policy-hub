@@ -3,18 +3,18 @@ import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { Policy } from '@shared/types/policy.model';
-import { CxPolicyTableComponent } from '@ui/policy-table/cx-policy-table.component';
-import { CxEmptyStateComponent } from '@ui/empty-state/cx-empty-state.component';
-import { CxButtonComponent } from '@ui/button/cx-button.component';
+import { ConXPolicyTableComponent } from '@ui/policy-table/con-x-policy-table.component';
+import { ConXEmptyStateComponent } from '@ui/empty-state/con-x-empty-state.component';
+import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 
 @Component({
   selector: 'app-home-page',
   imports: [
     RouterLink,
     TranslocoDirective,
-    CxButtonComponent,
-    CxPolicyTableComponent,
-    CxEmptyStateComponent,
+    ConXButtonComponent,
+    ConXPolicyTableComponent,
+    ConXEmptyStateComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',

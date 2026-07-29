@@ -16,12 +16,12 @@
     left: 0;
     bottom: 0;
     width: 4px;
-    background: var(--cx-orange, #e53d17);
+    background: var(--con-x-orange, #e53d17);
   }
 
   &__icon {
-    color: var(--cx-orange, #e53d17);
-    background: var(--cx-light-orange, #ebd8d0);
+    color: var(--con-x-orange, #e53d17);
+    background: var(--con-x-light-orange, #ebd8d0);
     border-radius: 8px;
     padding: 6px;
     font-size: 22px !important;
@@ -41,7 +41,7 @@
     margin: 0;
     font-size: 0.9375rem;
     font-weight: 600;
-    color: var(--cx-text-primary, #111111);
+    color: var(--con-x-text-primary, #111111);
   }
 
   &__summary {

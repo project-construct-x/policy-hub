@@ -1,0 +1,10 @@
+/* TypeScript-Konfiguration für die Cypress-E2E-Tests. Cypress erkennt diese Datei automatisch. */
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/cypress",
+    "types": ["cypress", "node"],
+    "sourceMap": false
+  },
+  "include": ["**/*.ts"]
+}
