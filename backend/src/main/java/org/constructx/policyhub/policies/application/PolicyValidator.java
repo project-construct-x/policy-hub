@@ -35,6 +35,7 @@ public class PolicyValidator {
                     ),
                     "DATE_RANGE",
                     Set.of(
+                            PolicyCategory.ACCESS,
                             PolicyCategory.CONTRACT
                     ),
                     "FRAMEWORK_AGREEMENT",
