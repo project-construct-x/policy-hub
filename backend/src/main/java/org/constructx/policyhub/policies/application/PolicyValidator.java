@@ -17,7 +17,7 @@ public class PolicyValidator {
     private static final Set<String> SUPPORTED_TYPES = Set.of(
             "MEMBERSHIP",
             "USE_CASE",
-            "END_DATE",
+            "DATE_RANGE",
             "FRAMEWORK_AGREEMENT"
     );
 
@@ -33,7 +33,7 @@ public class PolicyValidator {
                             PolicyCategory.ACCESS,
                             PolicyCategory.CONTRACT
                     ),
-                    "END_DATE",
+                    "DATE_RANGE",
                     Set.of(
                             PolicyCategory.CONTRACT
                     ),
@@ -87,20 +87,76 @@ public class PolicyValidator {
         }
     }
 
+    private LocalDate readRequiredDate(
+            JsonNode constraint,
+            String fieldName,
+            int index
+    ) {
+        JsonNode dateNode = constraint.get(fieldName);
+
+        if (dateNode == null
+                || !dateNode.isTextual()
+                || dateNode.asText().isBlank()) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index + "]."
+                            + fieldName + " is required"
+            );
+        }
+
+        try {
+            return LocalDate.parse(dateNode.asText());
+        } catch (DateTimeParseException ex) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index + "]."
+                            + fieldName
+                            + " must be a valid ISO date in YYYY-MM-DD format"
+            );
+        }
+    }
+
+    private void validateDateRange(
+            JsonNode constraint,
+            int index
+    ) {
+        LocalDate startDate = readRequiredDate(
+                constraint,
+                "startDate",
+                index
+        );
+
+        LocalDate endDate = readRequiredDate(
+                constraint,
+                "endDate",
+                index
+        );
+
+        if (startDate.isAfter(endDate)) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].startDate must not be after endDate"
+            );
+        }
+    }
+
     private void validateConstraint(
             String type,
             JsonNode constraint,
             int index
     ) {
         switch (type) {
-            case "MEMBERSHIP" -> validateMembership(constraint, index);
-            case "USE_CASE" -> validateUseCase(constraint, index);
-            case "END_DATE" -> validateEndDate(constraint, index);
+            case "MEMBERSHIP" ->
+                    validateMembership(constraint, index);
+            case "USE_CASE" ->
+                    validateUseCase(constraint, index);
+            case "DATE_RANGE" ->
+                    validateDateRange(constraint, index);
             case "FRAMEWORK_AGREEMENT" ->
                     validateFrameworkAgreement(constraint, index);
-            default -> throw new InvalidPolicyException(
-                    "Unsupported constraint type: " + type
-            );
+            default ->
+                    throw new InvalidPolicyException(
+                            "constraints[" + index
+                                    + "].type is unsupported: " + type
+                    );
         }
     }
 
@@ -137,31 +193,6 @@ public class PolicyValidator {
                         "constraints[" + index + "].useCases must contain only non-empty strings"
                 );
             }
-        }
-    }
-
-    private void validateEndDate(JsonNode constraint, int index) {
-        JsonNode endDate = constraint.get("endDate");
-
-        if (endDate == null || !endDate.isTextual()
-                || endDate.asText().isBlank()) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].endDate is required"
-            );
-        }
-
-        try {
-            LocalDate parsedDate = LocalDate.parse(endDate.asText());
-
-            if (parsedDate.isBefore(LocalDate.now())) {
-                throw new InvalidPolicyException(
-                        "constraints[" + index + "].endDate must not be in the past"
-                );
-            }
-        } catch (DateTimeParseException exception) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].endDate must be a valid ISO date"
-            );
         }
     }
 
