@@ -80,6 +80,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.production.ts"
+                },
+                {
+                  "replace": "src/app/mocks/mock.service.ts",
+                  "with": "src/app/mocks/mock.service.production.ts"
                 }
               ],
               "outputHashing": "all"

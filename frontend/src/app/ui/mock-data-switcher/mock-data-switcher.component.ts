@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { combineLatest, map, Observable } from 'rxjs';
@@ -10,6 +10,7 @@ import { initializePolicies } from '@mocks/data/policies/mocked-policies';
   imports: [CommonModule],
   templateUrl: './mock-data-switcher.component.html',
   styleUrl: './mock-data-switcher.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MockDataSwitcherComponent {
   private readonly router = inject(Router);

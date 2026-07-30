@@ -50,7 +50,9 @@ export class ConstraintEditorCardComponent {
     this.showErrors() ? validateConstraint(this.constraint(), this.index()) : [],
   );
 
-  readonly startDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.startDate));
+  readonly startDateValue = computed<Date | null>(() =>
+    this.parseDate(this.dateRange()?.startDate),
+  );
   readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate));
 
   private dateRange(): DateRangeConstraint | null {

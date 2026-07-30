@@ -140,15 +140,15 @@ frontend/
 
 ### 📖 Ordnerstruktur Erklärung
 
-| Ordner            | Zweck                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| **pages/**        | Page-Komponenten für Routes (Selektor-Präfix `app-`). Jede Page ist eine Seite.    |
+| Ordner            | Zweck                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| **pages/**        | Page-Komponenten für Routes (Selektor-Präfix `app-`). Jede Page ist eine Seite.       |
 | **ui/**           | Wiederverwendbare, präsentationsnahe UI-Komponenten (Design-System, Präfix `con-x-`). |
-| **services/**     | Services für API-Calls & abgeleitete Logik (z.B. ODRL/EDC-Mapping).                |
-| **shared/**       | Gemeinsame Types (String-Union-/Discriminated-Union-Modelle), Pipes, Adapters.     |
-| **mocks/**        | MirageJS-Mock-Server samt Beispieldaten für die lokale Entwicklung.                |
-| **assets/**       | Statische Dateien wie Icons, Logos, Fonts.                                         |
-| **environments/** | Umgebungskonfigurationen (`environment.ts` / `.mocks.ts` / `.production.ts`).      |
+| **services/**     | Services für API-Calls & abgeleitete Logik (z.B. ODRL/EDC-Mapping).                   |
+| **shared/**       | Gemeinsame Types (String-Union-/Discriminated-Union-Modelle), Pipes, Adapters.        |
+| **mocks/**        | MirageJS-Mock-Server samt Beispieldaten für die lokale Entwicklung.                   |
+| **assets/**       | Statische Dateien wie Icons, Logos, Fonts.                                            |
+| **environments/** | Umgebungskonfigurationen (`environment.ts` / `.mocks.ts` / `.production.ts`).         |
 
 ### Code-Stil
 

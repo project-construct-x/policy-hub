@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Server, Response } from 'miragejs';
+import type { Server as MirageServer } from 'miragejs';
 import { environment } from '@env';
-import {
-  getMockedPolicies,
-  getMockedPolicyById,
-  createMockedPolicy,
-  updateMockedPolicy,
-  deleteMockedPolicy,
-} from './data/policies/mocked-policies';
 
 @Injectable({ providedIn: 'root' })
 export class MockService {
-  private mirageServer?: Server;
+  private mirageServer?: MirageServer;
 
-  mirageJsServer(): Server {
+  async mirageJsServer(): Promise<MirageServer> {
     console.log('[MockService] Starting MirageJS server...');
     console.log('[MockService] Intercepting:', environment.backendUrl);
+
+    // Dynamically import MirageJS and mock data so they are code-split into a
+    // lazy chunk and never included in the production bundle.
+    const { Server, Response } = await import('miragejs');
+    const {
+      getMockedPolicies,
+      getMockedPolicyById,
+      createMockedPolicy,
+      updateMockedPolicy,
+      deleteMockedPolicy,
+    } = await import('./data/policies/mocked-policies');
 
     this.mirageServer = new Server({
       routes(): void {

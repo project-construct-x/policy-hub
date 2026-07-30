@@ -1,5 +1,6 @@
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   inject,
@@ -22,6 +23,7 @@ import {
     '[class.con-x-btn--neutral]': 'color() === "neutral"',
     '[class.con-x-btn--danger]': 'color() === "danger"',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConXButtonComponent {
   variant = input<'filled' | 'outlined' | 'text' | 'icon'>('filled');

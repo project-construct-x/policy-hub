@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { NotificationService } from '@services/notification/notification.service';
@@ -9,6 +9,7 @@ import { ConXButtonComponent } from '@ui/button/con-x-button.component';
   imports: [RouterLink, RouterLinkActive, TranslocoDirective, ConXButtonComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   private readonly transloco = inject(TranslocoService);

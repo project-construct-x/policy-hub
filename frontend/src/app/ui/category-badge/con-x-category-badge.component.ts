@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { PolicyCategory } from '@shared/types/policy.model';
 
@@ -7,6 +7,7 @@ import { PolicyCategory } from '@shared/types/policy.model';
   imports: [TranslocoDirective],
   templateUrl: './con-x-category-badge.component.html',
   styleUrl: './con-x-category-badge.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConXCategoryBadgeComponent {
   category = input.required<PolicyCategory>();

@@ -1,4 +1,4 @@
-import { Component, DOCUMENT, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -14,6 +14,7 @@ import { MockService } from '@mocks/mock.service';
   imports: [RouterOutlet, HeaderComponent, MockDataSwitcherComponent, TranslocoDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   private readonly mockService = inject(MockService);
@@ -41,7 +42,7 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     if (environment.useMocks) {
-      this.mockService.mirageJsServer();
+      void this.mockService.mirageJsServer();
     }
   }
 

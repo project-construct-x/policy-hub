@@ -1,3 +1,10 @@
+// Shared visible keyboard focus indicator (orange ring).
+%focus-ring {
+  border-color: var(--con-x-orange);
+  outline: 2px solid var(--con-x-orange);
+  outline-offset: 1px;
+}
+
 .policies-overview {
   max-width: 1248px;
   margin: 0 auto;
@@ -61,9 +68,7 @@
   // Visible keyboard focus indicator (the native input's own outline is
   // suppressed, so the ring is shown on the wrapping field instead).
   &:focus-within {
-    border-color: var(--con-x-orange);
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 1px;
+    @extend %focus-ring;
   }
 
   .search-icon {
@@ -104,9 +109,7 @@
     outline: none;
 
     &:focus-visible {
-      border-color: var(--con-x-orange);
-      outline: 2px solid var(--con-x-orange);
-      outline-offset: 1px;
+      @extend %focus-ring;
     }
   }
 

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Heading level for the empty-state title, so it fits the surrounding outline. */
 export type ConXHeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
@@ -7,6 +7,7 @@ export type ConXHeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
   selector: 'app-con-x-empty-state',
   templateUrl: './con-x-empty-state.component.html',
   styleUrl: './con-x-empty-state.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConXEmptyStateComponent {
   icon = input('description');

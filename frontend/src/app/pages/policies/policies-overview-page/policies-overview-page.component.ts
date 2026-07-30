@@ -1,4 +1,11 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
@@ -21,6 +28,7 @@ import { ConXButtonComponent } from '@ui/button/con-x-button.component';
   ],
   templateUrl: './policies-overview-page.component.html',
   styleUrl: './policies-overview-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoliciesOverviewPageComponent implements OnInit {
   private readonly policyService = inject(PolicyService);

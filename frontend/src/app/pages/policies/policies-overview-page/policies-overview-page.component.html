@@ -83,7 +83,11 @@
       </a>
     </app-con-x-empty-state>
   } @else if (filteredPolicies().length === 0) {
-    <app-con-x-empty-state icon="search_off" [title]="t('policies.noResults')" data-cy="no-results" />
+    <app-con-x-empty-state
+      icon="search_off"
+      [title]="t('policies.noResults')"
+      data-cy="no-results"
+    />
   } @else {
     <app-con-x-policy-table [policies]="paginatedPolicies()" />
 
