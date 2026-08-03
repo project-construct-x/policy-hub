@@ -1,6 +1,7 @@
 // ============================================================
 // Shared Policy Table — used in Overview + Home Page
 // ============================================================
+@use 'mixins' as *;
 
 // Data tables may scroll horizontally (WCAG 1.4.10 exception for content
 // that requires a two-dimensional layout), so we cap reflow with a scroller.
@@ -80,8 +81,7 @@
   // Row-level focus ring when the (only) focusable child — the link — is
   // focused by keyboard.
   &:has(.policy-link:focus-visible) {
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: -2px;
+    @include focus-ring(-2px);
   }
 }
 

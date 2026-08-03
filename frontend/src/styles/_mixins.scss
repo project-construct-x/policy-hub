@@ -1,0 +1,17 @@
+// Shared SCSS mixins for the con-x design system.
+//
+// Resolved via stylePreprocessorOptions.includePaths ("src/styles") in
+// angular.json, so component styles can `@use 'mixins' as *;` without
+// relative paths.
+
+/// Visible keyboard focus indicator (WCAG 2.2 SC 2.4.7 / 2.4.13).
+///
+/// The ring is defined once here so the whole app stays consistent; only the
+/// offset varies per component (negative offsets draw the ring inside the
+/// element, e.g. for table rows).
+///
+/// @param {Length} $offset - outline-offset for this element.
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid var(--con-x-orange);
+  outline-offset: $offset;
+}

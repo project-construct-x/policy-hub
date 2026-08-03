@@ -1,6 +1,8 @@
 // ============================================================
 // Header Layout
 // ============================================================
+@use 'mixins' as *;
+
 .con-x-header {
   background: var(--con-x-white);
   border-bottom: 1px solid var(--con-x-border-color);
@@ -88,8 +90,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 4px;
+    @include focus-ring(4px);
     border-radius: 2px;
   }
 }
@@ -136,8 +137,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 2px;
+    @include focus-ring;
   }
 }
 
