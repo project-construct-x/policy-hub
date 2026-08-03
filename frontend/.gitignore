@@ -39,6 +39,10 @@ testem.log
 /typings
 __screenshots__/
 
+# Cypress run artifacts (uploaded from CI, never committed)
+cypress/screenshots/
+cypress/videos/
+
 # System files
 .DS_Store
 Thumbs.db

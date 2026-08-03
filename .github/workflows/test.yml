@@ -121,3 +121,15 @@ jobs:
       # start-server-and-test, then runs Cypress headless against it.
       - name: Run E2E tests (Cypress)
         run: npm run e2e
+
+      # Only on failure: a green run would just burn storage and upload time.
+      - name: Upload Cypress artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            frontend/cypress/screenshots
+            frontend/cypress/videos
+          retention-days: 7
+          if-no-files-found: ignore
