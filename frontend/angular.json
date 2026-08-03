@@ -67,8 +67,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "5MB",
-                  "maximumError": "10MB"
+                  "maximumWarning": "700kB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -123,7 +123,23 @@
           "defaultConfiguration": "mocks"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true,
+            "coverageReporters": ["text-summary", "html"],
+            "coverageInclude": [
+              "src/app/**/*.mapper.ts",
+              "src/app/**/*.helper.ts",
+              "src/app/**/*-validators.ts",
+              "src/app/**/*-metadata.ts"
+            ],
+            "coverageThresholds": {
+              "statements": 90,
+              "branches": 85,
+              "functions": 95,
+              "lines": 90
+            }
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
