@@ -93,7 +93,7 @@
 
     @if (totalPages() > 1) {
       <nav class="pagination" [attr.aria-label]="t('a11y.pagination.nav')" data-cy="pagination">
-        <span class="pagination-info">{{ paginationInfo() }}</span>
+        <span class="pagination-info">{{ t('policies.pagination.info', paginationRange()) }}</span>
         <span class="pagination-spacer"></span>
         <div class="pagination-controls">
           <button

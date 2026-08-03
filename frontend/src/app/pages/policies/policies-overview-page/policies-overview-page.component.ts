@@ -69,11 +69,15 @@ export class PoliciesOverviewPageComponent implements OnInit {
 
   totalPages = computed(() => Math.ceil(this.filteredPolicies().length / this.pageSize));
 
-  paginationInfo = computed(() => {
+  // Only the numbers live here; the template does the translation through the
+  // *transloco directive. Translating imperatively in a computed would freeze
+  // the string in whatever language was active when it was last recomputed,
+  // because TranslocoService.translate() is not a signal dependency.
+  paginationRange = computed(() => {
     const total = this.filteredPolicies().length;
     const start = (this.currentPage() - 1) * this.pageSize + 1;
     const end = Math.min(this.currentPage() * this.pageSize, total);
-    return this.transloco.translate('policies.pagination.info', { start, end, total });
+    return { start, end, total };
   });
 
   ngOnInit(): void {

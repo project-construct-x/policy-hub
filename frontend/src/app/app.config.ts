@@ -46,8 +46,12 @@ export const appConfig: ApplicationConfig = {
       config: {
         availableLangs: ['de', 'en'],
         defaultLang: 'de',
+        fallbackLang: 'de',
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
+        missingHandler: {
+          useFallbackTranslation: true,
+        },
       },
       loader: TranslocoHttpLoader,
     }),

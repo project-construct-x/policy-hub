@@ -46,4 +46,14 @@ describe('Policies – Übersicht, Suche & Filter', () => {
     cy.getByCy('page-2').click();
     cy.getByCy('policy-row').should('have.length', 2);
   });
+
+  // Regression: der Paginierungs-Text wurde früher imperativ im Component
+  // übersetzt und blieb daher beim Sprachwechsel in der alten Sprache stehen.
+  it('übersetzt den Paginierungs-Text beim Sprachwechsel mit', () => {
+    cy.visitWithMode('/policies', 'many');
+    cy.get('.pagination-info').should('contain.text', 'von');
+    cy.getByCy('lang-en').click();
+    cy.get('.pagination-info').should('contain.text', 'of');
+    cy.get('.pagination-info').should('not.contain.text', 'von');
+  });
 });
