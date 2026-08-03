@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DOCUMENT, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -7,7 +7,6 @@ import { filter } from 'rxjs';
 import { environment } from '@env';
 import { HeaderComponent } from '@ui/header/header.component';
 import { MockDataSwitcherComponent } from '@ui/mock-data-switcher/mock-data-switcher.component';
-import { MockService } from '@mocks/mock.service';
 
 @Component({
   selector: 'app-root',
@@ -16,8 +15,7 @@ import { MockService } from '@mocks/mock.service';
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
-  private readonly mockService = inject(MockService);
+export class App {
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly liveAnnouncer = inject(LiveAnnouncer);
@@ -38,12 +36,6 @@ export class App implements OnInit {
         takeUntilDestroyed(),
       )
       .subscribe(() => this.onNavigationEnd());
-  }
-
-  ngOnInit(): void {
-    if (environment.useMocks) {
-      void this.mockService.mirageJsServer();
-    }
   }
 
   private onNavigationEnd(): void {

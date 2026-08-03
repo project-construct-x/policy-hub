@@ -1,5 +1,7 @@
 import {
   ApplicationConfig,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   isDevMode,
   LOCALE_ID,
@@ -14,6 +16,8 @@ import { provideTransloco } from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './services/transloco-loader.service';
 import { ConXTitleStrategy } from '@services/a11y/title-strategy.service';
 import { ConXDateAdapter } from '@shared/adapters/con-x-date.adapter';
+import { MockService } from '@mocks/mock.service';
+import { environment } from '@env';
 
 import { routes } from './app.routes';
 
@@ -34,6 +38,16 @@ export const CONX_DATE_FORMATS = {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    // Start the MirageJS mock server BEFORE the app bootstraps. mirageJsServer()
+    // is async (miragejs is a lazily imported chunk), so starting it from a
+    // component's ngOnInit would race the first HTTP call of the routed page:
+    // whenever the chunk lost that race the request escaped to the real network
+    // and the view stayed empty. Returning the promise here makes Angular wait
+    // for the interceptor to be installed. No-op in production — useMocks is
+    // false and MockService is replaced by a stub via fileReplacements.
+    provideAppInitializer(() =>
+      environment.useMocks ? inject(MockService).mirageJsServer() : Promise.resolve(),
+    ),
     provideRouter(routes),
     provideHttpClient(),
     provideAnimationsAsync(),
