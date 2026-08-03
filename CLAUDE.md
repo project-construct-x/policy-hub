@@ -74,13 +74,19 @@ Routing ist **lazy** (`app.routes.ts`). **Pfad-Aliase** statt Relativimporte:
   `inject()` statt Constructor-DI, `input()/input.required()/output()` statt `@Input/@Output`,
   `signal()/computed()/effect()`, `toSignal()` an der RxJS-Grenze. Templates: `@if/@for` mit `track`
   (kein `*ngIf/*ngFor`).
+  - **OnPush ist ESLint-`error`** (`@angular-eslint/prefer-on-push-component-change-detection`),
+    nicht nur Konvention — alle Komponenten laufen mit OnPush. Zustand deshalb ausschließlich über
+    Signals, `async`-Pipe oder Direktiven halten, die selbst `markForCheck()` rufen.
+  - **`console.log` ist ESLint-`error`** (`no-console`, erlaubt sind nur `warn`/`error`).
 - **Selektoren & Namen (ESLint erzwingt Präfixe `app` und `con-x`, kebab-case):**
   - `app-` = Pages/Features. Page-Dateien `*-page.component.ts`, Klasse `*PageComponent`.
   - `con-x-` = Design-System-UI. Klassen `ConX*Component`.
 - **Dateisuffixe:** `*.component/.service/.model/.mapper/.helper/.data/.pipe/.adapter.ts`,
   `*-metadata.ts`, `*-validators.ts`.
-- **Typisierung:** `strict` (+ verschärfte Flags). **String-Union-Types statt `enum`**; Domänentypen
-  als **Discriminated Unions** in `shared/types/*.model.ts`, Diskriminante via exhaustivem `switch`.
+- **Typisierung:** `strict` (+ verschärfte Flags, u.a. `noUnusedLocals`, `noUnusedParameters`,
+  `noPropertyAccessFromIndexSignature`, `noImplicitReturns`). **String-Union-Types statt `enum`**;
+  Domänentypen als **Discriminated Unions** in `shared/types/*.model.ts`, Diskriminante via
+  exhaustivem `switch`.
 - **Muster:**
   - Transformationen als **pure functions** in `*.mapper.ts` / `*.helper.ts` / `*-validators.ts`
     (Validators liefern `{ field, messageKey }`).
@@ -90,8 +96,17 @@ Routing ist **lazy** (`app.routes.ts`). **Pfad-Aliase** statt Relativimporte:
     → `Observable<T>`, **keine** Business-Logik.
 - **i18n:** **keine literalen UI-Strings** — alles über Transloco-Keys (verschachteltes camelCase-
   Namespacing in `de.json`/`en.json`).
-- **Styling:** SCSS pro Komponente; globale `--con-x-*`-Tokens in `styles.scss`; BEM-artige `con-x-`-Klassen.
+  - **Im Template übersetzen, nicht im Component.** `TranslocoService.translate()` ist keine
+    Signal-Abhängigkeit: in einem `computed()` friert der Text in der Sprache ein, die beim letzten
+    Neuberechnen aktiv war. Parameter als Signal berechnen und im Template über `t(key, params)`
+    auflösen.
+- **Styling:** SCSS pro Komponente; globale `--con-x-*`-Tokens in `styles.scss`; BEM-artige
+  `con-x-`-Klassen. Geteilte Mixins liegen in `src/styles/_mixins.scss` und werden über
+  `stylePreprocessorOptions.includePaths` aufgelöst → `@use 'mixins' as *;` (keine relativen Pfade).
+  Den Fokus-Ring **immer** über `@include focus-ring($offset)` setzen, nie literal.
 - **Format:** Prettier `printWidth 100`, single quotes, 2 Spaces.
+- **Bundle-Budgets:** initial `700kB` Warnung / `1MB` Fehler (`angular.json`). `npm run build:prod`
+  schlägt bei Überschreitung fehl — vor dem Hinzufügen schwerer Dependencies prüfen.
 
 ### Barrierefreiheit (a11y) — Konventionen
 Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/accessibility.md`.
@@ -143,6 +158,13 @@ Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/acce
   `*.spec.ts` **neben dem Code** und importieren `describe/it/expect` aus `'vitest'`.
   `tsconfig.spec.json` ist für Vitest konfiguriert; Cypress-Types liegen getrennt in
   `cypress/tsconfig.json`.
+  - **Coverage-Gate:** `npm test` erzwingt Schwellen (statements 90 / branches 85 / functions 95 /
+    lines 90) über `coverageInclude` in `angular.json`. Der Include ist bewusst als Glob über die
+    Logik-Suffixe formuliert (`*.mapper.ts`, `*.helper.ts`, `*-validators.ts`, `*-metadata.ts`) —
+    **jede neue Datei mit diesen Suffixen zählt automatisch mit und braucht Tests.**
+- **CI-Gates** (`.github/workflows/test.yml`): Job `frontend-quality` fährt `lint`, `format:check`
+  und `build:prod` (inkl. Bundle-Budgets), `frontend-unit-test` die Vitest-Suite inkl. Coverage-
+  Schwellen, `frontend-e2e-test` Cypress. Alle laufen auf Node 22 (wie das Docker-Build-Image).
 - **Umgebungs-Hinweis (Windows/Electron-Terminals):** Wird Cypress aus einem Electron-basierten
   Terminal (VSCode/Claude-Code) gestartet und bricht mit `bad option: --smoke-test` bzw. Exit-Code
   `3221225501` ab, ist `ELECTRON_RUN_AS_NODE=1` gesetzt. Vor dem E2E-Lauf entfernen (Bash:
@@ -211,9 +233,11 @@ Diese Datei immer aktualisieren, wenn:
 Immer prüfen:
 - Naming-Conventions eingehalten (Selektor-Präfixe `app`/`con-x`, Dateisuffixe, `*PageComponent`/`ConX*`)?
 - Error Handling vorhanden (HTTP-Fehlerpfade, Nutzer-Feedback via NotificationService/Snackbar)?
-- Keine `console.log` im Production-Code?
+- Keine `console.log` im Production-Code? (ESLint erzwingt das inzwischen)
 - TypeScript-Types vollständig?
 - **Kein `any`** im Code.
+- Neue Datei mit Logik-Suffix (`*.mapper/.helper/-validators/-metadata.ts`) → Tests vorhanden?
+  Sie fällt automatisch unter das Coverage-Gate.
 
 ### Weitere Erwartungen
 - **i18n:** Neue UI-Strings nie literal — immer als Transloco-Key in **beiden** Dateien
