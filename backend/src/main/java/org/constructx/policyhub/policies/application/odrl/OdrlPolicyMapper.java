@@ -16,9 +16,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OdrlPolicyMapper {
-    private final String CX_POLICY_NS = "https://w3id.org/catenax/2025/9/policy/";
-    private final String ODRL_USE = "odrl:use";
-    private final String CX_ACCESS = CX_POLICY_NS + "access";
     private final OdrlContextResponse ODRL_CONTEXT = new OdrlContextResponse(
         "https://w3id.org/edc/v0.0.1/ns/",
         "https://w3id.org/edc/v0.0.1/ns/",
@@ -27,7 +24,15 @@ public class OdrlPolicyMapper {
 
     public OdrlPolicyDefinitionResponse policyToOdrl(Policy policy) {
         final OdrlIdResponse action = new OdrlIdResponse(actionForCategory(policy.category()));
-        final List<OdrlAtomicConstraintResponse> atomics = policy.constraints().stream().map(OdrlConstraintMapper::constraintToOdrl).toList();
+        final List<OdrlAtomicConstraintResponse> atomics =
+                policy.constraints().stream()
+                        .flatMap(
+                                constraint ->
+                                        OdrlConstraintMapper
+                                                .constraintToOdrl(constraint)
+                                                .stream()
+                        )
+                        .toList();
         final OdrlConstraintResponse constraint = odrlConstraint(atomics);
         final OdrlPermissionResponse permission = new OdrlPermissionResponse(action, constraint);
 
@@ -46,6 +51,9 @@ public class OdrlPolicyMapper {
     }
 
     private String actionForCategory(PolicyCategory category) {
+        String ODRL_USE = "odrl:use";
+        String CX_POLICY_NS = "https://w3id.org/catenax/2025/9/policy/";
+        String CX_ACCESS = CX_POLICY_NS + "access";
         return category == PolicyCategory.ACCESS ? CX_ACCESS : ODRL_USE;
     }
 
