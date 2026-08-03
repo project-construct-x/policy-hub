@@ -7,9 +7,6 @@ export class MockService {
   private mirageServer?: MirageServer;
 
   async mirageJsServer(): Promise<MirageServer> {
-    console.log('[MockService] Starting MirageJS server...');
-    console.log('[MockService] Intercepting:', environment.backendUrl);
-
     // Dynamically import MirageJS and mock data so they are code-split into a
     // lazy chunk and never included in the production bundle.
     const { Server, Response } = await import('miragejs');
