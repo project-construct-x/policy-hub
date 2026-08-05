@@ -3,6 +3,7 @@
 // Variants: filled (default), outlined, text, icon
 // Colors: primary (orange), neutral (gray), danger (red)
 // ============================================================
+@use 'mixins' as *;
 
 .con-x-btn {
   display: inline-flex;
@@ -31,8 +32,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 2px;
+    @include focus-ring;
   }
 
   &:disabled,

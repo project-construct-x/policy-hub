@@ -2,6 +2,7 @@ name: Test
 
 # Runs every test infrastructure in the repo:
 #   - backend: JUnit 5 + Testcontainers (Gradle)
+#   - frontend: ESLint, Prettier and the production build (bundle budgets)
 #   - frontend: Vitest unit tests
 #   - frontend: Cypress E2E (against the mock backend, MirageJS)
 # Triggers on PRs against main (gate before merge) and on push to main
@@ -26,7 +27,7 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-java@v4
         with:
@@ -40,23 +41,56 @@ jobs:
       - name: Run backend tests (JUnit 5 + Testcontainers)
         run: ./gradlew test
 
-  frontend-unit-test:
+  # Static quality gates. These enforce the guardrails that are otherwise only
+  # checked locally: ESLint (incl. OnPush + no-console + template a11y rules),
+  # Prettier, the strict tsconfig flags and the production bundle budgets.
+  # Without this job a budget or lint regression would only surface in
+  # build-and-publish.yml — i.e. after the merge to main.
+  frontend-quality:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+
+      # Also fails on a bundle-budget violation (see angular.json).
+      - name: Production build
+        run: npm run build:prod
+
+  frontend-unit-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fails if the coverage thresholds in angular.json are not met.
       - name: Run unit tests (Vitest)
         run: npm test
 
@@ -66,16 +100,16 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Cache Cypress binary
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/Cypress
           key: cypress-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
@@ -87,3 +121,15 @@ jobs:
       # start-server-and-test, then runs Cypress headless against it.
       - name: Run E2E tests (Cypress)
         run: npm run e2e
+
+      # Only on failure: a green run would just burn storage and upload time.
+      - name: Upload Cypress artifacts
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: cypress-artifacts
+          path: |
+            frontend/cypress/screenshots
+            frontend/cypress/videos
+          retention-days: 7
+          if-no-files-found: ignore

@@ -1,4 +1,4 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { ConXButtonComponent } from '@ui/button/con-x-button.component';
@@ -8,6 +8,7 @@ import { ConXButtonComponent } from '@ui/button/con-x-button.component';
   imports: [MatDialogModule, TranslocoDirective, ConXButtonComponent],
   templateUrl: './confirm-delete-dialog.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDeleteDialogComponent {
   readonly data = inject<{ policyName: string }>(MAT_DIALOG_DATA);

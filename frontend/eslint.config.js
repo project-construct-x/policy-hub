@@ -31,6 +31,8 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
+      'no-console': ['error', { allow: ['warn', 'error'] }],
     },
   },
   {

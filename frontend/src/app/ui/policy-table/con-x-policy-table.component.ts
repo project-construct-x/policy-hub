@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { Policy } from '@shared/types/policy.model';
@@ -10,6 +10,7 @@ import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-ba
   imports: [RouterLink, TranslocoDirective, RelativeDatePipe, ConXCategoryBadgeComponent],
   templateUrl: './con-x-policy-table.component.html',
   styleUrl: './con-x-policy-table.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConXPolicyTableComponent {
   policies = input.required<Policy[]>();

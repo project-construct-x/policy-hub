@@ -65,7 +65,10 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
 
       // Cross-Field: Start darf nicht nach dem Ende liegen (nur prüfen, wenn beide gültig sind).
       if (start && end && start > end) {
-        errors.push({ field: `${prefix}.endDate`, messageKey: 'validation.dateRangeStartAfterEnd' });
+        errors.push({
+          field: `${prefix}.endDate`,
+          messageKey: 'validation.dateRangeStartAfterEnd',
+        });
       }
       break;
     }

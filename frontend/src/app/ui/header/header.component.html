@@ -40,6 +40,7 @@
           (click)="switchLang(lang)"
           [attr.aria-pressed]="lang === activeLang"
           [attr.aria-label]="t('a11y.language.switchTo', { lang: lang.toUpperCase() })"
+          [attr.data-cy]="'lang-' + lang"
         >
           {{ lang.toUpperCase() }}
         </button>

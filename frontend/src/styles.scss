@@ -1,4 +1,5 @@
 @use './material';
+@use 'mixins' as *;
 
 // ============================================================
 // Construct-X Design Tokens
@@ -126,8 +127,7 @@ b {
 
   &:focus-visible {
     transform: translateY(0);
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 2px;
+    @include focus-ring;
   }
 }
 

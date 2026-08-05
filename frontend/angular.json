@@ -49,6 +49,9 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
+            },
             "assets": [
               {
                 "glob": "**/*",
@@ -67,8 +70,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "5MB",
-                  "maximumError": "10MB"
+                  "maximumWarning": "700kB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -80,6 +83,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.production.ts"
+                },
+                {
+                  "replace": "src/app/mocks/mock.service.ts",
+                  "with": "src/app/mocks/mock.service.production.ts"
                 }
               ],
               "outputHashing": "all"
@@ -119,7 +126,23 @@
           "defaultConfiguration": "mocks"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverage": true,
+            "coverageReporters": ["text-summary", "html"],
+            "coverageInclude": [
+              "src/app/**/*.mapper.ts",
+              "src/app/**/*.helper.ts",
+              "src/app/**/*-validators.ts",
+              "src/app/**/*-metadata.ts"
+            ],
+            "coverageThresholds": {
+              "statements": 90,
+              "branches": 85,
+              "functions": 95,
+              "lines": 90
+            }
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

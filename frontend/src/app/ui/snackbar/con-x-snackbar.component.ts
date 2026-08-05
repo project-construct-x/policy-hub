@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   MAT_SNACK_BAR_DATA,
   MatSnackBarAction,
@@ -35,6 +35,7 @@ const SEVERITY_ICONS: Record<ConXSnackbarType, string> = {
   ],
   templateUrl: './con-x-snackbar.component.html',
   styleUrl: './con-x-snackbar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConXSnackbarComponent {
   readonly snackBarRef = inject(MatSnackBarRef);

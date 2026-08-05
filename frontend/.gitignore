@@ -39,6 +39,18 @@ testem.log
 /typings
 __screenshots__/
 
+# Cypress run artifacts (uploaded from CI, never committed)
+cypress/screenshots/
+cypress/videos/
+
 # System files
 .DS_Store
 Thumbs.db
+
+# Secrets & local env (never commit)
+*.env
+.env
+.env.*
+*.key
+*.pem
+secrets/

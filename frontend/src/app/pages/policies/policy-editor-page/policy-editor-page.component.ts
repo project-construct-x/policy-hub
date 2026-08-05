@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
@@ -14,6 +14,7 @@ import {
   imports: [TranslocoDirective, PolicyBuilderComponent],
   templateUrl: './policy-editor-page.component.html',
   styleUrl: './policy-editor-page.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PolicyEditorPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

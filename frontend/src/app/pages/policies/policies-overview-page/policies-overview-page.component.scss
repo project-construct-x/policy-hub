@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .policies-overview {
   max-width: 1248px;
   margin: 0 auto;
@@ -62,8 +64,7 @@
   // suppressed, so the ring is shown on the wrapping field instead).
   &:focus-within {
     border-color: var(--con-x-orange);
-    outline: 2px solid var(--con-x-orange);
-    outline-offset: 1px;
+    @include focus-ring(1px);
   }
 
   .search-icon {
@@ -105,8 +106,7 @@
 
     &:focus-visible {
       border-color: var(--con-x-orange);
-      outline: 2px solid var(--con-x-orange);
-      outline-offset: 1px;
+      @include focus-ring(1px);
     }
   }
 
