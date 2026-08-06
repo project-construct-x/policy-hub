@@ -299,3 +299,27 @@ describe('buildLegalDescription', () => {
     });
   });
 });
+
+describe('buildLegalClauses — unbekannter Constraint-Typ aus der API', () => {
+  const unknownConstraint = { type: 'FOO' } as unknown as Constraint;
+
+  it('übergeht den unbekannten Typ, statt beim Metadaten-Zugriff zu werfen', () => {
+    const { clauses } = buildLegalClauses(
+      draft('CONTRACT', [unknownConstraint, { type: 'MEMBERSHIP', value: 'active' }]),
+      makeTransloco(),
+    );
+
+    expect(clauses).toHaveLength(1);
+    expect(clauses[0].title).toBe('constraint.MEMBERSHIP.label');
+  });
+
+  it('fällt auf den "unrestricted"-Text zurück, wenn nur unbekannte Typen übrig bleiben', () => {
+    const { intro, clauses } = buildLegalClauses(
+      draft('CONTRACT', [unknownConstraint]),
+      makeTransloco(),
+    );
+
+    expect(intro).toBe('legalDescription.unrestricted');
+    expect(clauses).toEqual([]);
+  });
+});

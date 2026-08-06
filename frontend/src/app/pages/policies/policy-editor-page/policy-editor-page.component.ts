@@ -4,6 +4,7 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
+import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
 import {
   PolicyBuilderComponent,
   PolicyDraft,
@@ -37,7 +38,16 @@ export class PolicyEditorPageComponent implements OnInit {
       this.loading.set(true);
       this.policyService.getPolicyById(id).subscribe({
         next: (p) => {
-          this.initialPolicy.set(p);
+          // Unbekannte Constraint-Typen entfernen, bevor sie in den Builder gelangen:
+          // sie haben keinen Registry-Eintrag und würden beim Rendern der Editor-Card
+          // bzw. in der Validierung auf `undefined` zugreifen.
+          const constraints = keepKnownConstraints(p.constraints);
+          if (constraints.length !== p.constraints.length) {
+            this.notification.warning(
+              this.transloco.translate('policyEditor.notifications.unknownConstraints'),
+            );
+          }
+          this.initialPolicy.set({ ...p, constraints });
           this.loading.set(false);
         },
         error: () => {

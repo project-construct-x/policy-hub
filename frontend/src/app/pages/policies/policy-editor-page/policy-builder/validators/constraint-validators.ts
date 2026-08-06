@@ -1,6 +1,9 @@
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
-import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
+import {
+  CONSTRAINT_METADATA,
+  isKnownConstraintType,
+} from '@features/policies/builder/metadata/constraint-metadata';
 
 export interface ValidationError {
   field: string;
@@ -22,6 +25,17 @@ export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   }
 
   for (const [index, c] of (draft.constraints ?? []).entries()) {
+    // Typ zuerst gegen die Registry prüfen: bei einem unbekannten Typ (möglich, weil
+    // Constraints auch aus der API stammen) liefert der Index-Zugriff `undefined` und
+    // `.allowedIn` würde werfen. Ein unbekannter Typ ist ein Validierungsfehler, kein Absturz.
+    if (!isKnownConstraintType(c.type)) {
+      errors.push({
+        field: `constraint[${index}]`,
+        messageKey: 'validation.constraintUnknownType',
+      });
+      continue;
+    }
+
     // Check category compatibility
     if (draft.category && !CONSTRAINT_METADATA[c.type].allowedIn.includes(draft.category)) {
       errors.push({

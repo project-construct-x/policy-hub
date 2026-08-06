@@ -142,7 +142,8 @@
     "notifications": {
       "loadError": "Policy konnte nicht geladen werden.",
       "deleteSuccess": "Policy wurde gelöscht.",
-      "deleteError": "Policy konnte nicht gelöscht werden."
+      "deleteError": "Policy konnte nicht gelöscht werden.",
+      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt."
     }
   },
   "policyEditor": {
@@ -151,7 +152,8 @@
       "createSuccess": "Policy wurde erstellt.",
       "createError": "Policy konnte nicht erstellt werden.",
       "updateSuccess": "Policy wurde aktualisiert.",
-      "updateError": "Policy konnte nicht aktualisiert werden."
+      "updateError": "Policy konnte nicht aktualisiert werden.",
+      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese wurden aus dem Editor entfernt."
     }
   },
   "policyBuilder": {
@@ -271,7 +273,8 @@
     "dateRangeEndRequired": "Enddatum ist erforderlich",
     "dateRangeEndInvalid": "Enddatum ist ungültig",
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
-    "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen"
+    "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen",
+    "constraintUnknownType": "Unbekannter Bedingungstyp — diese Bedingung wird ignoriert."
   },
   "deleteDialog": {
     "title": "Policy löschen",

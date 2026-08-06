@@ -198,3 +198,29 @@ describe('validatePolicyDraft', () => {
     expect(keys).toContain('validation.useCaseRequired');
   });
 });
+
+describe('validatePolicyDraft — unbekannter Constraint-Typ aus der API', () => {
+  const unknownConstraint = { type: 'FOO' } as unknown as Constraint;
+
+  it('meldet einen Validierungsfehler statt zu werfen', () => {
+    const errors = validatePolicyDraft({
+      policyId: 'gueltige-id',
+      category: 'ACCESS',
+      constraints: [unknownConstraint],
+    } as Partial<Policy>);
+
+    expect(errors.map((e) => e.messageKey)).toContain('validation.constraintUnknownType');
+  });
+
+  it('prüft die übrigen Constraints trotzdem weiter', () => {
+    const errors = validatePolicyDraft({
+      policyId: 'gueltige-id',
+      category: 'ACCESS',
+      constraints: [unknownConstraint, { type: 'USE_CASE', useCases: [] }],
+    } as Partial<Policy>);
+
+    const keys = errors.map((e) => e.messageKey);
+    expect(keys).toContain('validation.constraintUnknownType');
+    expect(keys).toContain('validation.useCaseRequired');
+  });
+});

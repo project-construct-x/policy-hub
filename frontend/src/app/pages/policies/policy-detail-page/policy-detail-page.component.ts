@@ -22,6 +22,7 @@ import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
 import { buildLegalClauses } from '@features/policies/builder/helpers/legal-description.helper';
+import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
 
 @Component({
   selector: 'app-policy-detail-page',
@@ -78,7 +79,7 @@ export class PolicyDetailPageComponent implements OnInit {
     }
     this.policyService.getPolicyById(id).subscribe({
       next: (data) => {
-        this.policy.set(data);
+        this.policy.set(this.withKnownConstraintsOnly(data));
         this.loading.set(false);
       },
       error: () => {
@@ -87,6 +88,21 @@ export class PolicyDetailPageComponent implements OnInit {
         this.router.navigate(['/policies']);
       },
     });
+  }
+
+  /**
+   * Verwirft Constraints, deren Typ die Metadaten-Registry nicht kennt, und weist den
+   * Nutzer darauf hin. Ohne diesen Filter würde `app-constraint-card` beim Rendern auf
+   * `undefined` zugreifen und die gesamte Detailseite mit einem TypeError abbrechen.
+   */
+  private withKnownConstraintsOnly(policy: Policy): Policy {
+    const constraints = keepKnownConstraints(policy.constraints);
+    if (constraints.length !== policy.constraints.length) {
+      this.notification.warning(
+        this.transloco.translate('policyDetail.notifications.unknownConstraints'),
+      );
+    }
+    return { ...policy, constraints };
   }
 
   deletePolicy(): void {

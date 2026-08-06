@@ -1,7 +1,10 @@
 import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
-import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
+import {
+  CONSTRAINT_METADATA,
+  keepKnownConstraints,
+} from '@features/policies/builder/metadata/constraint-metadata';
 import {
   FRAMEWORK_AGREEMENT_VALUE,
   USE_CASE_OPTIONS,
@@ -40,7 +43,12 @@ export function buildLegalClauses(
   transloco: TranslocoService,
   lang?: string,
 ): LegalClauses {
-  if (!policy.constraints.length) {
+  // Constraints mit unbekanntem Typ übergehen: sie haben keinen Eintrag in der
+  // Metadaten-Registry, und der Zugriff auf `labelKey`/`legalTextKey` würde werfen.
+  // Für den Rechtstext ist Weglassen richtiger als ein Abbruch der ganzen Darstellung.
+  const constraints = keepKnownConstraints(policy.constraints);
+
+  if (!constraints.length) {
     return {
       intro: transloco.translate('legalDescription.unrestricted', undefined, lang),
       clauses: [],
@@ -55,7 +63,7 @@ export function buildLegalClauses(
     lang,
   );
 
-  const clauses = policy.constraints.map((c) => ({
+  const clauses = constraints.map((c) => ({
     title: transloco.translate(CONSTRAINT_METADATA[c.type].labelKey, undefined, lang),
     text: buildClause(c, transloco, lang),
   }));
