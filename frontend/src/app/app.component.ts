@@ -6,7 +6,7 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { environment } from '@env';
 import { HeaderComponent } from '@ui/header/header.component';
-import { MockDataSwitcherComponent } from '@ui/mock-data-switcher/mock-data-switcher.component';
+import { MockDataSwitcherComponent } from '@ui/mock-data-switcher';
 
 @Component({
   selector: 'app-root',
