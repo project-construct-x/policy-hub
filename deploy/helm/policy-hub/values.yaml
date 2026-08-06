@@ -64,22 +64,32 @@ frontend:
 database:
   name: policyhub
   username: policyhub
-# Basic-auth user for the backend (non-secret parts). Password from the Secret.
+# ---------------------------------------------------------------------------
+# TEMPORARY — HTTP Basic Auth for the backend. NOT PRODUCTION-READY.
+# Placeholder until the real Construct-X auth mechanism is decided. The
+# password is plaintext in git ON PURPOSE: it is a throwaway staging
+# credential, and the whole block is meant to be deleted rather than secured.
+# templates/secret-basic-auth.yaml documents how to remove this in one go.
+# ---------------------------------------------------------------------------
 auth:
+  enabled: true
   username: admin
-# Name + keys of the Secret holding the sensitive values. Creates the Secret
-# from dbPassword/authPassword below when `create: true`. Leave create: false
-# (default) and set those two as ArgoCD Application parameter overrides
-# (Application -> Parameters in the UI) instead of committing them here —
-# see deploy/secrets/README.md.
+  password: ph-staging-8Qk2vTn4
+  secretName: policy-hub-basic-auth
+  secretKey: security-user-password
+# Secret holding the database password. The chart owns and creates it: on the
+# first install the password is generated (randAlphaNum 32), every later render
+# re-uses the value already in the cluster — there is no automatic rotation.
+# See templates/secrets.yaml and deploy/secrets/README.md.
+# Set `dbPassword` only to force a specific password (restore / disaster
+# recovery), e.g. as an ArgoCD Application parameter override; leave it empty
+# otherwise. NOT PRODUCTION-READY: Secrets are base64-encoded, not encrypted.
 secret:
   name: policy-hub-secrets
-  create: false
+  create: true
   dbPassword: ""
-  authPassword: ""
   keys:
     dbPassword: db-password
-    authPassword: security-user-password
 # ---------------------------------------------------------------------------
 # In-cluster PostgreSQL (self-contained StatefulSet, official image).
 # Set enabled: false to use an external/managed database instead — then point

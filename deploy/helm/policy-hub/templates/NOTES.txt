@@ -16,5 +16,15 @@ The app will be reachable at:
   https://{{ .Values.ingress.host }}/api/... (backend)
 {{- end }}
 
-Prerequisite: the Secret "{{ .Values.secret.name }}" (keys: {{ .Values.secret.keys.dbPassword }}, {{ .Values.secret.keys.authPassword }})
-and the image pull secret must exist in the namespace. See deploy/secrets/README.md.
+Prerequisite: the image pull secret must exist in the namespace — it is the only
+one created out-of-band. See deploy/secrets/README.md.
+
+The database password in "{{ .Values.secret.name }}" is generated on the first install and
+re-used afterwards (no automatic rotation). Read it with:
+  kubectl -n {{ .Release.Namespace }} get secret {{ .Values.secret.name }} -o jsonpath='{.data.{{ .Values.secret.keys.dbPassword }}}' | base64 -d
+{{- if .Values.auth.enabled }}
+
+TEMPORARY: the backend is behind HTTP Basic Auth ({{ .Values.auth.username }} / see values.yaml ->
+auth.password, plaintext in git). Placeholder until the real Construct-X auth
+mechanism lands — see templates/secret-basic-auth.yaml.
+{{- end }}

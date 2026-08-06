@@ -220,8 +220,23 @@ Kompakter Überblick; Details in `backend/README.md`.
   in Namespace `policyhub`: Postgres-StatefulSet, Backend- & Frontend-Deployment + Services, Ingress
   `policy-hub.staging.construct-x.net` (`/` → Frontend, `/api` → Backend).
 - **Flow:** Push auf `main` → Images gebaut/gepusht → Tags in `values.yaml` gebumpt → ArgoCD rollt aus.
-- Layout: `helm/policy-hub/` (Chart), `argocd/{project,application}.yaml`, `secrets/` (manuell via
-  `kubectl`, siehe `secrets/README.md`).
+- Layout: `helm/policy-hub/` (Chart), `argocd/{project,application}.yaml`, `secrets/` (Doku zum
+  Secret-Handling, siehe `secrets/README.md`).
+- **Secrets (⚠️ nicht production-ready — K8s-Secrets sind nur base64-kodiert, nicht verschlüsselt):**
+  - **DB-Passwort** erzeugt das Chart selbst (`templates/secrets.yaml`, `randAlphaNum 32`) — **einmalig
+    beim ersten Install, keine automatische Rotation**. Zwei Guards halten den Wert stabil und sind
+    beide zwingend: der Helm-`lookup` im Template (deckt `helm upgrade` ab) **und**
+    `ignoreDifferences` auf `/data/db-password` + `RespectIgnoreDifferences=true` in
+    `argocd/application.yaml` (deckt ArgoCD ab, dessen repo-server ohne Cluster-Zugriff rendert).
+    Fällt einer weg, rotiert das Passwort bei jedem Reconcile und das Backend bricht gegen das
+    bestehende Postgres-PVC.
+  - **HTTP Basic Auth ist ein Provisorium** bis das echte Construct-X-Auth-Verfahren feststeht.
+    Bewusst isoliert in `templates/secret-basic-auth.yaml` + `auth`-Block in `values.yaml`
+    (Passwort **absichtlich im Klartext in git**), damit es in einem Zug entfernt werden kann — die
+    Ausbau-Anleitung steht im Kopf-Kommentar des Templates.
+  - Nur `ghcr-creds` wird noch manuell per `kubectl` angelegt.
+- `argocd/application.yaml` wird per `kubectl apply` gebootstrappt, ist also **nicht** selbst
+  GitOps-verwaltet — nach Änderungen daran erneut applyen.
 
 ## 6. Beitrag & Git-Konventionen
 
