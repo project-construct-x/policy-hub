@@ -93,7 +93,11 @@
                   "with": "src/app/ui/mock-data-switcher/index.production.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "subresourceIntegrity": true,
+              "security": {
+                "autoCsp": true
+              }
             },
             "mocks": {
               "fileReplacements": [
