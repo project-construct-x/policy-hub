@@ -2,6 +2,16 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
+import {
+  FRAMEWORK_AGREEMENT_VALUE,
+  USE_CASE_OPTIONS,
+} from '@features/policies/builder/metadata/use-case-options.data';
+
+/**
+ * Anzeigewert für Constraint-Inhalte, die nicht aus der Metadaten-Registry stammen —
+ * etwa weil das Backend einen unbekannten Use-Case oder Rahmenvertrag geliefert hat.
+ */
+const UNKNOWN_VALUE = '—';
 
 export interface LegalClause {
   /** Anzeigename des Constraints (Metadaten-Label), dient als Überschrift des Unterpunkts. */
@@ -74,16 +84,28 @@ export function buildLegalDescription(
   return `${intro}\n\n${list}`;
 }
 
+/**
+ * WICHTIG — warum hier gegen Whitelists geprüft wird statt die Werte direkt zu verwenden:
+ *
+ * Transloco durchsucht das Ergebnis einer Platzhalter-Ersetzung ERNEUT nach Platzhaltern
+ * (`DefaultTranspiler.transpile()` iteriert über den bereits ersetzten String, und
+ * `interpolationMatcher` liefert bei jedem Zugriff ein frisches RegExp mit `lastIndex = 0`).
+ * Ein Parameterwert, der selbst `{{…}}` enthält, wird dadurch ein zweites Mal aufgelöst:
+ * `{{legalDescription.unrestricted}}` schiebt einen fremden Satz in den Rechtstext, und
+ * `{{agreement}}` ersetzt sich endlos selbst — die Schleife terminiert nie und der Tab friert ein.
+ *
+ * Constraint-Werte stammen nicht nur aus der UI (dort sind sie durch Dropdown bzw. Konstante
+ * gedeckelt), sondern auch aus `GET /v1/policies/:id`. Ein HTTP-Response ist Eingabe; der
+ * `Constraint`-Typ ist nur ein Compile-Zeit-Versprechen. Deshalb: nur Werte weiterreichen,
+ * die nachweislich aus der Metadaten-Registry stammen.
+ */
 function buildClause(c: Constraint, transloco: TranslocoService, lang?: string): string {
   const meta = CONSTRAINT_METADATA[c.type];
   const base = transloco.translate(meta.legalTextKey, undefined, lang);
 
   switch (c.type) {
     case 'USE_CASE': {
-      const labels = c.useCases.map((id) => {
-        const key = `useCase.${id.replace(/^UC\./, '')}`;
-        return transloco.translate(key, undefined, lang);
-      });
+      const labels = c.useCases.map((id) => useCaseLabel(id, transloco, lang));
       return transloco.translate(
         'legalDescription.clause.useCase',
         { list: joinList(labels) },
@@ -99,7 +121,7 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
     case 'FRAMEWORK_AGREEMENT':
       return transloco.translate(
         'legalDescription.clause.frameworkAgreement',
-        { agreement: c.agreement },
+        { agreement: c.agreement === FRAMEWORK_AGREEMENT_VALUE ? c.agreement : UNKNOWN_VALUE },
         lang,
       );
     case 'MEMBERSHIP':
@@ -108,13 +130,24 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
   }
 }
 
+/**
+ * Übersetzt eine Use-Case-ID über die Registry. Der i18n-Key wird bewusst NICHT aus der ID
+ * zusammengesetzt, sondern der Registry entnommen — sonst könnte eine ID aus dem Backend
+ * einen beliebigen Key erzeugen (`useCase.<beliebig>`), dessen Auflösung bei fehlendem Key
+ * den Key selbst zurückliefert und ihn so in den Rechtstext schreibt.
+ */
+function useCaseLabel(id: string, transloco: TranslocoService, lang?: string): string {
+  const option = USE_CASE_OPTIONS.find((o) => o.id === id);
+  return option ? transloco.translate(option.labelKey, undefined, lang) : UNKNOWN_VALUE;
+}
+
 function joinList(items: string[]): string {
   if (items.length <= 1) return items.join('');
   return items.slice(0, -1).join(', ') + ' & ' + items[items.length - 1];
 }
 
 function formatDate(iso: string): string {
-  if (!iso) return '—';
+  if (!iso) return UNKNOWN_VALUE;
   // Reine Datumsangaben (YYYY-MM-DD, das Format der DATE_RANGE-Eingabe) direkt formatieren,
   // ohne sie durch `new Date()` in UTC-Mitternacht zu wandeln. Sonst kippt der lokale Tag
   // in Zeitzonen westlich von UTC um einen Tag — beim rechtlich maßgeblichen Text unzulässig.
@@ -124,7 +157,9 @@ function formatDate(iso: string): string {
     return `${day}.${month}.${year}`;
   }
   const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;
+  // Kein Rohwert-Fallback: ein unparsebarer Wert würde sonst ungeprüft als
+  // Transloco-Parameter in den Rechtstext gelangen (siehe Hinweis an `buildClause`).
+  if (isNaN(d.getTime())) return UNKNOWN_VALUE;
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const year = d.getFullYear();
