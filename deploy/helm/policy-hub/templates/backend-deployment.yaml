@@ -46,13 +46,18 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.name }}
                   key: {{ .Values.secret.keys.dbPassword }}
+            # --- TEMPORARY: HTTP Basic Auth, remove together with -----------
+            # --- templates/secret-basic-auth.yaml (see the notes there). ----
+            {{- if .Values.auth.enabled }}
             - name: SPRING_SECURITY_USER_NAME
               value: {{ .Values.auth.username | quote }}
             - name: SPRING_SECURITY_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secret.name }}
-                  key: {{ .Values.secret.keys.authPassword }}
+                  name: {{ .Values.auth.secretName }}
+                  key: {{ .Values.auth.secretKey }}
+            {{- end }}
+            # --- end TEMPORARY ----------------------------------------------
           # Startup probe gives the app (Flyway migration + boot) time before
           # the liveness probe can restart it.
           startupProbe:
