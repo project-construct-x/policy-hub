@@ -61,10 +61,15 @@ Environments: `src/environments/environment.ts` (`useMocks:false`), `environment
   policy-editor-page}`; darunter `policy-editor-page/policy-builder/` (**Kern-Feature**, Wizard mit
   `components/`, `metadata/`, `validators/`, `helpers/`).
 - `ui/` — wiederverwendbares Design-System auf Angular Material (`con-x-*`-Komponenten).
-- `services/` — u.a. `services/policies/policy.service.ts` (HTTP-CRUD) und
-  `services/policies/policy-mapper/policy-odrl.mapper.ts` (Domänenmodell → ODRL/EDC).
+- `services/` — u.a. `services/policies/policy.service.ts` (HTTP-CRUD),
+  `services/policies/policy-mapper/policy-odrl.mapper.ts` (Domänenmodell → ODRL/EDC) und
+  `services/http/` (`http-error.interceptor.ts` loggt fehlgeschlagene Requests,
+  `http-error.helper.ts` wählt den i18n-Key nach Statuscode).
 - `shared/` — `types/` (Modelle), `pipes/`, `adapters/`.
 - `mocks/` — MirageJS-Server + Mock-Daten.
+- `src/fonts/` — selbst gehostete Schriften (Montserrat, Material Icons), eingebunden über
+  `src/styles/_fonts.scss`. **Keine** Google-Fonts-Links in `index.html` (Herkunft & Lizenzen:
+  `src/fonts/README.md`).
 
 Routing ist **lazy** (`app.routes.ts`). **Pfad-Aliase** statt Relativimporte:
 `@pages/* @ui/* @services/* @shared/* @mocks/* @env @features/policies/builder/*`.
@@ -127,6 +132,37 @@ Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/acce
 - **Prüfung:** `templateAccessibility`-Regeln laufen in `npm run lint`; ergänzend manuell
   (Tastatur, NVDA, Zoom, axe/Lighthouse).
 
+### Sicherheits-Konventionen
+
+Aus dem OWASP-Top-10-Audit abgeleitet; bitte einhalten, sonst kommen die Befunde zurück.
+
+- **Ein HTTP-Response ist Eingabe.** `http.get<Policy>()` prüft zur Laufzeit nichts — der Typ
+  ist ein Compile-Zeit-Versprechen. Daten aus der API vor der Verwendung validieren:
+  unbekannte Constraint-Typen über `keepKnownConstraints()` / `isKnownConstraintType()`
+  aussortieren (ein Index-Zugriff mit unbekanntem Typ liefert `undefined` und wirft beim
+  Rendern).
+- **Nie ungeprüfte Werte als Transloco-Parameter.** Transloco durchsucht das Ergebnis einer
+  Ersetzung erneut nach Platzhaltern; ein Wert mit `{{…}}` wird ein zweites Mal aufgelöst und
+  kann die Schleife zum Nicht-Terminieren bringen. Werte gegen die Metadaten-Registry prüfen
+  (`USE_CASE_OPTIONS`, `FRAMEWORK_AGREEMENT_VALUE`), sonst `'—'`.
+- **i18n-Keys nie aus Daten zusammensetzen** — immer aus der Registry entnehmen.
+- **`encodeURIComponent` für jeden Wert in einer URL,** auch für Route-Parameter: Angular
+  dekodiert `%2F`/`%2E`, der Browser normalisiert anschließend `..` im Pfad.
+- **`policyId` ist ein Identifier** (wird zum JSON-LD-`@id`) — Zeichensatz-Validierung in
+  `constraint-validators.ts` beibehalten.
+- **HTTP-Fehler nie verwerfen:** `error: (err: unknown) => …` mit
+  `httpErrorMessageKey(err, '<fachlicher Fallback>')`. Nie Request-/Response-Bodies loggen.
+- **Dev-Werkzeug gehört nicht ins Prod-Bundle.** `@if` steuert nur das Rendern; das Bundling
+  entscheiden die `import`-Statements. Neue Mock-/Debug-Komponenten über `fileReplacements`
+  ausschließen — dabei eine **Barrel-Datei** ersetzen, nicht die Komponente selbst
+  (Angular behält die `templateUrl`-Zuordnung am Pfad, sonst bricht der AOT-Build mit
+  `TS2339` ab; Muster: `ui/mock-data-switcher/index.ts`).
+- **Keine externen Laufzeit-Ressourcen** (Fonts, Skripte, Styles von fremden Domains) —
+  sie übertragen die Nutzer-IP und machen Builds vom Netz abhängig.
+- **Produktion baut mit `security.autoCsp` und `subresourceIntegrity`.** Wer an Critical-CSS
+  oder `index.html` schraubt, prüft das Ergebnis **im Browser** gegen den Prod-Build
+  (Stylesheet aktiv? CSP-Violations?), nicht nur im HTML-Quelltext.
+
 ### Architektur-Entscheidungen
 - **Signal-first State** — kein externes State-Management.
 - **Trennung Domänenmodell ↔ externes ODRL/EDC-Format.** Die Übersetzung ist isoliert im
@@ -143,7 +179,8 @@ Zielniveau **WCAG 2.2 AA** (Grundausstattung). Details & Restrisiken: `docs/acce
   startet den Mock-Server selbst (via `start-server-and-test`), wartet auf `:4200`, fährt Cypress
   headless und stoppt danach. Deckt die **Hauptflüsse** gegen den Mock-Modus ab: Policy erstellen,
   ansehen, bearbeiten, löschen, Liste durchsuchen/filtern; inkl. empty-/no-results-States. Specs in
-  `cypress/e2e/*.cy.ts`. (`npm run cy:run` fährt nur Cypress gegen einen bereits laufenden Server.)
+  `cypress/e2e/*.cy.ts` (aktuell **20 Tests** in 6 Specs). (`npm run cy:run` fährt nur Cypress
+  gegen einen bereits laufenden Server.)
   - **Selektor-Konvention:** UI-Elemente werden über `data-cy="…"`-Attribute angesprochen
     (entkoppelt von CSS-Klassen & i18n-Text). Custom-Commands in `cypress/support/commands.ts`:
     `cy.getByCy(sel)` und `cy.visitWithMode(path, 'empty'|'few'|'many')` (setzt
