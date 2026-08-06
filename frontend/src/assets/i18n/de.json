@@ -289,5 +289,12 @@
   "jsonViewer": {
     "label": "ODRL JSON-LD",
     "noContent": "(kein Inhalt)"
+  },
+  "httpError": {
+    "offline": "Der Server ist nicht erreichbar. Bitte Netzwerkverbindung prüfen und erneut versuchen.",
+    "unauthorized": "Nicht angemeldet. Bitte melden Sie sich erneut an.",
+    "forbidden": "Für diese Aktion fehlt Ihnen die Berechtigung.",
+    "conflict": "Der Datensatz wurde zwischenzeitlich geändert. Bitte neu laden und erneut versuchen.",
+    "server": "Auf dem Server ist ein Fehler aufgetreten. Bitte später erneut versuchen."
   }
 }

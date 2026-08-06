@@ -26,6 +26,7 @@ import {
   hasDivergingLegalText,
 } from '@features/policies/builder/helpers/legal-description.helper';
 import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
+import { httpErrorMessageKey } from '@services/http/http-error.helper';
 
 @Component({
   selector: 'app-policy-detail-page',
@@ -94,8 +95,12 @@ export class PolicyDetailPageComponent implements OnInit {
         this.policy.set(this.withKnownConstraintsOnly(data));
         this.loading.set(false);
       },
-      error: () => {
-        this.notification.error(this.transloco.translate('policyDetail.notifications.loadError'));
+      error: (err: unknown) => {
+        this.notification.error(
+          this.transloco.translate(
+            httpErrorMessageKey(err, 'policyDetail.notifications.loadError'),
+          ),
+        );
         this.loading.set(false);
         this.router.navigate(['/policies']);
       },
@@ -135,9 +140,11 @@ export class PolicyDetailPageComponent implements OnInit {
             );
             this.router.navigate(['/policies']);
           },
-          error: () =>
+          error: (err: unknown) =>
             this.notification.error(
-              this.transloco.translate('policyDetail.notifications.deleteError'),
+              this.transloco.translate(
+                httpErrorMessageKey(err, 'policyDetail.notifications.deleteError'),
+              ),
             ),
         });
       }

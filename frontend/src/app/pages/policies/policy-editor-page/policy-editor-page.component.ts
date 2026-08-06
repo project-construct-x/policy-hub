@@ -5,6 +5,7 @@ import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
 import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
+import { httpErrorMessageKey } from '@services/http/http-error.helper';
 import {
   PolicyBuilderComponent,
   PolicyDraft,
@@ -50,8 +51,12 @@ export class PolicyEditorPageComponent implements OnInit {
           this.initialPolicy.set({ ...p, constraints });
           this.loading.set(false);
         },
-        error: () => {
-          this.notification.error(this.transloco.translate('policyEditor.notifications.loadError'));
+        error: (err: unknown) => {
+          this.notification.error(
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.loadError'),
+            ),
+          );
           this.loading.set(false);
           this.router.navigate(['/policies']);
         },
@@ -71,10 +76,12 @@ export class PolicyEditorPageComponent implements OnInit {
           );
           this.router.navigate(['/policies', id]);
         },
-        error: () => {
+        error: (err: unknown) => {
           this.submitting.set(false);
           this.notification.error(
-            this.transloco.translate('policyEditor.notifications.updateError'),
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.updateError'),
+            ),
           );
         },
       });
@@ -87,10 +94,12 @@ export class PolicyEditorPageComponent implements OnInit {
           );
           this.router.navigate(['/policies', created.id]);
         },
-        error: () => {
+        error: (err: unknown) => {
           this.submitting.set(false);
           this.notification.error(
-            this.transloco.translate('policyEditor.notifications.createError'),
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.createError'),
+            ),
           );
         },
       });
