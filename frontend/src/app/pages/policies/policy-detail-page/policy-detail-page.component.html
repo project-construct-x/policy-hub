@@ -79,6 +79,20 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="pd__legal-text" data-cy="legal-text">
+              @if (legalTextDiverges()) {
+                <div class="pd__legal-warning" role="alert" data-cy="legal-text-diverged">
+                  <mat-icon class="pd__legal-warning-icon" aria-hidden="true">warning</mat-icon>
+                  <div>
+                    <p>{{ t('policyDetail.legalTextDiverged') }}</p>
+                    <details class="pd__legal-stored">
+                      <summary>{{ t('policyDetail.legalTextStored') }}</summary>
+                      <pre class="pd__legal-stored-text" data-cy="legal-text-stored">{{
+                        storedLegalText()
+                      }}</pre>
+                    </details>
+                  </div>
+                </div>
+              }
               <p class="pd__legal-intro">{{ legalDescription().intro }}</p>
               @if (legalDescription().clauses.length) {
                 <ol class="pd__legal-list">

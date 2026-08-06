@@ -93,6 +93,29 @@ export function buildLegalDescription(
 }
 
 /**
+ * Prüft, ob der **gespeicherte** Rechtstext einer Policy noch zu ihren gespeicherten
+ * Constraints passt.
+ *
+ * Rechtlich maßgeblich ist der Text, der beim Speichern übermittelt und persistiert wurde
+ * (`CreatePolicyRequest.legalText`) — angezeigt wird auf der Detailseite dagegen eine bei
+ * jedem Aufruf neu aus den Constraints abgeleitete Fassung. Solange beides über diese UI
+ * entsteht, ist es identisch; bei einem anderen Client, nachträglich geänderten Daten oder
+ * einer angepassten Ableitungslogik läuft es auseinander, ohne dass es jemandem auffällt.
+ *
+ * Verglichen wird gegen die deutsche Fassung, weil `legalText` genau so erzeugt wird
+ * (siehe `PolicyBuilderComponent.submit`) — unabhängig von der aktiven UI-Sprache.
+ *
+ * Ohne gespeicherten Text (ältere Datensätze) gibt es nichts zu vergleichen: `false`.
+ */
+export function hasDivergingLegalText(
+  policy: Pick<Policy, 'category' | 'constraints' | 'legalText'>,
+  transloco: TranslocoService,
+): boolean {
+  if (policy.legalText === undefined || policy.legalText === null) return false;
+  return policy.legalText !== buildLegalDescription(policy, transloco, 'de');
+}
+
+/**
  * WICHTIG — warum hier gegen Whitelists geprüft wird statt die Werte direkt zu verwenden:
  *
  * Transloco durchsucht das Ergebnis einer Platzhalter-Ersetzung ERNEUT nach Platzhaltern

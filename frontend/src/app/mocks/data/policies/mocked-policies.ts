@@ -182,6 +182,7 @@ export function createMockedPolicy(data: {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  legalText?: string;
 }): Policy {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
@@ -194,6 +195,9 @@ export function createMockedPolicy(data: {
     constraints: data.constraints ?? [],
     createdAt: now,
     updatedAt: now,
+    // Der Rechtstext wird vom Client erzeugt und laut Backend-Vertrag unverändert
+    // persistiert und wieder ausgeliefert — der Mock bildet genau das ab.
+    legalText: data.legalText,
   };
   policies = [newPolicy, ...policies];
   return newPolicy;
@@ -205,6 +209,7 @@ export function updateMockedPolicy(
     policyId: string;
     category: PolicyCategory;
     constraints: Constraint[];
+    legalText?: string;
   },
 ): Policy | undefined {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
@@ -218,6 +223,7 @@ export function updateMockedPolicy(
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
+    legalText: data.legalText,
     updatedAt: new Date().toISOString(),
   };
   policies[index] = updated;

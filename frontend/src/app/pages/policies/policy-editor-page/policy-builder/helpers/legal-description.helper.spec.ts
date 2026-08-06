@@ -5,7 +5,11 @@ import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
 
-import { buildLegalClauses, buildLegalDescription } from './legal-description.helper';
+import {
+  buildLegalClauses,
+  buildLegalDescription,
+  hasDivergingLegalText,
+} from './legal-description.helper';
 
 /**
  * Fake-TranslocoService: gibt den i18n-Key deterministisch zurück (bei Parametern als
@@ -321,5 +325,54 @@ describe('buildLegalClauses — unbekannter Constraint-Typ aus der API', () => {
 
     expect(intro).toBe('legalDescription.unrestricted');
     expect(clauses).toEqual([]);
+  });
+});
+
+describe('hasDivergingLegalText', () => {
+  const policy: Pick<Policy, 'category' | 'constraints' | 'legalText'> = {
+    category: 'ACCESS',
+    constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
+  };
+
+  /** Genau der Text, den PolicyBuilderComponent.submit() beim Speichern mitschickt. */
+  function derived(): string {
+    return buildLegalDescription(policy, makeTransloco(), 'de');
+  }
+
+  it('meldet keine Abweichung, wenn der gespeicherte Text der abgeleitete ist', () => {
+    expect(hasDivergingLegalText({ ...policy, legalText: derived() }, makeTransloco())).toBe(false);
+  });
+
+  it('meldet eine Abweichung, wenn der gespeicherte Text nicht zu den Constraints passt', () => {
+    expect(
+      hasDivergingLegalText(
+        { ...policy, legalText: 'Die Nutzung der Daten ist uneingeschränkt gestattet.' },
+        makeTransloco(),
+      ),
+    ).toBe(true);
+  });
+
+  it('meldet eine Abweichung, wenn die Constraints nachträglich verändert wurden', () => {
+    // Gespeicherter Text passt zur MEMBERSHIP-Policy, die Constraints sagen inzwischen
+    // etwas anderes — der Fall, den die Detailseite sonst stillschweigend überschreiben würde.
+    expect(
+      hasDivergingLegalText(
+        {
+          category: 'ACCESS',
+          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
+          legalText: derived(),
+        },
+        makeTransloco(),
+      ),
+    ).toBe(true);
+  });
+
+  it('meldet nichts, wenn kein Text gespeichert ist (ältere Datensätze)', () => {
+    expect(hasDivergingLegalText(policy, makeTransloco())).toBe(false);
+    expect(hasDivergingLegalText({ ...policy, legalText: undefined }, makeTransloco())).toBe(false);
+  });
+
+  it('behandelt einen leeren gespeicherten Text als Abweichung', () => {
+    expect(hasDivergingLegalText({ ...policy, legalText: '' }, makeTransloco())).toBe(true);
   });
 });

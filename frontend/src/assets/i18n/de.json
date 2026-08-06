@@ -144,7 +144,9 @@
       "deleteSuccess": "Policy wurde gelöscht.",
       "deleteError": "Policy konnte nicht gelöscht werden.",
       "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt."
-    }
+    },
+    "legalTextDiverged": "Der gespeicherte Rechtstext weicht von den gespeicherten Bedingungen ab. Rechtlich maßgeblich ist der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
+    "legalTextStored": "Gespeicherten Rechtstext anzeigen"
   },
   "policyEditor": {
     "notifications": {

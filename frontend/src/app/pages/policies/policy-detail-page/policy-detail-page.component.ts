@@ -21,7 +21,10 @@ import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-ba
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
-import { buildLegalClauses } from '@features/policies/builder/helpers/legal-description.helper';
+import {
+  buildLegalClauses,
+  hasDivergingLegalText,
+} from '@features/policies/builder/helpers/legal-description.helper';
 import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
 
 @Component({
@@ -69,6 +72,15 @@ export class PolicyDetailPageComponent implements OnInit {
     const p = this.policy();
     if (!p) return { intro: '', clauses: [] };
     return buildLegalClauses(p, this.transloco);
+  });
+
+  /** Der gespeicherte, rechtlich maßgebliche Text — nicht die abgeleitete Anzeigefassung. */
+  readonly storedLegalText = computed(() => this.policy()?.legalText ?? null);
+
+  /** Siehe {@link hasDivergingLegalText}: warnt, wenn gespeichert ≠ abgeleitet. */
+  readonly legalTextDiverges = computed(() => {
+    const p = this.policy();
+    return p ? hasDivergingLegalText(p, this.transloco) : false;
   });
 
   ngOnInit(): void {

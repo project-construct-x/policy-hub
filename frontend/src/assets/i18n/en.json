@@ -144,7 +144,9 @@
       "deleteSuccess": "Policy deleted.",
       "deleteError": "Policy could not be deleted.",
       "unknownConstraints": "This policy contains unknown condition types. They are not displayed."
-    }
+    },
+    "legalTextDiverged": "The stored legal text does not match the stored conditions. The stored text is the legally binding one — please save the policy again or have it reviewed.",
+    "legalTextStored": "Show stored legal text"
   },
   "policyEditor": {
     "notifications": {
