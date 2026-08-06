@@ -274,7 +274,8 @@
     "dateRangeEndInvalid": "End date is invalid",
     "dateRangeEndInPast": "End date must be in the future",
     "dateRangeStartAfterEnd": "The start date must be before the end date",
-    "constraintUnknownType": "Unknown condition type — this condition is ignored."
+    "constraintUnknownType": "Unknown condition type — this condition is ignored.",
+    "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {
     "title": "Delete policy",

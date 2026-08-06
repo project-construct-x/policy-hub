@@ -10,6 +10,17 @@ export interface ValidationError {
   messageKey: string;
 }
 
+/**
+ * Zulässiger Zeichensatz der fachlichen Policy-ID: Buchstabe oder Ziffer am Anfang, danach
+ * zusätzlich Punkt, Unterstrich und Bindestrich (z.B. `policy.use-case-quality-assurance`).
+ *
+ * Der Wert wird von `policyToOdrl()` als JSON-LD-`@id` übernommen. `@id` ist dort ein
+ * Identifier, keine Beschriftung — eine freie Zeichenkette könnte eine absolute IRI
+ * (`https://…/fremde-policy`) oder eine Blank-Node-Referenz (`_:b0`) erzeugen und damit
+ * auf eine fremde PolicyDefinition zeigen.
+ */
+const POLICY_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+
 export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   const errors: ValidationError[] = [];
 
@@ -18,6 +29,8 @@ export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
     errors.push({ field: 'policyId', messageKey: 'validation.policyIdRequired' });
   } else if (id.length > 200) {
     errors.push({ field: 'policyId', messageKey: 'validation.policyIdTooLong' });
+  } else if (!POLICY_ID_PATTERN.test(id)) {
+    errors.push({ field: 'policyId', messageKey: 'validation.policyIdInvalidChars' });
   }
 
   if (!draft.category) {

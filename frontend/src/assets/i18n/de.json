@@ -274,7 +274,8 @@
     "dateRangeEndInvalid": "Enddatum ist ungültig",
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
     "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen",
-    "constraintUnknownType": "Unbekannter Bedingungstyp — diese Bedingung wird ignoriert."
+    "constraintUnknownType": "Unbekannter Bedingungstyp — diese Bedingung wird ignoriert.",
+    "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {
     "title": "Policy löschen",
