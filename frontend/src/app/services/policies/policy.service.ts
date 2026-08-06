@@ -9,12 +9,23 @@ export class PolicyService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.backendUrl}/v1/policies`;
 
+  /**
+   * IDs stammen aus `paramMap.get('id')` und sind damit Eingabe: Angulars UrlSerializer
+   * dekodiert `%2F`/`%2E`, sodass eine ID `/` und `..` enthalten kann. Ohne Kodierung würde
+   * der Browser den fertigen Pfad normalisieren (`…/policies/../../actuator` → `/api/actuator`)
+   * und der Request die Policies-Collection verlassen — same-origin und mit den Credentials
+   * des Nutzers. Deshalb geht jede ID durch `encodeURIComponent`.
+   */
+  private resourceUrl(id: string): string {
+    return `${this.baseUrl}/${encodeURIComponent(id)}`;
+  }
+
   getAllPolicies(): Observable<Policy[]> {
     return this.http.get<Policy[]>(this.baseUrl);
   }
 
   getPolicyById(id: string): Observable<Policy> {
-    return this.http.get<Policy>(`${this.baseUrl}/${id}`);
+    return this.http.get<Policy>(this.resourceUrl(id));
   }
 
   createPolicy(request: CreatePolicyRequest): Observable<Policy> {
@@ -22,10 +33,10 @@ export class PolicyService {
   }
 
   updatePolicy(id: string, request: UpdatePolicyRequest): Observable<Policy> {
-    return this.http.put<Policy>(`${this.baseUrl}/${id}`, request);
+    return this.http.put<Policy>(this.resourceUrl(id), request);
   }
 
   deletePolicy(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(this.resourceUrl(id));
   }
 }
