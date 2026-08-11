@@ -56,5 +56,5 @@ public class PolicyEntity {
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;;
+    private Instant updatedAt;
 }

@@ -30,25 +30,30 @@ public record CreatePolicyRequest(
 
         @Schema(
                 description = """
-                        Ordered list of policy constraints. Supported types are
-                        MEMBERSHIP, USE_CASE, END_DATE and FRAMEWORK_AGREEMENT.
-                        END_DATE is only allowed for CONTRACT policies.
-                        """,
+                Ordered list of policy constraints. Supported types are
+                MEMBERSHIP, USE_CASE, DATE_RANGE and FRAMEWORK_AGREEMENT.
+                DATE_RANGE defines a start and end date in ISO-8601 format.
+                """,
                 example = """
-                        [
-                          {
-                            "type": "MEMBERSHIP",
-                            "value": "active"
-                          },
-                          {
-                            "type": "USE_CASE",
-                            "useCases": [
-                              "UC.quality-assurance",
-                              "UC.material-testing"
-                            ]
-                          }
-                        ]
-                        """
+                [
+                  {
+                    "type": "MEMBERSHIP",
+                    "value": "active"
+                  },
+                  {
+                    "type": "USE_CASE",
+                    "useCases": [
+                      "UC.quality-assurance",
+                      "UC.material-testing"
+                    ]
+                  },
+                  {
+                    "type": "DATE_RANGE",
+                    "startDate": "2026-08-01",
+                    "endDate": "2027-12-31"
+                  }
+                ]
+                """
         )
         @NotNull(message = "constraints are required")
         List<JsonNode> constraints,

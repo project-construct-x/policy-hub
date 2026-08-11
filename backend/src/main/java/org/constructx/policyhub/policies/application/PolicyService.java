@@ -1,5 +1,6 @@
 package org.constructx.policyhub.policies.application;
 
+import lombok.RequiredArgsConstructor;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PolicyService {
 
     private static final Logger log = LoggerFactory.getLogger(PolicyService.class);
@@ -25,7 +27,7 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final PolicyMapper policyMapper;
     private final PolicyValidator policyValidator;
-    private final OdrlPolicyMapper odrlPolicyService;
+    private final OdrlPolicyMapper odrlPolicyMapper;
 
     public PolicyService(
             PolicyRepository policyRepository,
@@ -64,7 +66,7 @@ public class PolicyService {
         log.info("Fetching odrl-policy with id {}", id);
         return policyRepository.findById(id)
                 .map(policyMapper::toDomain)
-                .map(odrlPolicyService::policyToOdrl)
+                .map(odrlPolicyMapper::policyToOdrl)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
     }
 
