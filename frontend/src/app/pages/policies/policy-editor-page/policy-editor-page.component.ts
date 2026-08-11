@@ -4,6 +4,8 @@ import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
 import { Policy } from '@shared/types/policy.model';
+import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
+import { httpErrorMessageKey } from '@services/http/http-error.helper';
 import {
   PolicyBuilderComponent,
   PolicyDraft,
@@ -37,11 +39,24 @@ export class PolicyEditorPageComponent implements OnInit {
       this.loading.set(true);
       this.policyService.getPolicyById(id).subscribe({
         next: (p) => {
-          this.initialPolicy.set(p);
+          // Unbekannte Constraint-Typen entfernen, bevor sie in den Builder gelangen:
+          // sie haben keinen Registry-Eintrag und würden beim Rendern der Editor-Card
+          // bzw. in der Validierung auf `undefined` zugreifen.
+          const constraints = keepKnownConstraints(p.constraints);
+          if (constraints.length !== p.constraints.length) {
+            this.notification.warning(
+              this.transloco.translate('policyEditor.notifications.unknownConstraints'),
+            );
+          }
+          this.initialPolicy.set({ ...p, constraints });
           this.loading.set(false);
         },
-        error: () => {
-          this.notification.error(this.transloco.translate('policyEditor.notifications.loadError'));
+        error: (err: unknown) => {
+          this.notification.error(
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.loadError'),
+            ),
+          );
           this.loading.set(false);
           this.router.navigate(['/policies']);
         },
@@ -61,10 +76,12 @@ export class PolicyEditorPageComponent implements OnInit {
           );
           this.router.navigate(['/policies', id]);
         },
-        error: () => {
+        error: (err: unknown) => {
           this.submitting.set(false);
           this.notification.error(
-            this.transloco.translate('policyEditor.notifications.updateError'),
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.updateError'),
+            ),
           );
         },
       });
@@ -77,10 +94,12 @@ export class PolicyEditorPageComponent implements OnInit {
           );
           this.router.navigate(['/policies', created.id]);
         },
-        error: () => {
+        error: (err: unknown) => {
           this.submitting.set(false);
           this.notification.error(
-            this.transloco.translate('policyEditor.notifications.createError'),
+            this.transloco.translate(
+              httpErrorMessageKey(err, 'policyEditor.notifications.createError'),
+            ),
           );
         },
       });

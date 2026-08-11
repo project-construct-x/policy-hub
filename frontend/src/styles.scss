@@ -1,5 +1,9 @@
 @use './material';
+@use 'fonts';
 @use 'mixins' as *;
+// CDK's `.cdk-visually-hidden` class (used by LiveAnnouncer and others to
+// hide live-region text visually while keeping it available to screen readers).
+@use '@angular/cdk/a11y-prebuilt.css';
 
 // ============================================================
 // Construct-X Design Tokens

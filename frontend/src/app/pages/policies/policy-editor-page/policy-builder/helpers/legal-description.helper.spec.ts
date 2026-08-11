@@ -1,10 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, type MockedFunction } from 'vitest';
 
 import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
+import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
 
-import { buildLegalClauses, buildLegalDescription } from './legal-description.helper';
+import {
+  buildLegalClauses,
+  buildLegalDescription,
+  hasDivergingLegalText,
+} from './legal-description.helper';
 
 /**
  * Fake-TranslocoService: gibt den i18n-Key deterministisch zurück (bei Parametern als
@@ -85,12 +90,15 @@ describe('buildLegalDescription', () => {
   });
 
   describe('Use-Case-Liste (joinList)', () => {
+    // Nur IDs aus USE_CASE_OPTIONS verwenden: unbekannte IDs werden bewusst zu "—"
+    // zusammengefaltet (siehe "Schutz vor Transloco-Parameter-Injection") und würden
+    // die Trennlogik hier nicht mehr sichtbar machen.
     function useCaseList(useCases: string[]): string {
       const text = buildLegalDescription(
         draft('ACCESS', [{ type: 'USE_CASE', useCases }]),
         makeTransloco(),
       );
-      // Übersetzte Labels sind hier `useCase.<id ohne UC.-Präfix>`.
+      // Übersetzte Labels sind hier der i18n-Key aus der Registry, also `useCase.<id>`.
       const match = /legalDescription\.clause\.useCase\[list=(.+?)\]/.exec(text);
       return match![1];
     }
@@ -100,11 +108,15 @@ describe('buildLegalDescription', () => {
     });
 
     it('zwei Use-Cases → mit "&" verbunden', () => {
-      expect(useCaseList(['UC.geodata', 'UC.quality'])).toBe('useCase.geodata & useCase.quality');
+      expect(useCaseList(['UC.geodata', 'UC.quality-assurance'])).toBe(
+        'useCase.geodata & useCase.quality-assurance',
+      );
     });
 
     it('drei Use-Cases → Komma-getrennt, letztes mit "&"', () => {
-      expect(useCaseList(['UC.a', 'UC.b', 'UC.c'])).toBe('useCase.a, useCase.b & useCase.c');
+      expect(useCaseList(['UC.geodata', 'UC.material-testing', 'UC.bim-coordination'])).toBe(
+        'useCase.geodata, useCase.material-testing & useCase.bim-coordination',
+      );
     });
   });
 
@@ -200,12 +212,12 @@ describe('buildLegalDescription', () => {
       expect(text).toContain('start=—;end=—');
     });
 
-    it('unparsebares Datum → unverändert durchgereicht', () => {
+    it('unparsebares Datum → Platzhalter "—" statt Rohwert', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: 'not-a-date', endDate: 'not-a-date' }]),
         makeTransloco(),
       );
-      expect(text).toContain('start=not-a-date;end=not-a-date');
+      expect(text).toContain('start=—;end=—');
     });
   });
 
@@ -216,5 +228,151 @@ describe('buildLegalDescription', () => {
       expect(t.translate).toHaveBeenCalledWith('legalDescription.introAccess', undefined, 'de');
       expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.legalText', undefined, 'de');
     });
+  });
+
+  /**
+   * Transloco durchsucht das Ergebnis einer Ersetzung ERNEUT nach Platzhaltern:
+   * `DefaultTranspiler.transpile()` läuft in einer `while`-Schleife über den bereits
+   * ersetzten String, und `interpolationMatcher` ist ein Getter, der jedes Mal ein
+   * frisches RegExp mit `lastIndex = 0` liefert. Ein Parameterwert, der selbst
+   * `{{…}}` enthält, wird dadurch ein zweites Mal aufgelöst — im Fall
+   * `{{agreement}}` → `{{agreement}}` ändert sich der String nie und die Schleife
+   * terminiert nicht (eingefrorener Browser-Tab).
+   *
+   * Constraint-Werte stammen nicht nur aus der UI, sondern auch aus
+   * `GET /v1/policies/:id`. Deshalb die Invariante: an `translate()` darf weder als
+   * Key noch als Parameterwert jemals ein Interpolations-Delimiter gelangen.
+   */
+  describe('Schutz vor Transloco-Parameter-Injection', () => {
+    const HOSTILE = '{{agreement}}';
+
+    function argumentsPassedTo(t: TranslocoService): string[] {
+      const calls = (t.translate as unknown as MockedFunction<TranslocoService['translate']>).mock
+        .calls;
+      return calls.flatMap(([key, params]) => [
+        String(key),
+        ...(params ? Object.values(params).map((v) => String(v)) : []),
+      ]);
+    }
+
+    const hostileConstraints: [string, Constraint][] = [
+      ['FRAMEWORK_AGREEMENT.agreement', { type: 'FRAMEWORK_AGREEMENT', agreement: HOSTILE }],
+      ['USE_CASE.useCases', { type: 'USE_CASE', useCases: [HOSTILE] }],
+      ['DATE_RANGE.startDate', { type: 'DATE_RANGE', startDate: HOSTILE, endDate: '2027-01-01' }],
+      ['DATE_RANGE.endDate', { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: HOSTILE }],
+    ];
+
+    for (const [label, constraint] of hostileConstraints) {
+      it(`reicht keinen Interpolations-Delimiter an Transloco weiter: ${label}`, () => {
+        const t = makeTransloco();
+        buildLegalDescription(draft('CONTRACT', [constraint]), t, 'de');
+
+        for (const arg of argumentsPassedTo(t)) {
+          expect(arg).not.toContain('{{');
+          expect(arg).not.toContain('}}');
+        }
+      });
+    }
+
+    it('ersetzt einen unbekannten Rahmenvertrag durch den Platzhalter "—"', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [{ type: 'FRAMEWORK_AGREEMENT', agreement: 'FremderVertrag' }]),
+        makeTransloco(),
+      );
+      expect(text).toContain('agreement=—');
+    });
+
+    it('ersetzt einen unbekannten Use-Case durch den Platzhalter "—"', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [{ type: 'USE_CASE', useCases: ['UC.gibt-es-nicht'] }]),
+        makeTransloco(),
+      );
+      expect(text).toContain('list=—');
+    });
+
+    it('lässt bekannte Werte unverändert', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [
+          { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+          { type: 'USE_CASE', useCases: ['UC.quality-assurance', 'UC.geodata'] },
+        ]),
+        makeTransloco(),
+      );
+      expect(text).toContain(`agreement=${FRAMEWORK_AGREEMENT_VALUE}`);
+      expect(text).toContain('list=useCase.quality-assurance & useCase.geodata');
+    });
+  });
+});
+
+describe('buildLegalClauses — unbekannter Constraint-Typ aus der API', () => {
+  const unknownConstraint = { type: 'FOO' } as unknown as Constraint;
+
+  it('übergeht den unbekannten Typ, statt beim Metadaten-Zugriff zu werfen', () => {
+    const { clauses } = buildLegalClauses(
+      draft('CONTRACT', [unknownConstraint, { type: 'MEMBERSHIP', value: 'active' }]),
+      makeTransloco(),
+    );
+
+    expect(clauses).toHaveLength(1);
+    expect(clauses[0].title).toBe('constraint.MEMBERSHIP.label');
+  });
+
+  it('fällt auf den "unrestricted"-Text zurück, wenn nur unbekannte Typen übrig bleiben', () => {
+    const { intro, clauses } = buildLegalClauses(
+      draft('CONTRACT', [unknownConstraint]),
+      makeTransloco(),
+    );
+
+    expect(intro).toBe('legalDescription.unrestricted');
+    expect(clauses).toEqual([]);
+  });
+});
+
+describe('hasDivergingLegalText', () => {
+  const policy: Pick<Policy, 'category' | 'constraints' | 'legalText'> = {
+    category: 'ACCESS',
+    constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
+  };
+
+  /** Genau der Text, den PolicyBuilderComponent.submit() beim Speichern mitschickt. */
+  function derived(): string {
+    return buildLegalDescription(policy, makeTransloco(), 'de');
+  }
+
+  it('meldet keine Abweichung, wenn der gespeicherte Text der abgeleitete ist', () => {
+    expect(hasDivergingLegalText({ ...policy, legalText: derived() }, makeTransloco())).toBe(false);
+  });
+
+  it('meldet eine Abweichung, wenn der gespeicherte Text nicht zu den Constraints passt', () => {
+    expect(
+      hasDivergingLegalText(
+        { ...policy, legalText: 'Die Nutzung der Daten ist uneingeschränkt gestattet.' },
+        makeTransloco(),
+      ),
+    ).toBe(true);
+  });
+
+  it('meldet eine Abweichung, wenn die Constraints nachträglich verändert wurden', () => {
+    // Gespeicherter Text passt zur MEMBERSHIP-Policy, die Constraints sagen inzwischen
+    // etwas anderes — der Fall, den die Detailseite sonst stillschweigend überschreiben würde.
+    expect(
+      hasDivergingLegalText(
+        {
+          category: 'ACCESS',
+          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
+          legalText: derived(),
+        },
+        makeTransloco(),
+      ),
+    ).toBe(true);
+  });
+
+  it('meldet nichts, wenn kein Text gespeichert ist (ältere Datensätze)', () => {
+    expect(hasDivergingLegalText(policy, makeTransloco())).toBe(false);
+    expect(hasDivergingLegalText({ ...policy, legalText: undefined }, makeTransloco())).toBe(false);
+  });
+
+  it('behandelt einen leeren gespeicherten Text als Abweichung', () => {
+    expect(hasDivergingLegalText({ ...policy, legalText: '' }, makeTransloco())).toBe(true);
   });
 });

@@ -198,3 +198,78 @@ describe('validatePolicyDraft', () => {
     expect(keys).toContain('validation.useCaseRequired');
   });
 });
+
+describe('validatePolicyDraft — unbekannter Constraint-Typ aus der API', () => {
+  const unknownConstraint = { type: 'FOO' } as unknown as Constraint;
+
+  it('meldet einen Validierungsfehler statt zu werfen', () => {
+    const errors = validatePolicyDraft({
+      policyId: 'gueltige-id',
+      category: 'ACCESS',
+      constraints: [unknownConstraint],
+    } as Partial<Policy>);
+
+    expect(errors.map((e) => e.messageKey)).toContain('validation.constraintUnknownType');
+  });
+
+  it('prüft die übrigen Constraints trotzdem weiter', () => {
+    const errors = validatePolicyDraft({
+      policyId: 'gueltige-id',
+      category: 'ACCESS',
+      constraints: [unknownConstraint, { type: 'USE_CASE', useCases: [] }],
+    } as Partial<Policy>);
+
+    const keys = errors.map((e) => e.messageKey);
+    expect(keys).toContain('validation.constraintUnknownType');
+    expect(keys).toContain('validation.useCaseRequired');
+  });
+});
+
+/**
+ * Die policyId landet über `policyToOdrl()` als JSON-LD-`@id` im ODRL-Dokument. `@id` ist
+ * dort ein Identifier, keine Beschriftung: eine freie Zeichenkette könnte eine absolute IRI
+ * oder eine Blank-Node-Referenz erzeugen und damit auf eine fremde PolicyDefinition zeigen.
+ */
+describe('validatePolicyDraft — Zeichensatz der policyId', () => {
+  function withId(policyId: string): Partial<Policy> {
+    return { policyId, category: 'ACCESS', constraints: [] };
+  }
+
+  const accepted = [
+    'zugriff-konsortium-mitglieder',
+    'policy.use-case-quality-assurance',
+    'bim_koordination_2027',
+    'e2e-neue-policy',
+    'A1',
+  ];
+
+  for (const id of accepted) {
+    it(`akzeptiert die fachliche ID "${id}"`, () => {
+      expect(validatePolicyDraft(withId(id))).toEqual([]);
+    });
+  }
+
+  const rejected: [string, string][] = [
+    ['absolute IRI', 'https://w3id.org/catenax/policy/fremde-policy'],
+    ['Blank-Node-Referenz', '_:b0'],
+    ['Leerzeichen', 'policy mit leerzeichen'],
+    ['Pfadtrenner', '../andere-policy'],
+    ['führender Punkt', '.versteckt'],
+    ['spitze Klammern', 'policy<script>'],
+  ];
+
+  for (const [label, id] of rejected) {
+    it(`lehnt ab: ${label}`, () => {
+      expect(validatePolicyDraft(withId(id))).toContainEqual({
+        field: 'policyId',
+        messageKey: 'validation.policyIdInvalidChars',
+      });
+    });
+  }
+
+  it('meldet bei leerer ID weiterhin policyIdRequired, nicht den Zeichensatz-Fehler', () => {
+    const keys = validatePolicyDraft(withId('  ')).map((e) => e.messageKey);
+    expect(keys).toContain('validation.policyIdRequired');
+    expect(keys).not.toContain('validation.policyIdInvalidChars');
+  });
+});

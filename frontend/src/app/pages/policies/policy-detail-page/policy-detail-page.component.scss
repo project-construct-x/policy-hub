@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .pd {
   display: flex;
   flex-direction: column;
@@ -192,6 +194,53 @@
     color: var(--con-x-text-primary, #111111);
     line-height: 1.7;
     font-size: 0.9375rem;
+  }
+
+  &__legal-warning {
+    display: flex;
+    gap: 0.625rem;
+    align-items: flex-start;
+    margin: 0 0 1rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--con-x-warning, #f08109);
+    border-left-width: 4px;
+    border-radius: 4px;
+    // --con-x-warning (#f08109) mit 8 % Deckung über Weiß, vorberechnet:
+    // color-mix() wäre hier deutlich mehr CSS und reißt das 4-kB-Komponentenbudget.
+    background: #fef5eb;
+
+    p {
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+
+  &__legal-warning-icon {
+    flex: none;
+    color: var(--con-x-warning, #f08109);
+  }
+
+  &__legal-stored {
+    margin-top: 0.5rem;
+
+    summary {
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--con-x-text-secondary, #555555);
+
+      @include focus-ring(2px);
+    }
+  }
+
+  &__legal-stored-text {
+    margin: 0.5rem 0 0;
+    padding: 0.625rem;
+    border-radius: 4px;
+    background: var(--con-x-bg-page, #fafafa);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 
   &__legal-intro {

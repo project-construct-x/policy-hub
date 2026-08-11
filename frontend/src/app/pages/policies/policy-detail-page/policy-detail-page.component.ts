@@ -21,7 +21,12 @@ import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-ba
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
 import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
-import { buildLegalClauses } from '@features/policies/builder/helpers/legal-description.helper';
+import {
+  buildLegalClauses,
+  hasDivergingLegalText,
+} from '@features/policies/builder/helpers/legal-description.helper';
+import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
+import { httpErrorMessageKey } from '@services/http/http-error.helper';
 
 @Component({
   selector: 'app-policy-detail-page',
@@ -70,6 +75,15 @@ export class PolicyDetailPageComponent implements OnInit {
     return buildLegalClauses(p, this.transloco);
   });
 
+  /** Der gespeicherte, rechtlich maßgebliche Text — nicht die abgeleitete Anzeigefassung. */
+  readonly storedLegalText = computed(() => this.policy()?.legalText ?? null);
+
+  /** Siehe {@link hasDivergingLegalText}: warnt, wenn gespeichert ≠ abgeleitet. */
+  readonly legalTextDiverges = computed(() => {
+    const p = this.policy();
+    return p ? hasDivergingLegalText(p, this.transloco) : false;
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
@@ -78,15 +92,34 @@ export class PolicyDetailPageComponent implements OnInit {
     }
     this.policyService.getPolicyById(id).subscribe({
       next: (data) => {
-        this.policy.set(data);
+        this.policy.set(this.withKnownConstraintsOnly(data));
         this.loading.set(false);
       },
-      error: () => {
-        this.notification.error(this.transloco.translate('policyDetail.notifications.loadError'));
+      error: (err: unknown) => {
+        this.notification.error(
+          this.transloco.translate(
+            httpErrorMessageKey(err, 'policyDetail.notifications.loadError'),
+          ),
+        );
         this.loading.set(false);
         this.router.navigate(['/policies']);
       },
     });
+  }
+
+  /**
+   * Verwirft Constraints, deren Typ die Metadaten-Registry nicht kennt, und weist den
+   * Nutzer darauf hin. Ohne diesen Filter würde `app-constraint-card` beim Rendern auf
+   * `undefined` zugreifen und die gesamte Detailseite mit einem TypeError abbrechen.
+   */
+  private withKnownConstraintsOnly(policy: Policy): Policy {
+    const constraints = keepKnownConstraints(policy.constraints);
+    if (constraints.length !== policy.constraints.length) {
+      this.notification.warning(
+        this.transloco.translate('policyDetail.notifications.unknownConstraints'),
+      );
+    }
+    return { ...policy, constraints };
   }
 
   deletePolicy(): void {
@@ -107,9 +140,11 @@ export class PolicyDetailPageComponent implements OnInit {
             );
             this.router.navigate(['/policies']);
           },
-          error: () =>
+          error: (err: unknown) =>
             this.notification.error(
-              this.transloco.translate('policyDetail.notifications.deleteError'),
+              this.transloco.translate(
+                httpErrorMessageKey(err, 'policyDetail.notifications.deleteError'),
+              ),
             ),
         });
       }

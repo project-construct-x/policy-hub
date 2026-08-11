@@ -142,8 +142,11 @@
     "notifications": {
       "loadError": "Policy could not be loaded.",
       "deleteSuccess": "Policy deleted.",
-      "deleteError": "Policy could not be deleted."
-    }
+      "deleteError": "Policy could not be deleted.",
+      "unknownConstraints": "This policy contains unknown condition types. They are not displayed."
+    },
+    "legalTextDiverged": "The stored legal text does not match the stored conditions. The stored text is the legally binding one — please save the policy again or have it reviewed.",
+    "legalTextStored": "Show stored legal text"
   },
   "policyEditor": {
     "notifications": {
@@ -151,7 +154,8 @@
       "createSuccess": "Policy created.",
       "createError": "Policy could not be created.",
       "updateSuccess": "Policy updated.",
-      "updateError": "Policy could not be updated."
+      "updateError": "Policy could not be updated.",
+      "unknownConstraints": "This policy contains unknown condition types. They were removed from the editor."
     }
   },
   "policyBuilder": {
@@ -271,7 +275,9 @@
     "dateRangeEndRequired": "End date is required",
     "dateRangeEndInvalid": "End date is invalid",
     "dateRangeEndInPast": "End date must be in the future",
-    "dateRangeStartAfterEnd": "The start date must be before the end date"
+    "dateRangeStartAfterEnd": "The start date must be before the end date",
+    "constraintUnknownType": "Unknown condition type — this condition is ignored.",
+    "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {
     "title": "Delete policy",
@@ -283,5 +289,12 @@
   "jsonViewer": {
     "label": "ODRL JSON-LD",
     "noContent": "(no content)"
+  },
+  "httpError": {
+    "offline": "The server cannot be reached. Please check your network connection and try again.",
+    "unauthorized": "Not signed in. Please sign in again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "conflict": "The record was changed in the meantime. Please reload and try again.",
+    "server": "A server error occurred. Please try again later."
   }
 }

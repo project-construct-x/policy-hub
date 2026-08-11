@@ -87,9 +87,17 @@
                 {
                   "replace": "src/app/mocks/mock.service.ts",
                   "with": "src/app/mocks/mock.service.production.ts"
+                },
+                {
+                  "replace": "src/app/ui/mock-data-switcher/index.ts",
+                  "with": "src/app/ui/mock-data-switcher/index.production.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "subresourceIntegrity": true,
+              "security": {
+                "autoCsp": true
+              }
             },
             "mocks": {
               "fileReplacements": [

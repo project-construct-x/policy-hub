@@ -1,4 +1,4 @@
-import { ConstraintType, Operator } from '@shared/types/constraint.model';
+import { Constraint, ConstraintType, Operator } from '@shared/types/constraint.model';
 import { PolicyCategory } from '@shared/types/policy.model';
 
 export interface ConstraintMetadata {
@@ -61,9 +61,25 @@ export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintT
   return ALL_CONSTRAINT_TYPES.filter((t) => CONSTRAINT_METADATA[t].allowedIn.includes(category));
 }
 
-export function buildDefaultConstraint(
-  type: ConstraintType,
-): import('@shared/types/constraint.model').Constraint {
+/**
+ * Laufzeit-Prüfung, ob die Registry einen Constraint-Typ kennt.
+ *
+ * `Record<ConstraintType, ConstraintMetadata>` verspricht nur zur Compile-Zeit, dass ein
+ * Index-Zugriff Metadaten liefert. Constraints aus `GET /v1/policies/:id` sind ungeprüfte
+ * Eingabe: bei einem unbekannten Typ ist `CONSTRAINT_METADATA[type]` zur Laufzeit `undefined`,
+ * und der folgende Property-Zugriff (`.icon`, `.labelKey`, `.allowedIn`) wirft einen TypeError
+ * mitten im Rendering — die Seite bleibt für jeden Nutzer defekt.
+ */
+export function isKnownConstraintType(type: string): type is ConstraintType {
+  return Object.prototype.hasOwnProperty.call(CONSTRAINT_METADATA, type);
+}
+
+/** Entfernt alle Constraints, deren Typ die Registry nicht kennt. */
+export function keepKnownConstraints(constraints: readonly Constraint[]): Constraint[] {
+  return constraints.filter((c) => isKnownConstraintType(c.type));
+}
+
+export function buildDefaultConstraint(type: ConstraintType): Constraint {
   switch (type) {
     case 'MEMBERSHIP':
       return { type: 'MEMBERSHIP', value: 'active' };

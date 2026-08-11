@@ -10,6 +10,16 @@ export interface Policy {
   constraints: Constraint[];
   createdAt: string;
   updatedAt: string;
+  /**
+   * Der beim Speichern übermittelte und unverändert zurückgelieferte Rechtstext
+   * (siehe {@link CreatePolicyRequest.legalText}).
+   *
+   * Optional, weil ältere Datensätze ihn nicht haben. Er ist bewusst Teil des Lesemodells:
+   * Ohne ihn ließe sich nicht erkennen, ob der **gespeicherte** — rechtlich maßgebliche —
+   * Text noch zu den gespeicherten Constraints passt. Die Detailseite leitet ihre Anzeige
+   * aus den Constraints ab; eine Abweichung wäre sonst prinzipiell unsichtbar.
+   */
+  legalText?: string;
 }
 
 export interface CreatePolicyRequest {

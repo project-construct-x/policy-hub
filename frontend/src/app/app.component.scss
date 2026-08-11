@@ -1,5 +1,11 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .app-content {
-  min-height: calc(100vh - 64px);
+  flex: 1;
 
   // Programmatic focus target for skip link / route changes — the landmark
   // itself is not an interactive control, so no visible ring is needed.

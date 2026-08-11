@@ -15,6 +15,7 @@ import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import { ConXPolicyTableComponent } from '@ui/policy-table/con-x-policy-table.component';
 import { ConXEmptyStateComponent } from '@ui/empty-state/con-x-empty-state.component';
 import { ConXButtonComponent } from '@ui/button/con-x-button.component';
+import { httpErrorMessageKey } from '@services/http/http-error.helper';
 
 @Component({
   selector: 'app-policies-overview-page',
@@ -92,8 +93,10 @@ export class PoliciesOverviewPageComponent implements OnInit {
         this.policies.set(data);
         this.loading.set(false);
       },
-      error: () => {
-        this.notification.error(this.transloco.translate('policies.notifications.loadError'));
+      error: (err: unknown) => {
+        this.notification.error(
+          this.transloco.translate(httpErrorMessageKey(err, 'policies.notifications.loadError')),
+        );
         this.loading.set(false);
         this.error.set(true);
       },

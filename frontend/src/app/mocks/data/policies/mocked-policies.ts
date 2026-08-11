@@ -5,9 +5,24 @@ import { BehaviorSubject } from 'rxjs';
 
 export type PolicyMockMode = 'empty' | 'few' | 'many';
 
-const policyMockMode$ = new BehaviorSubject<PolicyMockMode>(
-  (localStorage.getItem('mock-policy-mode') as PolicyMockMode) || 'few',
-);
+const MOCK_MODE_KEY = 'mock-policy-mode';
+const DEFAULT_MOCK_MODE: PolicyMockMode = 'few';
+
+/**
+ * `localStorage` ist nicht immer verfügbar: bei blockiertem Site-Storage (Enterprise-Policy,
+ * Safari-Lockdown) oder in einem eingebetteten `<iframe>` wirft schon der Zugriff einen
+ * `SecurityError`. Das hier läuft beim Auswerten des Moduls — also noch vor
+ * `bootstrapApplication()`, wo der `catch` in `main.ts` nicht mehr greifen würde.
+ */
+function readStoredMockMode(): PolicyMockMode {
+  try {
+    return (localStorage.getItem(MOCK_MODE_KEY) as PolicyMockMode) || DEFAULT_MOCK_MODE;
+  } catch {
+    return DEFAULT_MOCK_MODE;
+  }
+}
+
+const policyMockMode$ = new BehaviorSubject<PolicyMockMode>(readStoredMockMode());
 
 export function getPolicyMockMode$() {
   return policyMockMode$.asObservable();
@@ -18,7 +33,12 @@ export function getCurrentPolicyMockMode(): PolicyMockMode {
 }
 
 export function setPolicyMockMode(mode: PolicyMockMode): void {
-  localStorage.setItem('mock-policy-mode', mode);
+  try {
+    localStorage.setItem(MOCK_MODE_KEY, mode);
+  } catch {
+    // Ohne Persistenz gilt der Modus nur für diese Session — kein Grund, den Switcher
+    // scheitern zu lassen.
+  }
   policyMockMode$.next(mode);
 }
 
@@ -182,6 +202,7 @@ export function createMockedPolicy(data: {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  legalText?: string;
 }): Policy {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
@@ -194,6 +215,9 @@ export function createMockedPolicy(data: {
     constraints: data.constraints ?? [],
     createdAt: now,
     updatedAt: now,
+    // Der Rechtstext wird vom Client erzeugt und laut Backend-Vertrag unverändert
+    // persistiert und wieder ausgeliefert — der Mock bildet genau das ab.
+    legalText: data.legalText,
   };
   policies = [newPolicy, ...policies];
   return newPolicy;
@@ -205,6 +229,7 @@ export function updateMockedPolicy(
     policyId: string;
     category: PolicyCategory;
     constraints: Constraint[];
+    legalText?: string;
   },
 ): Policy | undefined {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
@@ -218,6 +243,7 @@ export function updateMockedPolicy(
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
+    legalText: data.legalText,
     updatedAt: new Date().toISOString(),
   };
   policies[index] = updated;

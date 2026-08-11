@@ -9,13 +9,14 @@ import {
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import { provideRouter, TitleStrategy } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_DATE_LOCALE, MAT_DATE_FORMATS, DateAdapter } from '@angular/material/core';
 import { provideTransloco } from '@jsverse/transloco';
 import { TranslocoHttpLoader } from './services/transloco-loader.service';
 import { ConXTitleStrategy } from '@services/a11y/title-strategy.service';
 import { ConXDateAdapter } from '@shared/adapters/con-x-date.adapter';
+import { httpErrorInterceptor } from '@services/http/http-error.interceptor';
 import { MockService } from '@mocks/mock.service';
 import { environment } from '@env';
 
@@ -49,7 +50,7 @@ export const appConfig: ApplicationConfig = {
       environment.useMocks ? inject(MockService).mirageJsServer() : Promise.resolve(),
     ),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([httpErrorInterceptor])),
     provideAnimationsAsync(),
     { provide: TitleStrategy, useClass: ConXTitleStrategy },
     { provide: LOCALE_ID, useValue: 'de-DE' },
