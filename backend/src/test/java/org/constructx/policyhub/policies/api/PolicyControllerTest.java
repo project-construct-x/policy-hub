@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @WebMvcTest(PolicyController.class)
 class PolicyControllerTest {
@@ -68,32 +75,65 @@ class PolicyControllerTest {
     void getAllPolicies_returnsOkWithPolicies() throws Exception {
         JsonNode constraint = membershipConstraint();
 
-        when(policyService.getAllPolicies()).thenReturn(List.of(
-                policyResponse(
-                        """
-                                zugriff-konsortium-mitglieder""",
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
-        ));
+        PolicyResponse response = policyResponse(
+            "zugriff-konsortium-mitglieder",
+            PolicyCategory.ACCESS,
+            List.of(constraint)
+        );
 
-        mockMvc.perform(get("/api/v1/policies"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(POLICY_ID.toString()))
-                .andExpect(jsonPath("$[0].policyId")
-                        .value("zugriff-konsortium-mitglieder"))
-                .andExpect(jsonPath("$[0].category").value("ACCESS"))
-                .andExpect(jsonPath("$[0].constraints").isArray())
-                .andExpect(jsonPath("$[0].constraints[0].type")
-                        .value("MEMBERSHIP"))
-                .andExpect(jsonPath("$[0].constraints[0].value")
-                        .value("active"))
-                .andExpect(jsonPath("$[0].legalText")
-                        .value("Der Zugriff ist aktiven Mitgliedern gestattet."))
-                .andExpect(jsonPath("$[0].createdAt")
-                        .value(CREATED_AT_STRING))
-                .andExpect(jsonPath("$[0].updatedAt")
-                        .value(UPDATED_AT_STRING));
+        Page<PolicyResponse> page = new PageImpl<>(
+            List.of(response),
+            PageRequest.of(0, 20),
+            1
+        );
+
+        when(policyService.getAllPolicies(any(Pageable.class)))
+            .thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/policies")
+                    .param("page", "0")
+                    .param("size", "20"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].id")
+                    .value(POLICY_ID.toString()))
+            .andExpect(jsonPath("$.content[0].policyId")
+                    .value("zugriff-konsortium-mitglieder"))
+            .andExpect(jsonPath("$.content[0].category")
+                    .value("ACCESS"))
+            .andExpect(jsonPath("$.content[0].constraints").isArray())
+            .andExpect(jsonPath("$.content[0].constraints[0].type")
+                    .value("MEMBERSHIP"))
+            .andExpect(jsonPath("$.content[0].constraints[0].value")
+                    .value("active"))
+            .andExpect(jsonPath("$.content[0].legalText")
+                    .value("Der Zugriff ist aktiven Mitgliedern gestattet."))
+            .andExpect(jsonPath("$.content[0].createdAt")
+                    .value(CREATED_AT_STRING))
+            .andExpect(jsonPath("$.content[0].updatedAt")
+                    .value(UPDATED_AT_STRING))
+            .andExpect(jsonPath("$.totalElements").value(1))
+            .andExpect(jsonPath("$.totalPages").value(1))
+            .andExpect(jsonPath("$.size").value(20))
+            .andExpect(jsonPath("$.number").value(0));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void getAllPolicies_passesPaginationToService() throws Exception {
+        when(policyService.getAllPolicies(any(Pageable.class)))
+                .thenReturn(Page.empty());
+
+        mockMvc.perform(get("/api/v1/policies")
+                        .param("page", "2")
+                        .param("size", "5"))
+                .andExpect(status().isOk());
+
+        verify(policyService).getAllPolicies(
+                argThat(pageable ->
+                        pageable.getPageNumber() == 2
+                                && pageable.getPageSize() == 5
+                )
+        );
     }
 
     @Test

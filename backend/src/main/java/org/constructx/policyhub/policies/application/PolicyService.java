@@ -12,10 +12,11 @@ import org.constructx.policyhub.policies.infrastructure.PolicyMapper;
 import org.constructx.policyhub.policies.infrastructure.PolicyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,26 +30,20 @@ public class PolicyService {
     private final PolicyValidator policyValidator;
     private final OdrlPolicyMapper odrlPolicyMapper;
 
-    public PolicyService(
-            PolicyRepository policyRepository,
-            PolicyMapper policyMapper, 
-            OdrlPolicyMapper odrlPolicyService,
-            PolicyValidator policyValidator
-    ) {
-        this.policyRepository = policyRepository;
-        this.policyMapper = policyMapper;
-        this.policyValidator = policyValidator;
-        this.odrlPolicyService = odrlPolicyService;
-    }
 
     @Transactional(readOnly = true)
-    public List<PolicyResponse> getAllPolicies() {
-        log.info("Fetching all policies");
+    public Page<PolicyResponse> getAllPolicies(
+            Pageable pageable
+    ) {
+        log.info(
+                "Fetching policies page {} with size {}",
+                pageable.getPageNumber(),
+                pageable.getPageSize()
+        );
 
-        return policyRepository.findAll().stream()
+        return policyRepository.findAll(pageable)
                 .map(policyMapper::toDomain)
-                .map(this::toResponse)
-                .toList();
+                .map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
