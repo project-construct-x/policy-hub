@@ -6,16 +6,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
@@ -33,7 +31,6 @@ public interface PolicyApi {
             responseCode = "200",
             description = "Policies returned successfully"
     )
-    @GetMapping
     ResponseEntity<Page<PolicyResponse>> getAllPolicies(
             @ParameterObject Pageable pageable
     );
@@ -52,13 +49,12 @@ public interface PolicyApi {
                     description = "Policy not found"
             )
     })
-    @GetMapping("/{id}")
     ResponseEntity<PolicyResponse> getPolicyById(
             @Parameter(
                     description = "UUID of the policy to retrieve",
                     example = "00000000-0000-0000-0000-000000000001"
             )
-            @PathVariable UUID id
+            UUID id
     );
 
     @Operation(
@@ -76,13 +72,12 @@ public interface PolicyApi {
                     content = @Content
             )
     })
-    @GetMapping("/{id}/odrl")
     ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(
             @Parameter(
                     description = "UUID of the policy to retrieve",
                     example = "00000000-0000-0000-0000-000000000001"
             )
-            @PathVariable UUID id
+            UUID id
     );
 
     @Operation(
@@ -103,9 +98,8 @@ public interface PolicyApi {
                     description = "A policy with the same policyId already exists"
             )
     })
-    @PostMapping
     ResponseEntity<PolicyResponse> createPolicy(
-            @Valid @RequestBody CreatePolicyRequest request
+            CreatePolicyRequest request
     );
 
     @Operation(
@@ -130,10 +124,9 @@ public interface PolicyApi {
                     description = "The requested policyId belongs to another policy"
             )
     })
-    @PutMapping("/{id}")
     ResponseEntity<PolicyResponse> updatePolicy(
-            @PathVariable UUID id,
-            @Valid @RequestBody UpdatePolicyRequest request
+            UUID id,
+            UpdatePolicyRequest request
     );
 
     @Operation(
@@ -150,8 +143,5 @@ public interface PolicyApi {
                     description = "Policy not found"
             )
     })
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deletePolicy(
-            @PathVariable UUID id
-    );
+    ResponseEntity<Void> deletePolicy(UUID id);
 }

@@ -1,5 +1,6 @@
 package org.constructx.policyhub.policies.api;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
@@ -10,18 +11,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping("/api/v1/policies")
+@RequiredArgsConstructor
 public class PolicyController implements PolicyApi {
 
     private final PolicyService policyService;
 
     @Override
+    @GetMapping
     public ResponseEntity<Page<PolicyResponse>> getAllPolicies(
             Pageable pageable
     ) {
@@ -31,13 +33,19 @@ public class PolicyController implements PolicyApi {
     }
 
     @Override
-    public ResponseEntity<PolicyResponse> getPolicyById(UUID id) {
-        return ResponseEntity.ok(policyService.getPolicyById(id));
+    @GetMapping("/{id}")
+    public ResponseEntity<PolicyResponse> getPolicyById(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(
+                policyService.getPolicyById(id)
+        );
     }
 
     @Override
+    @GetMapping("/{id}/odrl")
     public ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(
-            UUID id
+            @PathVariable UUID id
     ) {
         return ResponseEntity.ok(
                 policyService.getOdrlPolicyDefinitionById(id)
@@ -45,8 +53,9 @@ public class PolicyController implements PolicyApi {
     }
 
     @Override
+    @PostMapping
     public ResponseEntity<PolicyResponse> createPolicy(
-            CreatePolicyRequest request
+            @Valid @RequestBody CreatePolicyRequest request
     ) {
         PolicyResponse created =
                 policyService.createPolicy(request);
@@ -57,9 +66,10 @@ public class PolicyController implements PolicyApi {
     }
 
     @Override
+    @PutMapping("/{id}")
     public ResponseEntity<PolicyResponse> updatePolicy(
-            UUID id,
-            UpdatePolicyRequest request
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdatePolicyRequest request
     ) {
         return ResponseEntity.ok(
                 policyService.updatePolicy(id, request)
@@ -67,7 +77,10 @@ public class PolicyController implements PolicyApi {
     }
 
     @Override
-    public ResponseEntity<Void> deletePolicy(UUID id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePolicy(
+            @PathVariable UUID id
+    ) {
         policyService.deletePolicy(id);
         return ResponseEntity.noContent().build();
     }
