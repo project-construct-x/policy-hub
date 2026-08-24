@@ -17,6 +17,7 @@ import { TranslocoHttpLoader } from './services/transloco-loader.service';
 import { ConXTitleStrategy } from '@services/a11y/title-strategy.service';
 import { ConXDateAdapter } from '@shared/adapters/con-x-date.adapter';
 import { httpErrorInterceptor } from '@services/http/http-error.interceptor';
+import { basicAuthInterceptor } from '@services/http/basic-auth.interceptor';
 import { MockService } from '@mocks/mock.service';
 import { environment } from '@env';
 
@@ -50,7 +51,7 @@ export const appConfig: ApplicationConfig = {
       environment.useMocks ? inject(MockService).mirageJsServer() : Promise.resolve(),
     ),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([httpErrorInterceptor])),
+    provideHttpClient(withInterceptors([basicAuthInterceptor, httpErrorInterceptor])),
     provideAnimationsAsync(),
     { provide: TitleStrategy, useClass: ConXTitleStrategy },
     { provide: LOCALE_ID, useValue: 'de-DE' },

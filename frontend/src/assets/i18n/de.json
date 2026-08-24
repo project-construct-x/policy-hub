@@ -28,7 +28,8 @@
       "nav": "Seitennummerierung",
       "previous": "Vorherige Seite",
       "next": "Nächste Seite",
-      "goToPage": "Zu Seite {{page}}"
+      "goToPage": "Zu Seite {{page}}",
+      "announce": "Seite {{page}} von {{totalPages}}"
     },
     "table": {
       "caption": "Liste der Policies"
@@ -88,6 +89,9 @@
         "title": "Noch keine Policies vorhanden",
         "description": "Erstellen Sie eine erste Policy, um sie hier zu sehen."
       }
+    },
+    "notifications": {
+      "loadError": "Policies konnten nicht geladen werden."
     }
   },
   "policies": {
@@ -98,7 +102,8 @@
     "loadingHint": "Policies werden geladen …",
     "noResults": "Keine Policies gefunden.",
     "pagination": {
-      "info": "{{start}}–{{end}} von {{total}} Policies"
+      "info": "{{start}}–{{end}} von {{total}} Policies",
+      "filteredInfo": "{{count}} von {{pageTotal}} Treffern auf Seite {{page}} von {{totalPages}}"
     },
     "filters": {
       "category": "Kategorie"

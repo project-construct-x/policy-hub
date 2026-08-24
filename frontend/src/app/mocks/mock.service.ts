@@ -11,7 +11,7 @@ export class MockService {
     // lazy chunk and never included in the production bundle.
     const { Server, Response } = await import('miragejs');
     const {
-      getMockedPolicies,
+      getMockedPolicyPage,
       getMockedPolicyById,
       createMockedPolicy,
       updateMockedPolicy,
@@ -20,9 +20,14 @@ export class MockService {
 
     this.mirageServer = new Server({
       routes(): void {
-        // GET all policies
-        this.get(`${environment.backendUrl}/v1/policies`, () => {
-          return getMockedPolicies();
+        // GET policies (paginated — mirrors the Spring `Page<T>` envelope)
+        this.get(`${environment.backendUrl}/v1/policies`, (_schema, request) => {
+          const { page, size, sort } = request.queryParams;
+          return getMockedPolicyPage({
+            page: page !== undefined ? Number(page) : undefined,
+            size: size !== undefined ? Number(size) : undefined,
+            sort: typeof sort === 'string' ? sort : undefined,
+          });
         });
 
         // GET single policy

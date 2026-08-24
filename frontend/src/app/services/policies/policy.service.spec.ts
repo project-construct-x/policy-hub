@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 
 import { PolicyService } from './policy.service';
+import { emptyPage } from '@services/http/page.helper';
 
 /**
  * Der Route-Parameter `id` kommt aus `paramMap.get('id')` und ist damit reine Eingabe:
@@ -24,7 +25,9 @@ describe('PolicyService — Pfad-Konstruktion', () => {
   // ohne ungenutzte Parameter zu deklarieren (ESLint `no-unused-vars`).
   function makeHttp() {
     return {
-      get: vi.fn<(url: string) => Observable<object>>(() => of({})),
+      get: vi.fn<(url: string, options?: { params?: HttpParams }) => Observable<object>>(() =>
+        of({}),
+      ),
       post: vi.fn<(url: string, body: unknown) => Observable<object>>(() => of({})),
       put: vi.fn<(url: string, body: unknown) => Observable<object>>(() => of({})),
       delete: vi.fn<(url: string) => Observable<undefined>>(() => of(undefined)),
@@ -86,5 +89,51 @@ describe('PolicyService — Pfad-Konstruktion', () => {
 
     const url = http.get.mock.calls[0][0];
     expect(url.endsWith(`/v1/policies/${id}`)).toBe(true);
+  });
+});
+
+describe('PolicyService — getPolicyPage', () => {
+  function makeHttp() {
+    return {
+      get: vi.fn<(url: string, options?: { params?: HttpParams }) => Observable<object>>(() =>
+        of({}),
+      ),
+    };
+  }
+
+  let http: ReturnType<typeof makeHttp>;
+  let service: PolicyService;
+
+  beforeEach(() => {
+    http = makeHttp();
+    TestBed.configureTestingModule({ providers: [{ provide: HttpClient, useValue: http }] });
+    service = TestBed.inject(PolicyService);
+  });
+
+  it('setzt page/size/sort als HttpParams, wenn angegeben', () => {
+    service.getPolicyPage({ page: 2, size: 5, sort: 'updatedAt,desc' }).subscribe();
+
+    const [, options] = http.get.mock.calls[0];
+    const params = options?.params;
+    expect(params?.get('page')).toBe('2');
+    expect(params?.get('size')).toBe('5');
+    expect(params?.get('sort')).toBe('updatedAt,desc');
+  });
+
+  it('lässt nicht angegebene Parameter weg', () => {
+    service.getPolicyPage().subscribe();
+
+    const [, options] = http.get.mock.calls[0];
+    const params = options?.params;
+    expect(params?.keys()).toEqual([]);
+  });
+
+  it('normalisiert einen unbrauchbaren Response-Body zu einer leeren Seite', () => {
+    http.get.mockReturnValueOnce(of({ notAPage: true }));
+
+    let result: unknown;
+    service.getPolicyPage().subscribe((page) => (result = page));
+
+    expect(result).toEqual(emptyPage());
   });
 });

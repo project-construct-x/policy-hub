@@ -56,4 +56,14 @@ describe('Policies – Übersicht, Suche & Filter', () => {
     cy.get('.pagination-info').should('contain.text', 'of');
     cy.get('.pagination-info').should('not.contain.text', 'von');
   });
+
+  // Die Pagination ist serverseitig; Suche/Filter wirken nur auf die geladene Seite. Der
+  // Paginierungstext muss das bei aktivem Filter erkennbar machen, statt eine Gesamtzahl über die
+  // gesamte Collection vorzutäuschen.
+  it('zeigt bei aktivem Filter den seitenbezogenen Treffertext statt der Collection-Summe', () => {
+    cy.visitWithMode('/policies', 'many');
+    cy.get('.pagination-info').should('contain.text', 'von').and('contain.text', 'Policies');
+    cy.getByCy('category-filter').select('ACCESS');
+    cy.get('.pagination-info').should('contain.text', 'Treffern auf Seite');
+  });
 });

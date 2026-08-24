@@ -62,7 +62,7 @@
       <h2>{{ t('policies.error.title') }}</h2>
       <p>{{ t('policies.error.description') }}</p>
       <div class="error-actions">
-        <button con-x-button (click)="loadPolicies()" data-cy="retry">
+        <button con-x-button (click)="retry()" data-cy="retry">
           <span class="material-icons" aria-hidden="true">refresh</span>
           {{ t('policies.error.retry') }}
         </button>
@@ -71,7 +71,7 @@
         }}</a>
       </div>
     </div>
-  } @else if (filteredPolicies().length === 0 && policies().length === 0) {
+  } @else if (page().totalElements === 0) {
     <app-con-x-empty-state
       icon="description"
       [title]="t('policies.empty.title')"
@@ -89,11 +89,20 @@
       data-cy="no-results"
     />
   } @else {
-    <app-con-x-policy-table [policies]="paginatedPolicies()" />
+    @if (pageLoading()) {
+      <span class="con-x-sr-only" role="status">{{ t('policies.loadingHint') }}</span>
+    }
+    <app-con-x-policy-table [policies]="filteredPolicies()" [attr.aria-busy]="pageLoading()" />
 
     @if (totalPages() > 1) {
       <nav class="pagination" [attr.aria-label]="t('a11y.pagination.nav')" data-cy="pagination">
-        <span class="pagination-info">{{ t('policies.pagination.info', paginationRange()) }}</span>
+        <span class="pagination-info">
+          @if (isFiltered()) {
+            {{ t('policies.pagination.filteredInfo', filteredPaginationInfo()) }}
+          } @else {
+            {{ t('policies.pagination.info', paginationRange()) }}
+          }
+        </span>
         <span class="pagination-spacer"></span>
         <div class="pagination-controls">
           <button

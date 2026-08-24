@@ -128,7 +128,8 @@
               "buildTarget": "frontend:build:mocks"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "frontend:build:development",
+              "proxyConfig": "proxy.conf.js"
             }
           },
           "defaultConfiguration": "mocks"

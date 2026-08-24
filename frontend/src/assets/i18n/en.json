@@ -28,7 +28,8 @@
       "nav": "Pagination",
       "previous": "Previous page",
       "next": "Next page",
-      "goToPage": "Go to page {{page}}"
+      "goToPage": "Go to page {{page}}",
+      "announce": "Page {{page}} of {{totalPages}}"
     },
     "table": {
       "caption": "List of policies"
@@ -88,6 +89,9 @@
         "title": "No policies yet",
         "description": "Create your first policy to see it here."
       }
+    },
+    "notifications": {
+      "loadError": "Policies could not be loaded."
     }
   },
   "policies": {
@@ -98,7 +102,8 @@
     "loadingHint": "Loading policies …",
     "noResults": "No policies found.",
     "pagination": {
-      "info": "{{start}}–{{end}} of {{total}} policies"
+      "info": "{{start}}–{{end}} of {{total}} policies",
+      "filteredInfo": "{{count}} of {{pageTotal}} matches on page {{page}} of {{totalPages}}"
     },
     "filters": {
       "category": "Category"
