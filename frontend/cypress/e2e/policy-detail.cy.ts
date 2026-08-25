@@ -20,7 +20,8 @@ describe('Policy – Detailansicht', () => {
     cy.get('app-constraint-card').should('have.length', 2);
   });
 
-  it('erzeugt die maschinenlesbare ODRL-Ausgabe (Cross-Check)', () => {
+  it('lädt und zeigt die vom Backend erzeugte ODRL-Ausgabe', () => {
+    cy.getByCy('odrl-panel-header').click();
     cy.getByCy('odrl-json')
       .should('contain', 'PolicyDefinition')
       .and('contain', 'DataUsageStartDate')

@@ -83,6 +83,14 @@ describe('PolicyService — Pfad-Konstruktion', () => {
     expect(resolvedPath(url).startsWith(collectionPath())).toBe(true);
   });
 
+  it('getPolicyOdrl kodiert die ID und bleibt in der Policies-Collection', () => {
+    service.getPolicyOdrl(TRAVERSAL_ID).subscribe();
+
+    const url = http.get.mock.calls[0][0];
+    expect(url).toContain(encodeURIComponent(TRAVERSAL_ID));
+    expect(resolvedPath(url).startsWith(collectionPath())).toBe(true);
+  });
+
   it('lässt eine unauffällige UUID unverändert', () => {
     const id = '00000000-0000-0000-0000-000000000001';
     service.getPolicyById(id).subscribe();

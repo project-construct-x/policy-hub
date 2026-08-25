@@ -5,6 +5,7 @@ import { environment } from '@env';
 import { Policy, CreatePolicyRequest, UpdatePolicyRequest } from '@shared/types/policy.model';
 import { Page, PageRequest } from '@shared/types/page.model';
 import { normalizePage } from '@services/http/page.helper';
+import { OdrlPolicyDefinition } from '@services/policies/policy-mapper/policy-odrl.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class PolicyService {
@@ -38,6 +39,19 @@ export class PolicyService {
 
   getPolicyById(id: string): Observable<Policy> {
     return this.http.get<Policy>(this.resourceUrl(id));
+  }
+
+  /**
+   * Liefert die ODRL/JSON-LD-Repräsentation. Die Detailseite zeigt dieses Ergebnis direkt an,
+   * lazy beim Öffnen des „Technische Details"-Panels. Im Mock-Modus fängt MirageJS die Anfrage
+   * ab und liefert `policyToOdrl()` (`policy-odrl.mapper.ts`) — ohne echtes Backend verhält sich
+   * die Anzeige identisch; gegen ein echtes Backend liefert dessen eigener Java-Mapper das
+   * Ergebnis. `OdrlPolicyDefinition` ist deshalb wiederverwendet, nicht neu modelliert: beide
+   * Mapper erzeugen exakt dieselbe Envelope-Form (gleiche `@context`-Werte, Action-IRIs,
+   * Left-Operand-IRIs und Operatoren).
+   */
+  getPolicyOdrl(id: string): Observable<OdrlPolicyDefinition> {
+    return this.http.get<OdrlPolicyDefinition>(`${this.resourceUrl(id)}/odrl`);
   }
 
   createPolicy(request: CreatePolicyRequest): Observable<Policy> {

@@ -139,6 +139,7 @@
     "created": "Erstellt",
     "constraintCount": "Anzahl Berechtigungen",
     "alwaysTrue": "Diese Policy enthält keine Einschränkungen — sie erlaubt alles.",
+    "odrlRetry": "Erneut versuchen",
     "sections": {
       "permissions": "Berechtigungen",
       "legalDescription": "Juristische Beschreibung",
@@ -148,7 +149,8 @@
       "loadError": "Policy konnte nicht geladen werden.",
       "deleteSuccess": "Policy wurde gelöscht.",
       "deleteError": "Policy konnte nicht gelöscht werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt."
+      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt.",
+      "odrlLoadError": "Das ODRL-Dokument laut Backend konnte nicht geladen werden."
     },
     "legalTextDiverged": "Der gespeicherte Rechtstext weicht von den gespeicherten Bedingungen ab. Rechtlich maßgeblich ist der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
     "legalTextStored": "Gespeicherten Rechtstext anzeigen"

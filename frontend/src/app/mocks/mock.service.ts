@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { Server as MirageServer } from 'miragejs';
 import { environment } from '@env';
+import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class MockService {
@@ -38,6 +39,17 @@ export class MockService {
             return new Response(404, {}, { error: 'Policy nicht gefunden' });
           }
           return policy;
+        });
+
+        // GET ODRL representation (reuses the client mapper — same output shape as the real
+        // backend, siehe policy-odrl.mapper.ts)
+        this.get(`${environment.backendUrl}/v1/policies/:id/odrl`, (_schema, request) => {
+          const id = request.params['id'];
+          const policy = getMockedPolicyById(id);
+          if (!policy) {
+            return new Response(404, {}, { error: 'Policy nicht gefunden' });
+          }
+          return policyToOdrl(policy);
         });
 
         // CREATE policy

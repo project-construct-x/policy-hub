@@ -196,7 +196,9 @@
     font-size: 0.9375rem;
   }
 
-  &__legal-warning {
+  // Generisch gehalten: deckt sowohl die Rechtstext-Abweichung als auch den
+  // ODRL-Backend-Ladefehler ab (Rahmen/Icon/Text, kein legal-spezifisches Styling).
+  &__warning {
     display: flex;
     gap: 0.625rem;
     align-items: flex-start;
@@ -215,7 +217,7 @@
     }
   }
 
-  &__legal-warning-icon {
+  &__warning-icon {
     flex: none;
     color: var(--con-x-warning, #f08109);
   }

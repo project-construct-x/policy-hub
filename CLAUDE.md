@@ -186,7 +186,7 @@ Aus dem OWASP-Top-10-Audit abgeleitet; bitte einhalten, sonst kommen die Befunde
   startet den Mock-Server selbst (via `start-server-and-test`), wartet auf `:4200`, fährt Cypress
   headless und stoppt danach. Deckt die **Hauptflüsse** gegen den Mock-Modus ab: Policy erstellen,
   ansehen, bearbeiten, löschen, Liste durchsuchen/filtern; inkl. empty-/no-results-States. Specs in
-  `cypress/e2e/*.cy.ts` (aktuell **21 Tests** in 6 Specs). (`npm run cy:run` fährt nur Cypress
+  `cypress/e2e/*.cy.ts` (aktuell **22 Tests** in 6 Specs). (`npm run cy:run` fährt nur Cypress
   gegen einen bereits laufenden Server.)
   - **Selektor-Konvention:** UI-Elemente werden über `data-cy="…"`-Attribute angesprochen
     (entkoppelt von CSS-Klassen & i18n-Text). Custom-Commands in `cypress/support/commands.ts`:
@@ -243,9 +243,15 @@ Kompakter Überblick; Details in `backend/README.md`.
   - `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}` liefern/erwarten `PolicyResponse` bzw.
     `CreatePolicyRequest`/`UpdatePolicyRequest` — feldgleich mit dem Frontend-`Policy`-Modell
     (`id`, `policyId`, `category`, `constraints`, `legalText`, `createdAt`, `updatedAt`).
-  - `GET /{id}/odrl` liefert die ODRL/JSON-LD-Repräsentation server-seitig; das Frontend nutzt
-    diesen Endpunkt bewusst **nicht** und erzeugt ODRL weiterhin clientseitig
-    (`policy-odrl.mapper.ts`) — Frontend bleibt Source of Truth für die Anzeige.
+  - `GET /{id}/odrl` liefert die ODRL/JSON-LD-Repräsentation server-seitig. Die Detailseite zeigt
+    dieses Ergebnis direkt und einzig an (`PolicyService.getPolicyOdrl()`, lazy beim Öffnen des
+    „Technische Details"-Panels). `policyToOdrl()` (`policy-odrl.mapper.ts`) wird von der Anzeige
+    nicht mehr direkt aufgerufen — es bleibt unit-getestet und backt stattdessen die
+    MirageJS-Mock-Route für `/{id}/odrl` (`mocks/mock.service.ts`), die einfach `policyToOdrl()`
+    zurückgibt. Dadurch verhält sich der Mock-Modus identisch zu einem echten Backend, ohne dass
+    eines laufen muss: Frontend- und Backend-Mapper erzeugen exakt dieselbe Envelope-Form (gleiche
+    `@context`-Werte, Action-/Left-Operand-IRIs, Operatoren) — der Rückgabetyp
+    `OdrlPolicyDefinition` aus dem Mapper wird deshalb für die Backend-Antwort wiederverwendet.
   - Fehlerformat `{ timestamp, status, error, message, path }`; `DATE_RANGE`-Constraints dürfen
     keine Daten in der Vergangenheit haben (serverseitige Prüfung gegen `LocalDate.now()`).
   - **CORS + HTTP Basic sind gelöst, ohne das Backend anzufassen.** Das Backend hat weiterhin

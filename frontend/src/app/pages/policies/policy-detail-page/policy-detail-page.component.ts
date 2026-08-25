@@ -20,7 +20,7 @@ import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-badge.component';
 import { ConfirmDeleteDialogComponent } from '@ui/confirm-delete-dialog/confirm-delete-dialog.component';
 import { ConstraintCardComponent } from '@features/policies/builder/components/constraint-card/constraint-card.component';
-import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
+import { OdrlPolicyDefinition } from '@services/policies/policy-mapper/policy-odrl.mapper';
 import {
   buildLegalClauses,
   hasDivergingLegalText,
@@ -61,10 +61,14 @@ export class PolicyDetailPageComponent implements OnInit {
     initialValue: this.transloco.getActiveLang(),
   });
 
+  readonly odrl = signal<OdrlPolicyDefinition | null>(null);
+  readonly odrlLoading = signal(false);
+  readonly odrlError = signal(false);
+  private odrlRequested = false;
+
   readonly odrlJson = computed(() => {
-    const p = this.policy();
-    if (!p) return '';
-    return JSON.stringify(policyToOdrl(p), null, 2);
+    const o = this.odrl();
+    return o ? JSON.stringify(o, null, 2) : '';
   });
 
   readonly legalDescription = computed(() => {
@@ -120,6 +124,38 @@ export class PolicyDetailPageComponent implements OnInit {
       );
     }
     return { ...policy, constraints };
+  }
+
+  /**
+   * Lädt das ODRL lazy — erst beim ersten Öffnen des Panels (`(opened)`), nicht beim Laden der
+   * Seite. Im Mock-Modus fängt MirageJS diesen Request ab und liefert `policyToOdrl()`, gegen
+   * ein echtes Backend liefert dessen eigener Java-Mapper das Ergebnis (siehe `PolicyService.
+   * getPolicyOdrl()`). `force` überspringt den Once-Guard für den Retry-Button.
+   */
+  loadOdrl(force = false): void {
+    if (this.odrlRequested && !force) return;
+    this.odrlRequested = true;
+
+    const p = this.policy();
+    if (!p) return;
+
+    this.odrlLoading.set(true);
+    this.odrlError.set(false);
+    this.policyService.getPolicyOdrl(p.id).subscribe({
+      next: (data) => {
+        this.odrl.set(data);
+        this.odrlLoading.set(false);
+      },
+      error: (err: unknown) => {
+        this.odrlLoading.set(false);
+        this.odrlError.set(true);
+        this.notification.error(
+          this.transloco.translate(
+            httpErrorMessageKey(err, 'policyDetail.notifications.odrlLoadError'),
+          ),
+        );
+      },
+    });
   }
 
   deletePolicy(): void {
