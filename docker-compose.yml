@@ -44,11 +44,17 @@ services:
     build:
       context: ./frontend
       dockerfile: cicd/docker/Dockerfile.development
+    environment:
+      # Ziel des Dev-Server-Proxys fuer /api (siehe frontend/proxy.conf.js). "localhost:8080" wäre
+      # im Frontend-Container der Container selbst, nicht das Backend - deshalb der Compose-DNS-Name.
+      BACKEND_PROXY_TARGET: http://backend:8080
     ports:
       - "4200:4200"
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

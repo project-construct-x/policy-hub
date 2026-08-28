@@ -1,5 +1,6 @@
 import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
+import { Page, PageRequest } from '@shared/types/page.model';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
 import { BehaviorSubject } from 'rxjs';
 
@@ -43,7 +44,6 @@ export function setPolicyMockMode(mode: PolicyMockMode): void {
 }
 
 let policies: Policy[] = [];
-let nextIdCounter = 100;
 
 function buildPolicy(params: {
   id: string;
@@ -184,11 +184,44 @@ export function initializePolicies(): void {
   policies = generatePolicies(getCurrentPolicyMockMode());
 }
 
-export function getMockedPolicies(): Policy[] {
+/** Bildet Spring Data `?sort=<property>,<asc|desc>` nach (ISO-Timestamps sortieren lexikalisch korrekt). */
+function sortPolicies(list: Policy[], sort?: string): Policy[] {
+  if (!sort) return [...list];
+  const [property, direction] = sort.split(',');
+  const key = property as keyof Policy;
+  const sign = direction === 'desc' ? -1 : 1;
+  return [...list].sort((a, b) => {
+    const aValue = a[key] ?? '';
+    const bValue = b[key] ?? '';
+    if (aValue === bValue) return 0;
+    return (aValue > bValue ? 1 : -1) * sign;
+  });
+}
+
+export function getMockedPolicyPage(request: PageRequest = {}): Page<Policy> {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
     initializePolicies();
   }
-  return [...policies];
+
+  const size = request.size ?? 20;
+  const number = request.page ?? 0;
+  const sorted = sortPolicies(policies, request.sort);
+  const totalElements = sorted.length;
+  const totalPages = size > 0 ? Math.ceil(totalElements / size) : 0;
+  const start = number * size;
+  const content = sorted.slice(start, start + size);
+
+  return {
+    content,
+    totalElements,
+    totalPages,
+    size,
+    number,
+    numberOfElements: content.length,
+    first: number === 0,
+    last: totalPages === 0 || number >= totalPages - 1,
+    empty: content.length === 0,
+  };
 }
 
 export function getMockedPolicyById(id: string): Policy | undefined {
@@ -209,7 +242,9 @@ export function createMockedPolicy(data: {
   }
   const now = new Date().toISOString();
   const newPolicy: Policy = {
-    id: `generated-${nextIdCounter++}`,
+    // Das Backend erwartet eine UUID als `@PathVariable UUID id` — eine andere Form
+    // (z.B. `generated-100`) würde ein späteres GET/PUT/DELETE mit 400 ablehnen.
+    id: crypto.randomUUID(),
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],

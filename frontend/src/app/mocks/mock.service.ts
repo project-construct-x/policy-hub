@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { Server as MirageServer } from 'miragejs';
 import { environment } from '@env';
+import { policyToOdrl } from '@services/policies/policy-mapper/policy-odrl.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class MockService {
@@ -11,7 +12,7 @@ export class MockService {
     // lazy chunk and never included in the production bundle.
     const { Server, Response } = await import('miragejs');
     const {
-      getMockedPolicies,
+      getMockedPolicyPage,
       getMockedPolicyById,
       createMockedPolicy,
       updateMockedPolicy,
@@ -20,9 +21,14 @@ export class MockService {
 
     this.mirageServer = new Server({
       routes(): void {
-        // GET all policies
-        this.get(`${environment.backendUrl}/v1/policies`, () => {
-          return getMockedPolicies();
+        // GET policies (paginated — mirrors the Spring `Page<T>` envelope)
+        this.get(`${environment.backendUrl}/v1/policies`, (_schema, request) => {
+          const { page, size, sort } = request.queryParams;
+          return getMockedPolicyPage({
+            page: page !== undefined ? Number(page) : undefined,
+            size: size !== undefined ? Number(size) : undefined,
+            sort: typeof sort === 'string' ? sort : undefined,
+          });
         });
 
         // GET single policy
@@ -33,6 +39,17 @@ export class MockService {
             return new Response(404, {}, { error: 'Policy nicht gefunden' });
           }
           return policy;
+        });
+
+        // GET ODRL representation (reuses the client mapper — same output shape as the real
+        // backend, siehe policy-odrl.mapper.ts)
+        this.get(`${environment.backendUrl}/v1/policies/:id/odrl`, (_schema, request) => {
+          const id = request.params['id'];
+          const policy = getMockedPolicyById(id);
+          if (!policy) {
+            return new Response(404, {}, { error: 'Policy nicht gefunden' });
+          }
+          return policyToOdrl(policy);
         });
 
         // CREATE policy

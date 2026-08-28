@@ -28,7 +28,8 @@
       "nav": "Seitennummerierung",
       "previous": "Vorherige Seite",
       "next": "Nächste Seite",
-      "goToPage": "Zu Seite {{page}}"
+      "goToPage": "Zu Seite {{page}}",
+      "announce": "Seite {{page}} von {{totalPages}}"
     },
     "table": {
       "caption": "Liste der Policies"
@@ -88,6 +89,9 @@
         "title": "Noch keine Policies vorhanden",
         "description": "Erstellen Sie eine erste Policy, um sie hier zu sehen."
       }
+    },
+    "notifications": {
+      "loadError": "Policies konnten nicht geladen werden."
     }
   },
   "policies": {
@@ -98,7 +102,8 @@
     "loadingHint": "Policies werden geladen …",
     "noResults": "Keine Policies gefunden.",
     "pagination": {
-      "info": "{{start}}–{{end}} von {{total}} Policies"
+      "info": "{{start}}–{{end}} von {{total}} Policies",
+      "filteredInfo": "{{count}} von {{pageTotal}} Treffern auf Seite {{page}} von {{totalPages}}"
     },
     "filters": {
       "category": "Kategorie"
@@ -134,6 +139,7 @@
     "created": "Erstellt",
     "constraintCount": "Anzahl Berechtigungen",
     "alwaysTrue": "Diese Policy enthält keine Einschränkungen — sie erlaubt alles.",
+    "odrlRetry": "Erneut versuchen",
     "sections": {
       "permissions": "Berechtigungen",
       "legalDescription": "Juristische Beschreibung",
@@ -143,7 +149,8 @@
       "loadError": "Policy konnte nicht geladen werden.",
       "deleteSuccess": "Policy wurde gelöscht.",
       "deleteError": "Policy konnte nicht gelöscht werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt."
+      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt.",
+      "odrlLoadError": "Das ODRL-Dokument laut Backend konnte nicht geladen werden."
     },
     "legalTextDiverged": "Der gespeicherte Rechtstext weicht von den gespeicherten Bedingungen ab. Rechtlich maßgeblich ist der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
     "legalTextStored": "Gespeicherten Rechtstext anzeigen"

@@ -65,7 +65,9 @@ Environments: `src/environments/environment.ts` (`useMocks:false`), `environment
 - `services/` — u.a. `services/policies/policy.service.ts` (HTTP-CRUD),
   `services/policies/policy-mapper/policy-odrl.mapper.ts` (Domänenmodell → ODRL/EDC) und
   `services/http/` (`http-error.interceptor.ts` loggt fehlgeschlagene Requests,
-  `http-error.helper.ts` wählt den i18n-Key nach Statuscode).
+  `http-error.helper.ts` wählt den i18n-Key nach Statuscode, `basic-auth.interceptor.ts` hängt die
+  Dev-HTTP-Basic-Credentials an Backend-Requests an, `page.helper.ts` normalisiert die
+  Spring-`Page`-Antwort der Policy-Liste).
 - `shared/` — `types/` (Modelle), `pipes/`, `adapters/`.
 - `mocks/` — MirageJS-Server + Mock-Daten.
 - `src/fonts/` — selbst gehostete Schriften (Montserrat, Material Icons), eingebunden über
@@ -170,6 +172,10 @@ Aus dem OWASP-Top-10-Audit abgeleitet; bitte einhalten, sonst kommen die Befunde
   `policy-odrl.mapper.ts` (CX-Namespace `https://w3id.org/catenax/2025/9/policy/`).
 - **Mock-first:** `policy.service.ts` ruft echte HTTP-CRUD-Endpunkte auf; MirageJS fängt exakt diese
   ab, wenn `useMocks` gesetzt ist. Ein Mock-Data-Switcher bietet Datensatzgrößen `empty`/`few`/`many`.
+- **Pagination ist serverseitig** (`PolicyService.getPolicyPage()`, `shared/types/page.model.ts`).
+  Das Backend kennt keine Such-/Filterparameter — Suche und Kategorie-Filter der Übersicht wirken
+  deshalb bewusst nur auf die aktuell geladene Seite, nicht auf die gesamte Collection. Der
+  Paginierungstext benennt das bei aktivem Filter explizit (`policies.pagination.filteredInfo`).
 - **`con-x-`-Design-System** als dünne, tokenbasierte Schicht über Angular Material.
 - **Deutsch ist rechtlich maßgeblich** (z.B. generierter legalText wird immer auf Deutsch erzeugt),
   unabhängig von der aktiven UI-Sprache.
@@ -180,7 +186,7 @@ Aus dem OWASP-Top-10-Audit abgeleitet; bitte einhalten, sonst kommen die Befunde
   startet den Mock-Server selbst (via `start-server-and-test`), wartet auf `:4200`, fährt Cypress
   headless und stoppt danach. Deckt die **Hauptflüsse** gegen den Mock-Modus ab: Policy erstellen,
   ansehen, bearbeiten, löschen, Liste durchsuchen/filtern; inkl. empty-/no-results-States. Specs in
-  `cypress/e2e/*.cy.ts` (aktuell **20 Tests** in 6 Specs). (`npm run cy:run` fährt nur Cypress
+  `cypress/e2e/*.cy.ts` (aktuell **22 Tests** in 6 Specs). (`npm run cy:run` fährt nur Cypress
   gegen einen bereits laufenden Server.)
   - **Selektor-Konvention:** UI-Elemente werden über `data-cy="…"`-Attribute angesprochen
     (entkoppelt von CSS-Klassen & i18n-Text). Custom-Commands in `cypress/support/commands.ts`:
@@ -220,14 +226,45 @@ Kompakter Überblick; Details in `backend/README.md`.
 - **Layering** (`org.constructx.policyhub`): Feature-Modul `policies/{api,application,domain,
   infrastructure}` plus `config/` und `core/` (security, exception).
 - **Entscheidungen:** 3-Typen-Grenze Entity → Domain-`record` → Response-DTO (handgeschriebene Mapper,
-  kein MapStruct); `content` als **JSONB** (GIN-Index) für flexibles Policy-Format; **Flyway** statt
+  kein MapStruct); `constraints` als **JSONB** (GIN-Index) für die Domänen-Constraints (nicht das
+  ODRL-Dokument — das wird nur für `GET /{id}/odrl` on-the-fly gemappt); **Flyway** statt
   Hibernate-DDL (`ddl-auto: validate`); HTTP Basic + CSRF disabled; einheitliches Fehlerformat via
-  `@RestControllerAdvice`.
+  `@RestControllerAdvice`. `name`, `description`, `status` und `content` (die ursprüngliche
+  JSONB-Spalte) wurden per Migration entfernt — der aktuelle Vertrag ist bereits an das
+  Frontend-Zielbild angeglichen (siehe API-Vertrag unten).
 - **Befehle** (aus `backend/`): `docker compose up -d` (nur Postgres), `./gradlew bootRun` (Port 8080,
   dev-Login `admin/admin`, Swagger unter `/swagger-ui.html`), `./gradlew clean build` (Tests benötigen
   Docker/Testcontainers).
-- Hinweis: Das Backend hat noch ein `status`-Feld, das nicht dem Frontend-Zielbild entspricht — wird
-  beim Nachziehen angeglichen.
+- **API-Vertrag (`PolicyController`, Basispfad `/api/v1/policies`, kein `server.servlet.context-path`):**
+  - `GET /api/v1/policies` liefert eine **Spring-`Page<PolicyResponse>`**
+    (`?page&size&sort`, `page` **0-basiert**, Default-`size` 20) — keine Such-/Filterparameter.
+    Antwortform: `{ content, totalElements, totalPages, size, number, numberOfElements, first,
+    last, empty, … }`.
+  - `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}` liefern/erwarten `PolicyResponse` bzw.
+    `CreatePolicyRequest`/`UpdatePolicyRequest` — feldgleich mit dem Frontend-`Policy`-Modell
+    (`id`, `policyId`, `category`, `constraints`, `legalText`, `createdAt`, `updatedAt`).
+  - `GET /{id}/odrl` liefert die ODRL/JSON-LD-Repräsentation server-seitig. Die Detailseite zeigt
+    dieses Ergebnis direkt und einzig an (`PolicyService.getPolicyOdrl()`, lazy beim Öffnen des
+    „Technische Details"-Panels). `policyToOdrl()` (`policy-odrl.mapper.ts`) wird von der Anzeige
+    nicht mehr direkt aufgerufen — es bleibt unit-getestet und backt stattdessen die
+    MirageJS-Mock-Route für `/{id}/odrl` (`mocks/mock.service.ts`), die einfach `policyToOdrl()`
+    zurückgibt. Dadurch verhält sich der Mock-Modus identisch zu einem echten Backend, ohne dass
+    eines laufen muss: Frontend- und Backend-Mapper erzeugen exakt dieselbe Envelope-Form (gleiche
+    `@context`-Werte, Action-/Left-Operand-IRIs, Operatoren) — der Rückgabetyp
+    `OdrlPolicyDefinition` aus dem Mapper wird deshalb für die Backend-Antwort wiederverwendet.
+  - Fehlerformat `{ timestamp, status, error, message, path }`; `DATE_RANGE`-Constraints dürfen
+    keine Daten in der Vergangenheit haben (serverseitige Prüfung gegen `LocalDate.now()`).
+  - **CORS + HTTP Basic sind gelöst, ohne das Backend anzufassen.** Das Backend hat weiterhin
+    **keine CORS-Konfiguration** — statt sie zu ergänzen, proxied der Angular-Dev-Server `/api`
+    zum Backend (`frontend/proxy.conf.js`, eingebunden über `serve.configurations.development` in
+    `angular.json`), sodass der Browser nur same-origin mit `localhost:4200` spricht. Das
+    Proxy-Ziel kommt aus `BACKEND_PROXY_TARGET` (Fallback `http://localhost:8080` für den lokalen
+    Lauf; `http://backend:8080` im Root-`docker-compose.yml`, dem Compose-DNS-Namen des
+    Backend-Service). Die HTTP-Basic-Credentials (`admin`/`admin`) hängt
+    `services/http/basic-auth.interceptor.ts` automatisch an Requests auf `environment.backendUrl`
+    an — nur wenn `environment.devBasicAuth` gesetzt ist (`environment.ts`; `environment.
+    production.ts` setzt es bewusst **nicht**, das echte Auth-Verfahren für Produktion/Staging
+    ist weiterhin offen).
 
 ---
 
@@ -238,7 +275,9 @@ Kompakter Überblick; Details in `backend/README.md`.
 ### Docker (lokal)
 - **Root `docker-compose.yml`** — voller Stack **ohne** Mocks (Postgres + Backend + Frontend):
   `docker compose up --build`. Frontend `:4200` (Dev-Image mit Live-Mount), Backend `:8080`,
-  Postgres `:5432`. Aus `frontend/` auch via `npm run docker:dev`.
+  Postgres `:5432`. Aus `frontend/` auch via `npm run docker:dev`. Der `frontend`-Service setzt
+  `BACKEND_PROXY_TARGET=http://backend:8080`, damit der im Container laufende Angular-Dev-Server
+  `/api` zum richtigen Ziel proxied (siehe `frontend/proxy.conf.js` und §3 „API-Vertrag").
 - **Dockerfiles:** Backend `backend/Dockerfile`; Frontend `frontend/cicd/docker/Dockerfile.development`
   (Dev) und `Dockerfile.production` (nginx, SPA-Fallback, Port 8080, `nginx.conf` daneben).
 

@@ -28,7 +28,8 @@
       "nav": "Pagination",
       "previous": "Previous page",
       "next": "Next page",
-      "goToPage": "Go to page {{page}}"
+      "goToPage": "Go to page {{page}}",
+      "announce": "Page {{page}} of {{totalPages}}"
     },
     "table": {
       "caption": "List of policies"
@@ -88,6 +89,9 @@
         "title": "No policies yet",
         "description": "Create your first policy to see it here."
       }
+    },
+    "notifications": {
+      "loadError": "Policies could not be loaded."
     }
   },
   "policies": {
@@ -98,7 +102,8 @@
     "loadingHint": "Loading policies …",
     "noResults": "No policies found.",
     "pagination": {
-      "info": "{{start}}–{{end}} of {{total}} policies"
+      "info": "{{start}}–{{end}} of {{total}} policies",
+      "filteredInfo": "{{count}} of {{pageTotal}} matches on page {{page}} of {{totalPages}}"
     },
     "filters": {
       "category": "Category"
@@ -134,6 +139,7 @@
     "created": "Created",
     "constraintCount": "Number of permissions",
     "alwaysTrue": "This policy has no constraints — it allows everything.",
+    "odrlRetry": "Try again",
     "sections": {
       "permissions": "Permissions",
       "legalDescription": "Legal description",
@@ -143,7 +149,8 @@
       "loadError": "Policy could not be loaded.",
       "deleteSuccess": "Policy deleted.",
       "deleteError": "Policy could not be deleted.",
-      "unknownConstraints": "This policy contains unknown condition types. They are not displayed."
+      "unknownConstraints": "This policy contains unknown condition types. They are not displayed.",
+      "odrlLoadError": "The backend ODRL document could not be loaded."
     },
     "legalTextDiverged": "The stored legal text does not match the stored conditions. The stored text is the legally binding one — please save the policy again or have it reviewed.",
     "legalTextStored": "Show stored legal text"
