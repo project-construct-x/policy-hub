@@ -8,8 +8,7 @@
 
 > [!WARNING]
 > This repository is under heavy development and **not** intended for productive use. The
-> policy model, the constraint types and the backend API contract are provisional and may
-> change without notice.
+> policy model and its constraint types are provisional and may change without notice.
 
 An open source implementation of a **Policy Hub** for the [Construct-X](https://construct-x.de/)
 project: a tool to create and manage data-sharing **policies** for the Construct-X dataspace
@@ -26,17 +25,16 @@ This is a monorepo:
 
 | Folder      | Contents                                                                    |
 | ----------- | ---------------------------------------------------------------------------- |
-| `frontend/` | Angular app — the primary, mock-first implementation. See [frontend/README.md](./frontend/README.md). |
-| `backend/`  | Spring Boot service, built in parallel to the frontend. See [backend/README.md](./backend/README.md). |
+| `frontend/` | Angular app. See [frontend/README.md](./frontend/README.md).                 |
+| `backend/`  | Spring Boot service (PostgreSQL-backed). See [backend/README.md](./backend/README.md). |
 | `docs/`     | Design brief, screens and the Pencil design source.                          |
 | `deploy/`   | GitOps deployment (Helm chart + ArgoCD) for the staging environment. See [deploy/README.md](./deploy/README.md). |
 
 ## Status
 
-- **The frontend is the source of truth.** It was deliberately built mock-first (using
-  [MirageJS](https://miragejs.com/)) to establish the target UX; it has no hard dependency on the
-  backend.
-- **The backend is being built in parallel** and is converging on the frontend's data contract.
+- **Frontend and backend are integrated.** Policies created, edited and deleted in the UI are
+  persisted by the Spring Boot backend in PostgreSQL — the full create/read/update/delete flow
+  works end to end.
 - **The policy model is provisional.** The current categories and constraint types exist to
   support development and are very likely to change once the final Construct-X policy model is
   defined.
@@ -55,22 +53,9 @@ This is a monorepo:
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) 20+ and npm 11+ (frontend)
-- [Java](https://adoptium.net/) 21 (JDK) and [Docker](https://www.docker.com/) (backend)
-- Docker (for the full stack via Docker Compose)
-
-### Frontend only, with mock data (fastest way to see the app)
-
-```sh
-git clone https://github.com/project-construct-x/policy-hub.git
-cd policy-hub/frontend
-npm install
-npm start
-```
-
-The app is served at [http://localhost:4200](http://localhost:4200) using an in-browser mock API
-(MirageJS) — no backend or database required. See
-[frontend/README.md](./frontend/README.md) for lint/test/build commands.
+- Docker (runs the full stack)
+- [Node.js](https://nodejs.org/) 20+ and npm 11+ (for frontend-only development)
+- [Java](https://adoptium.net/) 21 (JDK) (for backend-only development)
 
 ### Full stack (frontend + backend + PostgreSQL) via Docker Compose
 
@@ -81,14 +66,19 @@ docker compose up --build
 ```
 
 This starts PostgreSQL (`:5432`), the Spring Boot backend (`:8080`) and the Angular dev server
-(`:4200`), wired together without mocks. See [backend/README.md](./backend/README.md) to run the
-backend on its own against a local database.
+(`:4200`), talking to each other. The app is served at
+[http://localhost:4200](http://localhost:4200).
+
+For running frontend or backend on their own (e.g. for faster local iteration), see
+[frontend/README.md](./frontend/README.md) and [backend/README.md](./backend/README.md). The
+frontend also has a mock-data mode (MirageJS) for developing the UI without a running backend —
+this is a development convenience only and is not part of the shipped application.
 
 ## Tech stack
 
 | Layer      | Stack                                                                              |
 | ---------- | ----------------------------------------------------------------------------------- |
-| Frontend   | Angular 21 (standalone, Signals), Angular Material 21, Transloco (i18n), MirageJS, Vitest, Cypress |
+| Frontend   | Angular 21 (standalone, Signals), Angular Material 21, Transloco (i18n), Vitest, Cypress |
 | Backend    | Java 21, Spring Boot 3.5, PostgreSQL 16, Flyway, springdoc-openapi, JUnit 5 + Testcontainers |
 | Deployment | Docker, Helm, ArgoCD (GitOps)                                                       |
 
