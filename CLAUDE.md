@@ -335,6 +335,12 @@ Kompakter Überblick; Details in `backend/README.md`.
 
 Verhaltensregeln für Claude beim Arbeiten in diesem Repo.
 
+### Git: nie selbstständig committen oder pushen
+Claude darf **niemals eigenständig** `git commit` oder `git push` (o.ä. wie `gh pr create`)
+ausführen. **Immer vorher explizit nachfragen** und die Bestätigung des Nutzers abwarten — auch
+wenn eine vorherige Anfrage in der Session bereits bestätigt wurde (gilt nicht automatisch für
+spätere Commits/Pushes).
+
 ### Automatische Tasks nach Feature-Implementation
 - Nach jedem neuen Feature automatisch `npm run lint` und alle vorhandenen Tests ausführen.
 - Auftretende Fehler beheben, **bevor** die Arbeit als „done" gilt.

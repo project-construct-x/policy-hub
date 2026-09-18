@@ -37,4 +37,74 @@ describe('Policy – Erstellen', () => {
     cy.location('pathname').should('eq', '/policies/new');
     cy.getByCy('policyId-error').should('be.visible');
   });
+
+  it('blockiert das Speichern bei USE_CASE-Bedingung ohne Auswahl und zeigt einen Inline-Fehler', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('policyId-input').type('e2e-usecase-ohne-auswahl');
+    cy.getByCy('category-access').click();
+    cy.getByCy('palette-USE_CASE').click();
+
+    cy.getByCy('submit-policy').click();
+
+    // Speichern ist blockiert → wir bleiben auf der Editor-Seite, Fehler wird sichtbar angezeigt.
+    cy.location('pathname').should('eq', '/policies/new');
+    cy.getByCy('usecase-error').should('be.visible');
+  });
+
+  it('erlaubt bei ZEITRAUM nur die Auswahl per Datepicker, kein manuelles Tippen im Feld', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('policyId-input').type('e2e-zeitraum-nur-picker');
+    cy.getByCy('category-access').click();
+    cy.getByCy('palette-DATE_RANGE').click();
+
+    // Die Felder sind `readonly` — Eingabe ist nur über den Kalender möglich, nicht per Tastatur.
+    cy.getByCy('daterange-start-input').should('have.attr', 'readonly');
+    cy.getByCy('daterange-end-input').should('have.attr', 'readonly');
+
+    // Über den Kalender ausgewählte Werte müssen trotzdem ankommen.
+    cy.get('.ce-card__field--datepicker mat-datepicker-toggle button').click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').first().click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').last().click();
+
+    cy.getByCy('daterange-start-input').invoke('val').should('not.be.empty');
+    cy.getByCy('daterange-end-input').invoke('val').should('not.be.empty');
+  });
+
+  it('öffnet den Datepicker bei Klick auf die gesamte ZEITRAUM-Leiste, nicht nur auf das Icon', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('category-access').click();
+    cy.getByCy('palette-DATE_RANGE').click();
+
+    cy.get('.mat-calendar').should('not.exist');
+    // Klick auf die Leiste selbst (nicht auf das Kalender-Icon) muss den Picker öffnen.
+    cy.getByCy('daterange-field').click();
+    cy.get('.mat-calendar').should('be.visible');
+  });
+
+  it('erlaubt es, das Startdatum nach einer vollständigen Auswahl erneut zu ändern', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('category-access').click();
+    cy.getByCy('palette-DATE_RANGE').click();
+
+    // Erste vollständige Auswahl (Start + Ende).
+    cy.getByCy('daterange-field').click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+
+    cy.getByCy('daterange-start-input')
+      .invoke('val')
+      .then((firstStart) => {
+        // Erneut öffnen und ein komplett anderes Datumspaar wählen — das Startdatum darf nicht
+        // an der ersten Auswahl "kleben bleiben".
+        cy.getByCy('daterange-field').click();
+        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(5).click();
+        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(6).click();
+
+        cy.getByCy('daterange-start-input').invoke('val').should('not.eq', firstStart);
+      });
+  });
 });

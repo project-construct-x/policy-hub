@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
 import {
   Constraint,
   DateRangeConstraint,
@@ -19,6 +19,10 @@ import {
   ValidationError,
   validateConstraint,
 } from '@features/policies/builder/validators/constraint-validators';
+
+function sameDateOrNull(a: Date | null, b: Date | null): boolean {
+  return a === b || (a !== null && b !== null && a.getTime() === b.getTime());
+}
 
 @Component({
   selector: 'app-constraint-editor-card',
@@ -50,10 +54,19 @@ export class ConstraintEditorCardComponent {
     this.showErrors() ? validateConstraint(this.constraint(), this.index()) : [],
   );
 
-  readonly startDateValue = computed<Date | null>(() =>
-    this.parseDate(this.dateRange()?.startDate),
+  // `equal: sameDateOrNull` hält die Objekt-Referenz stabil, solange sich das Datum inhaltlich
+  // nicht ändert. Ohne das erzeugt jede Änderung (z.B. am Enddatum) über `parseDate()` ein neues
+  // `Date`-Objekt für BEIDE Felder; Angular sieht dadurch am Start-Input eine "neue" Referenz und
+  // ruft erneut `writeValue()` auf `matStartDate` auf. Bei Range-Inputs ist das kein No-Op:
+  // `MatStartDate._assignValueToModel()` schreibt den Wert zurück ins geteilte Auswahl-Modell —
+  // dadurch wird der vom Nutzer gerade angeklickte neue Start sofort wieder überschrieben.
+  readonly startDateValue = computed<Date | null>(
+    () => this.parseDate(this.dateRange()?.startDate),
+    { equal: sameDateOrNull },
   );
-  readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate));
+  readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate), {
+    equal: sameDateOrNull,
+  });
 
   private dateRange(): DateRangeConstraint | null {
     const c = this.constraint();
@@ -73,6 +86,20 @@ export class ConstraintEditorCardComponent {
   errorKey(field: string): string | null {
     return this.errors().find((e) => e.field.endsWith(field))?.messageKey ?? null;
   }
+
+  // `mat-error` wird von Material nur eingeblendet, wenn der zugehörige Control-Direktive
+  // (hier: mat-select bzw. matStartDate/matEndDate) einen NgControl mit errorState=true hat.
+  // Deshalb ein `ngModel` je Feld im Template + ein darauf gekoppelter Matcher — analog
+  // `policyIdErrorStateMatcher` in policy-builder.component.ts.
+  readonly useCasesErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => this.hasError('.useCases'),
+  };
+  readonly startDateErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => this.hasError('.startDate'),
+  };
+  readonly endDateErrorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => this.hasError('.endDate'),
+  };
 
   asMembership(c: Constraint): MembershipConstraint {
     return c as MembershipConstraint;
