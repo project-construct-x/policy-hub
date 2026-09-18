@@ -127,7 +127,13 @@ Migrationen liegen unter `src/main/resources/db/migration/`:
 
 | Migration | Inhalt |
 |---|---|
-| `V1__create_policy_tables.sql` | `policies`-Tabelle mit UUID, Status, JSONB-Inhalt, Timestamps |
+| `V1__create_policy_tables.sql` | `policies`-Tabelle mit UUID-PK, JSONB-Inhalt, Timestamps |
+| `V2__align_policy_schema_with_frontend.sql` | Schema an den Frontend-Vertrag angeglichen (`name`, `description`, `status`, `content` entfernt; `policy_id`, `category`, `constraints`, `legal_text`) |
+
+**Migrationen enthalten nur Schema, keine Daten.** Ein frisch gestartetes Backend hat eine leere
+`policies`-Tabelle. Beispiel-Policies existieren ausschließlich im Frontend-Mock-Modus
+(MirageJS, in-memory) — bitte keine Seed-Migration ergänzen, sie würde in allen Profilen laufen
+und damit auch im Cluster Daten anlegen.
 
 ## Profile
 
