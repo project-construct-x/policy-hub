@@ -13,6 +13,18 @@ html {
       density: 0,
     )
   );
+
+  // `mat.theme()` above is deliberately called without a `color:` config (see comment below),
+  // so Material never emits `--mat-sys-error` — every mat-form-field's invalid state (outline,
+  // mat-error text) silently falls back to a near-invisible default instead of red. Wire it to
+  // our own error token so validation errors actually look like errors.
+  --mat-sys-error: var(--con-x-error);
+}
+
+// mat-error defaults to a normal-weight caption; bump it so a required-field message reads as a
+// warning at a glance instead of blending in with the hint text above it.
+.mat-mdc-form-field-error {
+  font-weight: 600;
 }
 
 // ============================================================

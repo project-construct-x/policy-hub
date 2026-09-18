@@ -22,8 +22,10 @@
           <mat-label>{{ t('policyBuilder.constraint.USE_CASE.label') }}</mat-label>
           <mat-select
             multiple
-            [value]="asUseCase(constraint()).useCases"
-            (valueChange)="onUseCaseChange($event)"
+            [name]="'useCases-' + index()"
+            [ngModel]="asUseCase(constraint()).useCases"
+            (ngModelChange)="onUseCaseChange($event)"
+            [errorStateMatcher]="useCasesErrorStateMatcher"
             [placeholder]="t('policyBuilder.constraint.USE_CASE.placeholder')"
             data-cy="usecase-select"
           >
@@ -32,7 +34,7 @@
             }
           </mat-select>
           @if (hasError('.useCases')) {
-            <mat-error>{{ t(errorKey('.useCases')!) }}</mat-error>
+            <mat-error data-cy="usecase-error">{{ t(errorKey('.useCases')!) }}</mat-error>
           } @else {
             <mat-hint>{{ t('policyBuilder.constraint.USE_CASE.hint') }}</mat-hint>
           }
@@ -40,32 +42,43 @@
       }
 
       @case ('DATE_RANGE') {
-        <mat-form-field appearance="outline" class="ce-card__field ce-card__field--datepicker">
+        <mat-form-field
+          appearance="outline"
+          class="ce-card__field ce-card__field--datepicker"
+          (click)="picker.open()"
+          data-cy="daterange-field"
+        >
           <mat-label>{{ t('policyBuilder.constraint.DATE_RANGE.label') }}</mat-label>
           <mat-date-range-input [rangePicker]="picker" [min]="minDate">
             <input
               matStartDate
-              [value]="startDateValue()"
-              (dateChange)="onStartDateChange($event.value)"
+              readonly
+              [name]="'startDate-' + index()"
+              [ngModel]="startDateValue()"
+              (ngModelChange)="onStartDateChange($event)"
+              [errorStateMatcher]="startDateErrorStateMatcher"
               [placeholder]="t('policyBuilder.constraint.DATE_RANGE.startLabel')"
               [attr.aria-label]="t('a11y.dateRange.startInput')"
               data-cy="daterange-start-input"
             />
             <input
               matEndDate
-              [value]="endDateValue()"
-              (dateChange)="onEndDateChange($event.value)"
+              readonly
+              [name]="'endDate-' + index()"
+              [ngModel]="endDateValue()"
+              (ngModelChange)="onEndDateChange($event)"
+              [errorStateMatcher]="endDateErrorStateMatcher"
               [placeholder]="t('policyBuilder.constraint.DATE_RANGE.endLabel')"
               [attr.aria-label]="t('a11y.dateRange.endInput')"
               data-cy="daterange-end-input"
             />
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="picker" />
-          <mat-date-range-picker #picker />
+          <mat-date-range-picker #picker xPosition="end" />
           @if (hasError('.startDate')) {
-            <mat-error>{{ t(errorKey('.startDate')!) }}</mat-error>
+            <mat-error data-cy="daterange-start-error">{{ t(errorKey('.startDate')!) }}</mat-error>
           } @else if (hasError('.endDate')) {
-            <mat-error>{{ t(errorKey('.endDate')!) }}</mat-error>
+            <mat-error data-cy="daterange-end-error">{{ t(errorKey('.endDate')!) }}</mat-error>
           } @else {
             <mat-hint>{{ t('policyBuilder.constraint.DATE_RANGE.hint') }}</mat-hint>
           }
