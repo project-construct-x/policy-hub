@@ -90,19 +90,24 @@ describe('Policy – Erstellen', () => {
     cy.getByCy('category-access').click();
     cy.getByCy('palette-DATE_RANGE').click();
 
-    // Erste vollständige Auswahl (Start + Ende).
+    // Immer einen Monat weiterblättern, statt Zellen im aktuell angezeigten Monat per Index zu
+    // picken (`.eq(5)`/`.eq(6)`): je nach heutigem Datum kann der aktuelle Monat weniger als die
+    // erwartete Anzahl auswählbarer (nicht vergangener) Tage übrig haben, was den Test am
+    // Monatsende flaky macht. Ein voller Folgemonat hat garantiert genug Tage.
     cy.getByCy('daterange-field').click();
+    cy.get('.mat-calendar-next-button').click();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
 
     cy.getByCy('daterange-start-input')
       .invoke('val')
       .then((firstStart) => {
-        // Erneut öffnen und ein komplett anderes Datumspaar wählen — das Startdatum darf nicht
-        // an der ersten Auswahl "kleben bleiben".
+        // Erneut öffnen, einen weiteren Monat weiterblättern und ein komplett anderes
+        // Datumspaar wählen — das Startdatum darf nicht an der ersten Auswahl "kleben bleiben".
         cy.getByCy('daterange-field').click();
-        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(5).click();
-        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(6).click();
+        cy.get('.mat-calendar-next-button').click();
+        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
+        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
 
         cy.getByCy('daterange-start-input').invoke('val').should('not.eq', firstStart);
       });
