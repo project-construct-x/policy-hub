@@ -37,8 +37,8 @@ public class PolicyResponse {
     @Schema(
             description = """
                     Ordered list of structured policy constraints.
-                    Supported types are MEMBERSHIP, USE_CASE, END_DATE and
-                    FRAMEWORK_AGREEMENT. END_DATE is only allowed for CONTRACT policies.
+                    Supported types are MEMBERSHIP, USE_CASE, DATE_RANGE and
+                    FRAMEWORK_AGREEMENT. DATE_RANGE is only allowed for CONTRACT policies.
                     """,
             example = """
                     [
