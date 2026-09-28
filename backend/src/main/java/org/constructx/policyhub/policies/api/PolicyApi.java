@@ -3,9 +3,11 @@ package org.constructx.policyhub.policies.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.constructx.policyhub.core.exception.ErrorResponse;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
@@ -46,7 +48,8 @@ public interface PolicyApi {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Policy not found"
+                    description = "Policy not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<PolicyResponse> getPolicyById(
@@ -69,7 +72,7 @@ public interface PolicyApi {
             @ApiResponse(
                     responseCode = "404",
                     description = "Policy not found",
-                    content = @Content
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(
@@ -91,11 +94,13 @@ public interface PolicyApi {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Policy request is incomplete or invalid"
+                    description = "Policy request is incomplete or invalid",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "A policy with the same policyId already exists"
+                    description = "A policy with the same policyId already exists",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<PolicyResponse> createPolicy(
@@ -113,15 +118,18 @@ public interface PolicyApi {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Policy request is incomplete or invalid"
+                    description = "Policy request is incomplete or invalid",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Policy not found"
+                    description = "Policy not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "The requested policyId belongs to another policy"
+                    description = "The requested policyId belongs to another policy",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<PolicyResponse> updatePolicy(
@@ -140,7 +148,8 @@ public interface PolicyApi {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Policy not found"
+                    description = "Policy not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<Void> deletePolicy(UUID id);
