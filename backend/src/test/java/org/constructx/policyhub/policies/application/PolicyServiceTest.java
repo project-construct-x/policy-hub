@@ -99,18 +99,18 @@ class PolicyServiceTest {
         PolicyResponse response =
                 result.getContent().getFirst();
 
-        assertEquals(ID, response.getId());
+        assertEquals(ID, response.id());
         assertEquals(
                 "zugriff-konsortium-mitglieder",
-                response.getPolicyId()
+                response.policyId()
         );
         assertEquals(
                 PolicyCategory.ACCESS,
-                response.getCategory()
+                response.category()
         );
         assertEquals(
                 "Legal Text",
-                response.getLegalText()
+                response.legalText()
         );
 
         verify(policyRepository).findAll(pageable);
@@ -145,10 +145,10 @@ class PolicyServiceTest {
         PolicyResponse result =
                 policyService.getPolicyById(ID);
 
-        assertEquals(ID, result.getId());
+        assertEquals(ID, result.id());
         assertEquals(
                 "zugriff-konsortium-mitglieder",
-                result.getPolicyId()
+                result.policyId()
         );
 
         verify(policyRepository).findById(ID);
@@ -241,10 +241,10 @@ class PolicyServiceTest {
         PolicyResponse result =
                 policyService.createPolicy(request);
 
-        assertEquals(ID, result.getId());
+        assertEquals(ID, result.id());
         assertEquals(
                 request.policyId(),
-                result.getPolicyId()
+                result.policyId()
         );
 
         verify(policyValidator).validate(
@@ -340,11 +340,11 @@ class PolicyServiceTest {
 
         assertEquals(
                 "updated-policy",
-                result.getPolicyId()
+                result.policyId()
         );
         assertEquals(
                 "Updated Legal Text",
-                result.getLegalText()
+                result.legalText()
         );
 
         verify(policyValidator).validate(
