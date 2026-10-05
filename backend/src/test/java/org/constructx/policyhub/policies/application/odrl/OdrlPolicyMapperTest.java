@@ -370,62 +370,6 @@ public class OdrlPolicyMapperTest {
     }
 
     @Test
-    void policyToOdrl_mapsUseCasesAsArray()
-            throws Exception {
-        JsonNode useCase = objectMapper.readTree("""
-            {
-              "type": "USE_CASE",
-              "useCases": [
-                "UC.quality-assurance",
-                "UC.material-testing"
-              ]
-            }
-            """);
-
-        Policy policy = createPolicy(
-                List.of(useCase)
-        );
-
-        JsonNode actual = mapToJson(policy);
-
-        JsonNode atomic = actual
-                .path("policy")
-                .path("odrl:permission")
-                .path(0)
-                .path("odrl:constraint")
-                .path("odrl:and")
-                .path(0);
-
-        assertEquals(
-                CX_POLICY_NS + "UsagePurpose",
-                atomic.path("odrl:leftOperand")
-                        .path("@id")
-                        .asText()
-        );
-
-        assertEquals(
-                "odrl:isAnyOf",
-                atomic.path("odrl:operator")
-                        .path("@id")
-                        .asText()
-        );
-
-        JsonNode rightOperand =
-                atomic.path("odrl:rightOperand");
-
-        assertTrue(rightOperand.isArray());
-        assertEquals(2, rightOperand.size());
-        assertEquals(
-                "UC.quality-assurance",
-                rightOperand.get(0).asText()
-        );
-        assertEquals(
-                "UC.material-testing",
-                rightOperand.get(1).asText()
-        );
-    }
-
-    @Test
     void policyToOdrl_usesBusinessPolicyIdAsOdrlId() {
         Policy policy = new Policy(
                 UUID.randomUUID(),

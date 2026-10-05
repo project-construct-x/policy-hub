@@ -239,7 +239,7 @@ class PolicyControllerTest {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
                 "zugriff-konsortium-mitglieder-updated",
                 PolicyCategory.CONTRACT,
-                List.of(useCaseConstraint()),
+                List.of(frameworkAgreementConstraint()),
                 "Aktualisierter juristischer Text."
         );
 
@@ -266,9 +266,9 @@ class PolicyControllerTest {
                         .value("zugriff-konsortium-mitglieder-updated"))
                 .andExpect(jsonPath("$.category").value("CONTRACT"))
                 .andExpect(jsonPath("$.constraints[0].type")
-                        .value("USE_CASE"))
-                .andExpect(jsonPath("$.constraints[0].useCases[0]")
-                        .value("UC.quality-assurance"))
+                        .value("FRAMEWORK_AGREEMENT"))
+                .andExpect(jsonPath("$.constraints[0].agreement")
+                        .value("DataExchangeGovernance"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Aktualisierter juristischer Text."));
     }
@@ -389,13 +389,11 @@ class PolicyControllerTest {
                 """);
     }
 
-    private JsonNode useCaseConstraint() throws Exception {
+    private JsonNode frameworkAgreementConstraint() throws Exception {
         return objectMapper.readTree("""
                 {
-                  "type": "USE_CASE",
-                  "useCases": [
-                    "UC.quality-assurance"
-                  ]
+                  "type": "FRAMEWORK_AGREEMENT",
+                  "agreement": "DataExchangeGovernance"
                 }
                 """);
     }

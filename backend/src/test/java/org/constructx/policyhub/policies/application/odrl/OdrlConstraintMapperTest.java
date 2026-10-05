@@ -35,32 +35,6 @@ class OdrlConstraintMapperTest {
     }
 
     @Test
-    void mapUseCase_mapsUseCaseConstraint() throws Exception {
-        JsonNode constraint = createConstraint(
-                "USE_CASE",
-                """
-                "useCases": [
-                    "UC.quality-assurance",
-                    "UC.material-testing"
-                ]
-                """
-        );
-
-        JsonNode expected = createExpected(
-                "UsagePurpose",
-                "odrl:isAnyOf",
-                """
-                [
-                    "UC.quality-assurance",
-                    "UC.material-testing"
-                ]
-                """
-        );
-
-        assertSingleMapping(constraint, expected);
-    }
-
-    @Test
     void mapDateRange_mapsStartAndEndDateConstraints() throws Exception {
         JsonNode constraint = createConstraint(
                 "DATE_RANGE",

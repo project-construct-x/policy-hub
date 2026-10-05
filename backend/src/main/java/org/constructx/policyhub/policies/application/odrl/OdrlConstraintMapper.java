@@ -26,9 +26,6 @@ public class OdrlConstraintMapper {
             case MEMBERSHIP ->
                     List.of(mapMembership(constraint));
 
-            case USE_CASE ->
-                    List.of(mapUseCase(constraint));
-
             case DATE_RANGE ->
                     mapDateRange(constraint);
 
@@ -44,16 +41,6 @@ public class OdrlConstraintMapper {
                 new OdrlIdResponse(CX_POLICY_NS + "Membership"),
                 new OdrlIdResponse(OdrlOperator.EQ.value()),
                 constraint.get("value")
-        );
-    }
-
-    private static OdrlAtomicConstraintResponse mapUseCase(
-            JsonNode constraint
-    ) {
-        return new OdrlAtomicConstraintResponse(
-                new OdrlIdResponse(CX_POLICY_NS + "UsagePurpose"),
-                new OdrlIdResponse(OdrlOperator.IS_ANY_OF.value()),
-                constraint.get("useCases")
         );
     }
 
@@ -102,7 +89,6 @@ public class OdrlConstraintMapper {
 
     private enum OdrlOperator {
         EQ("odrl:eq"),
-        IS_ANY_OF("odrl:isAnyOf"),
         GTEQ("odrl:gteq"),
         LTEQ("odrl:lteq");
 
