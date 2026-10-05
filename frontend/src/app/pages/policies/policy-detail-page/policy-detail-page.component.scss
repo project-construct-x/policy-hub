@@ -109,7 +109,7 @@
 
   &__info-label {
     font-size: 0.8125rem;
-    color: var(--con-x-text-secondary, #555555);
+    color: var(--con-x-text-secondary, #454545);
   }
 
   &__info-value {
@@ -162,7 +162,7 @@
     border: 1px dashed var(--con-x-light-blue, #c9d8e0);
     border-radius: 10px;
     background: var(--con-x-light-gray, #f4f3f3);
-    color: var(--con-x-text-secondary, #555555);
+    color: var(--con-x-text-secondary, #454545);
 
     .material-icons {
       color: var(--con-x-orange, #e53d17);
@@ -228,7 +228,7 @@
     summary {
       cursor: pointer;
       font-size: 0.875rem;
-      color: var(--con-x-text-secondary, #555555);
+      color: var(--con-x-text-secondary, #454545);
 
       @include focus-ring(2px);
     }

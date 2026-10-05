@@ -142,7 +142,7 @@
     "odrlRetry": "Try again",
     "sections": {
       "permissions": "Permissions",
-      "legalDescription": "Legal description",
+      "legalDescription": "Permissions explained",
       "technical": "Technical details (ODRL / JSON-LD)"
     },
     "notifications": {
@@ -152,8 +152,8 @@
       "unknownConstraints": "This policy contains unknown condition types. They are not displayed.",
       "odrlLoadError": "The backend ODRL document could not be loaded."
     },
-    "legalTextDiverged": "The stored legal text does not match the stored conditions. The stored text is the legally binding one — please save the policy again or have it reviewed.",
-    "legalTextStored": "Show stored legal text"
+    "legalTextDiverged": "The stored explanation no longer matches the currently stored conditions. The stored text is still the one shown — please save the policy again or have it reviewed.",
+    "legalTextStored": "Show stored text"
   },
   "policyEditor": {
     "notifications": {

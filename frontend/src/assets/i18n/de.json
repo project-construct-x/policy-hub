@@ -142,7 +142,7 @@
     "odrlRetry": "Erneut versuchen",
     "sections": {
       "permissions": "Berechtigungen",
-      "legalDescription": "Juristische Beschreibung",
+      "legalDescription": "Erläuterung der Berechtigungen",
       "technical": "Technische Details (ODRL / JSON-LD)"
     },
     "notifications": {
@@ -152,8 +152,8 @@
       "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt.",
       "odrlLoadError": "Das ODRL-Dokument laut Backend konnte nicht geladen werden."
     },
-    "legalTextDiverged": "Der gespeicherte Rechtstext weicht von den gespeicherten Bedingungen ab. Rechtlich maßgeblich ist der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
-    "legalTextStored": "Gespeicherten Rechtstext anzeigen"
+    "legalTextDiverged": "Die gespeicherte Erläuterung weicht von den aktuell hinterlegten Bedingungen ab. Angezeigt wird weiterhin der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
+    "legalTextStored": "Gespeicherten Text anzeigen"
   },
   "policyEditor": {
     "notifications": {
