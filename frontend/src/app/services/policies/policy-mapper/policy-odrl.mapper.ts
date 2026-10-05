@@ -65,14 +65,6 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
           'odrl:rightOperand': c.value,
         },
       ];
-    case 'USE_CASE':
-      return [
-        {
-          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}UsagePurpose` },
-          'odrl:operator': { '@id': 'odrl:isAnyOf' },
-          'odrl:rightOperand': c.useCases,
-        },
-      ];
     case 'DATE_RANGE':
       return [
         {

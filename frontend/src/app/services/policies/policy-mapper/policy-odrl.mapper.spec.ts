@@ -42,15 +42,6 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
     ]);
   });
 
-  it('USE_CASE → UsagePurpose / odrl:isAnyOf / Array-rightOperand', () => {
-    const c: Constraint = { type: 'USE_CASE', useCases: ['UC.quality-assurance', 'UC.geodata'] };
-    const [result] = constraintToOdrl(c);
-    expect(result['odrl:leftOperand']).toEqual({ '@id': `${CX_NS}UsagePurpose` });
-    expect(result['odrl:operator']).toEqual({ '@id': 'odrl:isAnyOf' });
-    expect(result['odrl:rightOperand']).toEqual(['UC.quality-assurance', 'UC.geodata']);
-    expect(Array.isArray(result['odrl:rightOperand'])).toBe(true);
-  });
-
   it('DATE_RANGE → zwei Atomics: Start (gteq) und Ende (lteq)', () => {
     const c: Constraint = { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' };
     expect(constraintToOdrl(c)).toEqual([
@@ -130,25 +121,22 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
   it('kombiniert mehrere Bedingungen (alle Typen) unter odrl:and und erhält die Reihenfolge', () => {
     const constraints: Constraint[] = [
       { type: 'MEMBERSHIP', value: 'active' },
-      { type: 'USE_CASE', useCases: ['UC.geodata'] },
       { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' },
       { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
     ];
     const policy = buildPolicy({ category: 'CONTRACT', constraints });
     const group = policyToOdrl(policy).policy['odrl:permission'][0]['odrl:constraint']!;
 
-    // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 5 gesamt.
-    expect(group['odrl:and']).toHaveLength(5);
+    // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 4 gesamt.
+    expect(group['odrl:and']).toHaveLength(4);
     expect(group['odrl:and'].map((a) => a['odrl:leftOperand']['@id'])).toEqual([
       `${CX_NS}Membership`,
-      `${CX_NS}UsagePurpose`,
       `${CX_NS}FrameworkAgreement`,
       `${CX_NS}DataUsageStartDate`,
       `${CX_NS}DataUsageEndDate`,
     ]);
     expect(group['odrl:and'].map((a) => a['odrl:operator']['@id'])).toEqual([
       'odrl:eq',
-      'odrl:isAnyOf',
       'odrl:eq',
       'odrl:gteq',
       'odrl:lteq',

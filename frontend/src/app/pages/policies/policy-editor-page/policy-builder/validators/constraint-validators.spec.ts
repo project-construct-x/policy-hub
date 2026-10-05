@@ -102,26 +102,6 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
     });
   });
 
-  describe('USE_CASE', () => {
-    it('meldet useCaseRequired bei leerer Liste', () => {
-      expect(validateConstraint({ type: 'USE_CASE', useCases: [] })).toEqual([
-        { field: 'constraint[0].useCases', messageKey: 'validation.useCaseRequired' },
-      ]);
-    });
-
-    it('meldet useCaseRequired bei fehlender Liste (undefined)', () => {
-      const invalid = { type: 'USE_CASE' } as unknown as Constraint;
-      expect(validateConstraint(invalid)).toContainEqual({
-        field: 'constraint[0].useCases',
-        messageKey: 'validation.useCaseRequired',
-      });
-    });
-
-    it('ist gültig bei mindestens einem Use-Case', () => {
-      expect(validateConstraint({ type: 'USE_CASE', useCases: ['UC.geodata'] })).toEqual([]);
-    });
-  });
-
   describe('MEMBERSHIP & FRAMEWORK_AGREEMENT — immer gültig', () => {
     it('MEMBERSHIP liefert keine Fehler', () => {
       expect(validateConstraint({ type: 'MEMBERSHIP', value: 'active' })).toEqual([]);
@@ -135,8 +115,8 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
   });
 
   it('interpoliert den Index in das field-Präfix', () => {
-    const errors = validateConstraint({ type: 'USE_CASE', useCases: [] }, 3);
-    expect(errors[0].field).toBe('constraint[3].useCases');
+    const errors = validateConstraint({ type: 'DATE_RANGE', startDate: '', endDate: '' }, 3);
+    expect(errors[0].field).toBe('constraint[3].startDate');
   });
 });
 
@@ -190,12 +170,12 @@ describe('validatePolicyDraft', () => {
   it('aggregiert mehrere Fehler (ID + Kategorie + Bedingung)', () => {
     const errors = validatePolicyDraft({
       policyId: '',
-      constraints: [{ type: 'USE_CASE', useCases: [] }],
+      constraints: [{ type: 'DATE_RANGE', startDate: '', endDate: '' }],
     } as Partial<Policy>);
     const keys = errors.map((e) => e.messageKey);
     expect(keys).toContain('validation.policyIdRequired');
     expect(keys).toContain('validation.categoryRequired');
-    expect(keys).toContain('validation.useCaseRequired');
+    expect(keys).toContain('validation.dateRangeStartRequired');
   });
 });
 
@@ -216,12 +196,12 @@ describe('validatePolicyDraft — unbekannter Constraint-Typ aus der API', () =>
     const errors = validatePolicyDraft({
       policyId: 'gueltige-id',
       category: 'ACCESS',
-      constraints: [unknownConstraint, { type: 'USE_CASE', useCases: [] }],
+      constraints: [unknownConstraint, { type: 'DATE_RANGE', startDate: '', endDate: '' }],
     } as Partial<Policy>);
 
     const keys = errors.map((e) => e.messageKey);
     expect(keys).toContain('validation.constraintUnknownType');
-    expect(keys).toContain('validation.useCaseRequired');
+    expect(keys).toContain('validation.dateRangeStartRequired');
   });
 });
 

@@ -21,15 +21,6 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     defaultOperator: 'eq',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
-  USE_CASE: {
-    type: 'USE_CASE',
-    labelKey: 'constraint.USE_CASE.label',
-    descriptionKey: 'constraint.USE_CASE.description',
-    legalTextKey: 'constraint.USE_CASE.legalText',
-    icon: 'category',
-    defaultOperator: 'isAnyOf',
-    allowedIn: ['ACCESS', 'CONTRACT'],
-  },
   DATE_RANGE: {
     type: 'DATE_RANGE',
     labelKey: 'constraint.DATE_RANGE.label',
@@ -50,12 +41,7 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
   },
 };
 
-export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
-  'MEMBERSHIP',
-  'USE_CASE',
-  'DATE_RANGE',
-  'FRAMEWORK_AGREEMENT',
-];
+export const ALL_CONSTRAINT_TYPES: ConstraintType[] = ['MEMBERSHIP', 'DATE_RANGE', 'FRAMEWORK_AGREEMENT'];
 
 export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
   return ALL_CONSTRAINT_TYPES.filter((t) => CONSTRAINT_METADATA[t].allowedIn.includes(category));
@@ -83,8 +69,6 @@ export function buildDefaultConstraint(type: ConstraintType): Constraint {
   switch (type) {
     case 'MEMBERSHIP':
       return { type: 'MEMBERSHIP', value: 'active' };
-    case 'USE_CASE':
-      return { type: 'USE_CASE', useCases: [] };
     case 'DATE_RANGE':
       return { type: 'DATE_RANGE', startDate: '', endDate: '' };
     case 'FRAMEWORK_AGREEMENT':

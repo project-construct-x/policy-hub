@@ -3,7 +3,7 @@ import { describe, expect, it, vi, type MockedFunction } from 'vitest';
 import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
-import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
+import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 
 import {
   buildLegalClauses,
@@ -86,37 +86,6 @@ describe('buildLegalDescription', () => {
         makeTransloco(),
       );
       expect(text).toContain('legalDescription.clause.dateRange[start=01.06.2026;end=31.12.2027]');
-    });
-  });
-
-  describe('Use-Case-Liste (joinList)', () => {
-    // Nur IDs aus USE_CASE_OPTIONS verwenden: unbekannte IDs werden bewusst zu "—"
-    // zusammengefaltet (siehe "Schutz vor Transloco-Parameter-Injection") und würden
-    // die Trennlogik hier nicht mehr sichtbar machen.
-    function useCaseList(useCases: string[]): string {
-      const text = buildLegalDescription(
-        draft('ACCESS', [{ type: 'USE_CASE', useCases }]),
-        makeTransloco(),
-      );
-      // Übersetzte Labels sind hier der i18n-Key aus der Registry, also `useCase.<id>`.
-      const match = /legalDescription\.clause\.useCase\[list=(.+?)\]/.exec(text);
-      return match![1];
-    }
-
-    it('ein Use-Case → nur das Label, kein Trenner', () => {
-      expect(useCaseList(['UC.geodata'])).toBe('useCase.geodata');
-    });
-
-    it('zwei Use-Cases → mit "&" verbunden', () => {
-      expect(useCaseList(['UC.geodata', 'UC.quality-assurance'])).toBe(
-        'useCase.geodata & useCase.quality-assurance',
-      );
-    });
-
-    it('drei Use-Cases → Komma-getrennt, letztes mit "&"', () => {
-      expect(useCaseList(['UC.geodata', 'UC.material-testing', 'UC.bim-coordination'])).toBe(
-        'useCase.geodata, useCase.material-testing & useCase.bim-coordination',
-      );
     });
   });
 
@@ -257,7 +226,6 @@ describe('buildLegalDescription', () => {
 
     const hostileConstraints: [string, Constraint][] = [
       ['FRAMEWORK_AGREEMENT.agreement', { type: 'FRAMEWORK_AGREEMENT', agreement: HOSTILE }],
-      ['USE_CASE.useCases', { type: 'USE_CASE', useCases: [HOSTILE] }],
       ['DATE_RANGE.startDate', { type: 'DATE_RANGE', startDate: HOSTILE, endDate: '2027-01-01' }],
       ['DATE_RANGE.endDate', { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: HOSTILE }],
     ];
@@ -282,24 +250,12 @@ describe('buildLegalDescription', () => {
       expect(text).toContain('agreement=—');
     });
 
-    it('ersetzt einen unbekannten Use-Case durch den Platzhalter "—"', () => {
-      const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'USE_CASE', useCases: ['UC.gibt-es-nicht'] }]),
-        makeTransloco(),
-      );
-      expect(text).toContain('list=—');
-    });
-
     it('lässt bekannte Werte unverändert', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [
-          { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
-          { type: 'USE_CASE', useCases: ['UC.quality-assurance', 'UC.geodata'] },
-        ]),
+        draft('CONTRACT', [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }]),
         makeTransloco(),
       );
       expect(text).toContain(`agreement=${FRAMEWORK_AGREEMENT_VALUE}`);
-      expect(text).toContain('list=useCase.quality-assurance & useCase.geodata');
     });
   });
 });
