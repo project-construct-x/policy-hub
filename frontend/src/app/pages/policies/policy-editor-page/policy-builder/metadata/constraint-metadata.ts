@@ -41,7 +41,11 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
   },
 };
 
-export const ALL_CONSTRAINT_TYPES: ConstraintType[] = ['MEMBERSHIP', 'DATE_RANGE', 'FRAMEWORK_AGREEMENT'];
+export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
+  'MEMBERSHIP',
+  'DATE_RANGE',
+  'FRAMEWORK_AGREEMENT',
+];
 
 export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
   return ALL_CONSTRAINT_TYPES.filter((t) => CONSTRAINT_METADATA[t].allowedIn.includes(category));
