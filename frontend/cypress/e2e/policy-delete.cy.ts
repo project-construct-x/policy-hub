@@ -17,7 +17,7 @@ describe('Policy – Löschen', () => {
     cy.getByCy('snackbar-success').should('exist');
 
     // Policy ist weg (In-App-State nach client-seitiger Navigation erhalten).
-    cy.getByCy('policy-row').should('have.length', 6);
+    cy.getByCy('policy-row').should('have.length', 5);
     cy.get(`[data-cy="policy-row"][aria-label="${POLICY_SLUG}"]`).should('not.exist');
   });
 

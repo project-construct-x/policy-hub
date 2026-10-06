@@ -32,9 +32,13 @@
   --con-x-black: #000000;
 
   // Text
+  // --con-x-text-secondary/-tertiary wurden gegenüber dem Design-Entwurf abgedunkelt
+  // (#555555 -> #454545, #767676 -> #636363): Kontrast-Nachbesserung, siehe
+  // docs/accessibility.md. #767676 lag auf --con-x-bg-page (#fafafa) knapp unter dem
+  // AA-Kriterium 1.4.3 (4.5:1); #636363 erreicht dort 5.76:1.
   --con-x-text-primary: #111111;
-  --con-x-text-secondary: #555555;
-  --con-x-text-tertiary: #767676;
+  --con-x-text-secondary: #454545;
+  --con-x-text-tertiary: #636363;
 
   // Backgrounds
   --con-x-bg-primary: #ffffff;
@@ -180,7 +184,7 @@ b {
     pointer-events: none;
 
     .mat-calendar-body-cell-content {
-      color: var(--con-x-text-tertiary, #767676) !important;
+      color: var(--con-x-text-tertiary, #636363) !important;
       opacity: 0.4;
       text-decoration: line-through;
       background-color: transparent !important;

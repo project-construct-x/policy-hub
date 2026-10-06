@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
-import { USE_CASE_OPTIONS } from '@features/policies/builder/metadata/use-case-options.data';
 
 @Component({
   selector: 'app-constraint-card',
@@ -25,14 +24,6 @@ function formatSummary(c: Constraint, transloco: TranslocoService): string {
   switch (c.type) {
     case 'MEMBERSHIP':
       return transloco.translate('constraint.MEMBERSHIP.summary');
-    case 'USE_CASE': {
-      if (!c.useCases.length) return transloco.translate('constraint.USE_CASE.summaryEmpty');
-      const labels = c.useCases.map((id) => {
-        const opt = USE_CASE_OPTIONS.find((o) => o.id === id);
-        return opt ? transloco.translate(opt.labelKey) : id;
-      });
-      return labels.join(', ');
-    }
     case 'DATE_RANGE': {
       if (!c.startDate && !c.endDate) return '—';
       const start = formatDisplayDate(c.startDate);

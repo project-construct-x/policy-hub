@@ -1,15 +1,10 @@
-export type ConstraintType = 'MEMBERSHIP' | 'USE_CASE' | 'DATE_RANGE' | 'FRAMEWORK_AGREEMENT';
+export type ConstraintType = 'MEMBERSHIP' | 'DATE_RANGE' | 'FRAMEWORK_AGREEMENT';
 
 export type Operator = 'eq' | 'isAnyOf' | 'gteq' | 'lteq';
 
 export interface MembershipConstraint {
   type: 'MEMBERSHIP';
   value: 'active';
-}
-
-export interface UseCaseConstraint {
-  type: 'USE_CASE';
-  useCases: string[];
 }
 
 export interface DateRangeConstraint {
@@ -23,8 +18,4 @@ export interface FrameworkAgreementConstraint {
   agreement: string;
 }
 
-export type Constraint =
-  | MembershipConstraint
-  | UseCaseConstraint
-  | DateRangeConstraint
-  | FrameworkAgreementConstraint;
+export type Constraint = MembershipConstraint | DateRangeConstraint | FrameworkAgreementConstraint;

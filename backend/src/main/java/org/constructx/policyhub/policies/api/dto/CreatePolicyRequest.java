@@ -31,7 +31,7 @@ public record CreatePolicyRequest(
         @Schema(
                 description = """
                 Ordered list of policy constraints. Supported types are
-                MEMBERSHIP, USE_CASE, DATE_RANGE and FRAMEWORK_AGREEMENT.
+                MEMBERSHIP, DATE_RANGE and FRAMEWORK_AGREEMENT.
                 DATE_RANGE defines a start and end date in ISO-8601 format.
                 """,
                 example = """
@@ -39,13 +39,6 @@ public record CreatePolicyRequest(
                   {
                     "type": "MEMBERSHIP",
                     "value": "active"
-                  },
-                  {
-                    "type": "USE_CASE",
-                    "useCases": [
-                      "UC.quality-assurance",
-                      "UC.material-testing"
-                    ]
                   },
                   {
                     "type": "DATE_RANGE",

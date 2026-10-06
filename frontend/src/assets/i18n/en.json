@@ -142,7 +142,7 @@
     "odrlRetry": "Try again",
     "sections": {
       "permissions": "Permissions",
-      "legalDescription": "Legal description",
+      "legalDescription": "Permissions explained",
       "technical": "Technical details (ODRL / JSON-LD)"
     },
     "notifications": {
@@ -152,8 +152,8 @@
       "unknownConstraints": "This policy contains unknown condition types. They are not displayed.",
       "odrlLoadError": "The backend ODRL document could not be loaded."
     },
-    "legalTextDiverged": "The stored legal text does not match the stored conditions. The stored text is the legally binding one — please save the policy again or have it reviewed.",
-    "legalTextStored": "Show stored legal text"
+    "legalTextDiverged": "The stored explanation no longer matches the currently stored conditions. The stored text is still the one shown — please save the policy again or have it reviewed.",
+    "legalTextStored": "Show stored text"
   },
   "policyEditor": {
     "notifications": {
@@ -197,11 +197,6 @@
       "MEMBERSHIP": {
         "hint": "The consumer must be an active member of the dataspace. No further configuration required."
       },
-      "USE_CASE": {
-        "label": "Use cases",
-        "placeholder": "Select use cases",
-        "hint": "Select one or more use cases."
-      },
       "DATE_RANGE": {
         "label": "Time period",
         "startLabel": "Start date",
@@ -236,12 +231,6 @@
       "legalText": "The data consumer must be an active, verified member of the Construct-X dataspace at the time of data access. Access by non-members or organizations with suspended membership is excluded.",
       "summary": "active dataspace membership required"
     },
-    "USE_CASE": {
-      "label": "Use Case",
-      "description": "Restricted to selected use cases.",
-      "legalText": "Data usage is restricted to the selected use cases.",
-      "summaryEmpty": "no use cases selected yet"
-    },
     "DATE_RANGE": {
       "label": "Time period",
       "description": "Validity limited to a period from start to end date.",
@@ -253,19 +242,11 @@
       "legalText": "The consumer must have agreed to the DataExchangeGovernance framework agreement."
     }
   },
-  "useCase": {
-    "bim-coordination": "BIM coordination",
-    "quality-assurance": "Quality assurance",
-    "material-testing": "Material testing",
-    "site-documentation": "Site documentation",
-    "geodata": "Geodata"
-  },
   "legalDescription": {
     "unrestricted": "This policy contains no restrictions. Access to and usage of the provided data is permitted without limitation.",
     "introAccess": "Access to the provided data is only permitted under the following conditions:",
     "introContract": "Usage of the provided data is only permitted under the following conditions:",
     "clause": {
-      "useCase": "The data may only be processed within the scope of the following use cases: {{list}}. Any usage for other purposes is prohibited.",
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
       "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place."
     }
@@ -275,7 +256,6 @@
     "policyIdTooLong": "Policy ID must be at most 200 characters long",
     "categoryRequired": "A category must be selected",
     "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
-    "useCaseRequired": "At least one use case must be selected",
     "dateRangeStartRequired": "Start date is required",
     "dateRangeStartInvalid": "Start date is invalid",
     "dateRangeStartInPast": "Start date must be in the future",

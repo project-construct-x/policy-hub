@@ -1,7 +1,7 @@
 import { Policy, PolicyCategory } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { Page, PageRequest } from '@shared/types/page.model';
-import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/use-case-options.data';
+import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 import { BehaviorSubject } from 'rxjs';
 
 export type PolicyMockMode = 'empty' | 'few' | 'many';
@@ -79,19 +79,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           updatedAt: '2026-04-28T16:10:00Z',
         }),
         buildPolicy({
-          id: '00000000-0000-0000-0000-000000000003',
-          policyId: 'baustellendaten-qualitaetspruefung',
-          category: 'CONTRACT',
-          constraints: [
-            {
-              type: 'USE_CASE',
-              useCases: ['UC.quality-assurance', 'UC.material-testing'],
-            },
-          ],
-          createdAt: '2026-02-20T14:00:00Z',
-          updatedAt: '2026-04-24T11:30:00Z',
-        }),
-        buildPolicy({
           id: '00000000-0000-0000-0000-000000000004',
           policyId: 'geodaten-bis-2027',
           category: 'CONTRACT',
@@ -128,10 +115,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           category: 'ACCESS',
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
-            {
-              type: 'USE_CASE',
-              useCases: ['UC.quality-assurance', 'UC.material-testing'],
-            },
             { type: 'DATE_RANGE', startDate: '2026-08-01', endDate: '2027-07-31' },
           ],
           createdAt: '2026-03-01T09:00:00Z',
@@ -147,7 +130,6 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           category: 'CONTRACT',
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
-            { type: 'USE_CASE', useCases: ['UC.site-documentation', 'UC.bim-coordination'] },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
             { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
           ],
@@ -169,10 +151,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           id: '00000000-0000-0000-0000-000000000010',
           policyId: 'qualitaetssicherung-befristet-2027',
           category: 'CONTRACT',
-          constraints: [
-            { type: 'USE_CASE', useCases: ['UC.quality-assurance'] },
-            { type: 'DATE_RANGE', startDate: '2026-07-01', endDate: '2027-12-31' },
-          ],
+          constraints: [{ type: 'DATE_RANGE', startDate: '2026-07-01', endDate: '2027-12-31' }],
           createdAt: '2026-02-15T10:00:00Z',
           updatedAt: '2026-04-18T08:45:00Z',
         }),

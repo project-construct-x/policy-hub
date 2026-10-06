@@ -5,14 +5,11 @@ import {
   CONSTRAINT_METADATA,
   keepKnownConstraints,
 } from '@features/policies/builder/metadata/constraint-metadata';
-import {
-  FRAMEWORK_AGREEMENT_VALUE,
-  USE_CASE_OPTIONS,
-} from '@features/policies/builder/metadata/use-case-options.data';
+import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 
 /**
  * Anzeigewert für Constraint-Inhalte, die nicht aus der Metadaten-Registry stammen —
- * etwa weil das Backend einen unbekannten Use-Case oder Rahmenvertrag geliefert hat.
+ * etwa weil das Backend einen unbekannten Rahmenvertrag geliefert hat.
  */
 const UNKNOWN_VALUE = '—';
 
@@ -135,14 +132,6 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
   const base = transloco.translate(meta.legalTextKey, undefined, lang);
 
   switch (c.type) {
-    case 'USE_CASE': {
-      const labels = c.useCases.map((id) => useCaseLabel(id, transloco, lang));
-      return transloco.translate(
-        'legalDescription.clause.useCase',
-        { list: joinList(labels) },
-        lang,
-      );
-    }
     case 'DATE_RANGE':
       return transloco.translate(
         'legalDescription.clause.dateRange',
@@ -159,22 +148,6 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
     default:
       return base;
   }
-}
-
-/**
- * Übersetzt eine Use-Case-ID über die Registry. Der i18n-Key wird bewusst NICHT aus der ID
- * zusammengesetzt, sondern der Registry entnommen — sonst könnte eine ID aus dem Backend
- * einen beliebigen Key erzeugen (`useCase.<beliebig>`), dessen Auflösung bei fehlendem Key
- * den Key selbst zurückliefert und ihn so in den Rechtstext schreibt.
- */
-function useCaseLabel(id: string, transloco: TranslocoService, lang?: string): string {
-  const option = USE_CASE_OPTIONS.find((o) => o.id === id);
-  return option ? transloco.translate(option.labelKey, undefined, lang) : UNKNOWN_VALUE;
-}
-
-function joinList(items: string[]): string {
-  if (items.length <= 1) return items.join('');
-  return items.slice(0, -1).join(', ') + ' & ' + items[items.length - 1];
 }
 
 function formatDate(iso: string): string {
