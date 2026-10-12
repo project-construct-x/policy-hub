@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Das bestehende Angular-Frontend des Construct-X Policy Hub soll anhand der bereitgestellten Design-Screens umgesetzt werden.
+Das bestehende Angular-Frontend des Construct-X Policy Hub folgt dem Design aus der Pencil-Quelldatei.
 
 Die Anwendung ist aktuell ein Frontend-Prototyp mit Mock-Daten. Es soll keine Backend-Anbindung ergänzt werden.
 
@@ -10,19 +10,7 @@ Die Anwendung ist aktuell ein Frontend-Prototyp mit Mock-Daten. Es soll keine Ba
 
 Die Originalquelle des Designs:
 
-- `docs/design/source/Policy_hub.pen`
-
-## Screens
-
-Die finalen Screens liegen unter:
-
-- `docs/design/screens/home.png`
-- `docs/design/screens/policy-overview.png`
-- `docs/design/screens/policy-detail.png`
-- `docs/design/screens/policy-create.png`
-- `docs/design/screens/empty-state.png`
-- `docs/design/screens/error-state.png`
-- `docs/design/screens/loading-state.png`
+- `docs/design/Policy_hub.pen`
 
 ## Designrichtung
 
