@@ -16,6 +16,7 @@ npm test                               # Vitest headless (inkl. Coverage-Gate)
 npm run e2e                            # Cypress headless, startet Mock-Server selbst
 npm run build:prod                     # Prod-Build (Bundle-Budgets: 700kB Warnung / 1MB Fehler)
 ```
+
 Environments: `environment.ts` (`useMocks:false`), `environment.mocks.ts` (`useMocks:true`),
 `environment.production.ts` (`backendUrl:'/api'`).
 
@@ -29,7 +30,7 @@ Environments: `environment.ts` (`useMocks:false`), `environment.mocks.ts` (`useM
 - Schriften sind selbst gehostet (`src/fonts/`, Details `src/fonts/README.md`) — **keine**
   Google-Fonts-Links.
 - **Pfad-Aliase statt `../`-Importen:** `@pages/* @ui/* @services/* @shared/* @mocks/* @env
-  @features/policies/builder/*`.
+@features/policies/builder/*`.
 
 ## Code-Conventions
 
