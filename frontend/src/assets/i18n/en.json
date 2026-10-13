@@ -78,7 +78,7 @@
         "description": "Use cases of the Construct-X dataspace"
       },
       "rules": {
-        "label": "Rules",
+        "label": "Constraints",
         "description": "Number of configured constraints"
       }
     },
@@ -137,22 +137,22 @@
     "category": "Category",
     "lastChanged": "Last changed",
     "created": "Created",
-    "constraintCount": "Number of permissions",
+    "constraintCount": "Number of constraints",
     "alwaysTrue": "This policy has no constraints — it allows everything.",
     "odrlRetry": "Try again",
     "sections": {
-      "permissions": "Permissions",
-      "legalDescription": "Permissions explained",
+      "permissions": "Constraints",
+      "legalDescription": "Constraints explained",
       "technical": "Technical details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy could not be loaded.",
       "deleteSuccess": "Policy deleted.",
       "deleteError": "Policy could not be deleted.",
-      "unknownConstraints": "This policy contains unknown condition types. They are not displayed.",
+      "unknownConstraints": "This policy contains unknown constraint types. They are not displayed.",
       "odrlLoadError": "The backend ODRL document could not be loaded."
     },
-    "legalTextDiverged": "The stored explanation no longer matches the currently stored conditions. The stored text is still the one shown — please save the policy again or have it reviewed.",
+    "legalTextDiverged": "The stored explanation no longer matches the currently stored constraints. The stored text is still the one shown — please save the policy again or have it reviewed.",
     "legalTextStored": "Show stored text"
   },
   "policyEditor": {
@@ -162,7 +162,7 @@
       "createError": "Policy could not be created.",
       "updateSuccess": "Policy updated.",
       "updateError": "Policy could not be updated.",
-      "unknownConstraints": "This policy contains unknown condition types. They were removed from the editor."
+      "unknownConstraints": "This policy contains unknown constraint types. They were removed from the editor."
     }
   },
   "policyBuilder": {
@@ -278,7 +278,7 @@
     "dateRangeEndInvalid": "End date is invalid",
     "dateRangeEndInPast": "End date must be in the future",
     "dateRangeStartAfterEnd": "The start date must be before the end date",
-    "constraintUnknownType": "Unknown condition type — this condition is ignored.",
+    "constraintUnknownType": "Unknown constraint type — this constraint is ignored.",
     "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {

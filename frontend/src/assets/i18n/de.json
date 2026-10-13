@@ -78,7 +78,7 @@
         "description": "Use-Cases des Construct-X Datenraums"
       },
       "rules": {
-        "label": "Regeln",
+        "label": "Constraints",
         "description": "Anzahl konfigurierter Constraints"
       }
     },
@@ -137,22 +137,22 @@
     "category": "Kategorie",
     "lastChanged": "Zuletzt geändert",
     "created": "Erstellt",
-    "constraintCount": "Anzahl Berechtigungen",
-    "alwaysTrue": "Diese Policy enthält keine Einschränkungen — sie erlaubt alles.",
+    "constraintCount": "Anzahl Constraints",
+    "alwaysTrue": "Diese Policy enthält keine Constraints — sie erlaubt alles.",
     "odrlRetry": "Erneut versuchen",
     "sections": {
-      "permissions": "Berechtigungen",
-      "legalDescription": "Erläuterung der Berechtigungen",
+      "permissions": "Constraints",
+      "legalDescription": "Erläuterung der Constraints",
       "technical": "Technische Details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy konnte nicht geladen werden.",
       "deleteSuccess": "Policy wurde gelöscht.",
       "deleteError": "Policy konnte nicht gelöscht werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt.",
+      "unknownConstraints": "Die Policy enthält unbekannte Constraint-Typen. Diese werden nicht angezeigt.",
       "odrlLoadError": "Das ODRL-Dokument laut Backend konnte nicht geladen werden."
     },
-    "legalTextDiverged": "Die gespeicherte Erläuterung weicht von den aktuell hinterlegten Bedingungen ab. Angezeigt wird weiterhin der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
+    "legalTextDiverged": "Die gespeicherte Erläuterung weicht von den aktuell hinterlegten Constraints ab. Angezeigt wird weiterhin der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
     "legalTextStored": "Gespeicherten Text anzeigen"
   },
   "policyEditor": {
@@ -162,7 +162,7 @@
       "createError": "Policy konnte nicht erstellt werden.",
       "updateSuccess": "Policy wurde aktualisiert.",
       "updateError": "Policy konnte nicht aktualisiert werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese wurden aus dem Editor entfernt."
+      "unknownConstraints": "Die Policy enthält unbekannte Constraint-Typen. Diese wurden aus dem Editor entfernt."
     }
   },
   "policyBuilder": {
@@ -171,15 +171,15 @@
       "edit": "Policy bearbeiten"
     },
     "subtitle": {
-      "create": "Definieren Sie eine neue Policy mit eindeutiger Policy-ID, Kategorie und Bedingungen.",
-      "edit": "Bearbeiten Sie die Policy und ihre Bedingungen."
+      "create": "Definieren Sie eine neue Policy mit eindeutiger Policy-ID, Kategorie und Constraints.",
+      "edit": "Bearbeiten Sie die Policy und ihre Constraints."
     },
     "sections": {
       "identity": "Policy-ID",
       "category": "Kategorie",
       "categoryHint": "Wählen Sie, ob die Policy den Zugriff oder die Nutzung der Daten regelt.",
-      "constraints": "Bedingungen",
-      "constraintsHint": "Fügen Sie eine oder mehrere Bedingungen hinzu. Bei mehreren Bedingungen legen Sie fest, ob alle (UND) oder mindestens eine (ODER) erfüllt sein muss."
+      "constraints": "Constraints",
+      "constraintsHint": "Fügen Sie einen oder mehrere Constraints hinzu. Bei mehreren Constraints legen Sie fest, ob alle (UND) oder mindestens einer (ODER) erfüllt sein muss."
     },
     "policyId": {
       "label": "Policy-ID",
@@ -187,26 +187,26 @@
       "hint": "Vergeben Sie eine eindeutige ID ohne Leerzeichen (z.B. geodaten-zugriff-2027)."
     },
     "palette": {
-      "title": "Bedingung hinzufügen",
-      "subtitle": "Wählen Sie aus den verfügbaren Bedingungen für die gewählte Kategorie."
+      "title": "Constraint hinzufügen",
+      "subtitle": "Wählen Sie aus den verfügbaren Constraints für die gewählte Kategorie."
     },
     "andConnector": "UND",
     "orConnector": "ODER",
     "logicalOperator": {
-      "label": "Verknüpfung der Bedingungen",
-      "hint": "Legt fest, wie mehrere Bedingungen kombiniert werden.",
+      "label": "Verknüpfung der Constraints",
+      "hint": "Legt fest, wie mehrere Constraints kombiniert werden.",
       "AND": {
         "label": "UND",
-        "description": "Alle Bedingungen müssen erfüllt sein."
+        "description": "Alle Constraints müssen erfüllt sein."
       },
       "OR": {
         "label": "ODER",
-        "description": "Mindestens eine Bedingung muss erfüllt sein."
+        "description": "Mindestens ein Constraint muss erfüllt sein."
       }
     },
     "constraint": {
-      "empty": "Noch keine Bedingungen hinzugefügt. Ohne Bedingungen erlaubt diese Policy alles.",
-      "remove": "Bedingung entfernen",
+      "empty": "Noch keine Constraints hinzugefügt. Ohne Constraints erlaubt diese Policy alles.",
+      "remove": "Constraint entfernen",
       "MEMBERSHIP": {
         "hint": "Der Datenkonsument muss ein aktives Mitglied des Datenraums sein. Keine weiteren Angaben nötig."
       },
@@ -270,7 +270,7 @@
     "policyIdRequired": "Policy-ID ist erforderlich",
     "policyIdTooLong": "Policy-ID darf maximal 200 Zeichen lang sein",
     "categoryRequired": "Kategorie muss gewählt werden",
-    "constraintNotAllowedInCategory": "Diese Bedingung ist für die gewählte Kategorie nicht zulässig.",
+    "constraintNotAllowedInCategory": "Dieser Constraint ist für die gewählte Kategorie nicht zulässig.",
     "dateRangeStartRequired": "Startdatum ist erforderlich",
     "dateRangeStartInvalid": "Startdatum ist ungültig",
     "dateRangeStartInPast": "Startdatum muss in der Zukunft liegen",
@@ -278,7 +278,7 @@
     "dateRangeEndInvalid": "Enddatum ist ungültig",
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
     "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen",
-    "constraintUnknownType": "Unbekannter Bedingungstyp — diese Bedingung wird ignoriert.",
+    "constraintUnknownType": "Unbekannter Constraint-Typ — dieser Constraint wird ignoriert.",
     "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {
