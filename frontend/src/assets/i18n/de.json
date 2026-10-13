@@ -179,7 +179,7 @@
       "category": "Kategorie",
       "categoryHint": "Wählen Sie, ob die Policy den Zugriff oder die Nutzung der Daten regelt.",
       "constraints": "Bedingungen",
-      "constraintsHint": "Fügen Sie eine oder mehrere Bedingungen hinzu. Mehrere Bedingungen werden verknüpft."
+      "constraintsHint": "Fügen Sie eine oder mehrere Bedingungen hinzu. Bei mehreren Bedingungen legen Sie fest, ob alle (UND) oder mindestens eine (ODER) erfüllt sein muss."
     },
     "policyId": {
       "label": "Policy-ID",
@@ -191,6 +191,19 @@
       "subtitle": "Wählen Sie aus den verfügbaren Bedingungen für die gewählte Kategorie."
     },
     "andConnector": "UND",
+    "orConnector": "ODER",
+    "logicalOperator": {
+      "label": "Verknüpfung der Bedingungen",
+      "hint": "Legt fest, wie mehrere Bedingungen kombiniert werden.",
+      "AND": {
+        "label": "UND",
+        "description": "Alle Bedingungen müssen erfüllt sein."
+      },
+      "OR": {
+        "label": "ODER",
+        "description": "Mindestens eine Bedingung muss erfüllt sein."
+      }
+    },
     "constraint": {
       "empty": "Noch keine Bedingungen hinzugefügt. Ohne Bedingungen erlaubt diese Policy alles.",
       "remove": "Bedingung entfernen",
@@ -246,6 +259,8 @@
     "unrestricted": "Diese Policy enthält keine Einschränkungen. Der Zugriff auf die bereitgestellten Daten ist uneingeschränkt gestattet.",
     "introAccess": "Der Zugriff auf die bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
     "introContract": "Die Nutzung der bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
+    "introAccessAnyOf": "Der Zugriff auf die bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
+    "introContractAnyOf": "Die Nutzung der bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
     "clause": {
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
       "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf."

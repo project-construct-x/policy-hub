@@ -12,7 +12,7 @@ und über den **European Accessibility Act** (in Kraft seit Juni 2025) auch rech
 - **Sprache:** `<html lang>` wird bei DE/EN-Wechsel dynamisch aktualisiert; Titel neu übersetzt.
 - **Struktur:** semantische Tabelle in `con-x-policy-table` (`<table>`/`<th scope>`/`<caption>`),
   lückenlose Überschriften-Reihenfolge, `aria-current` in der Navigation.
-- **Formulare:** Labels/ARIA für Suche & Filter, Kategorie-Auswahl als `radiogroup` (Pfeiltasten),
+- **Formulare:** Labels/ARIA für Suche & Filter, Kategorie- und UND/ODER-Auswahl als `radiogroup` (Pfeiltasten),
   Palette-Toggles mit `aria-pressed`, Fehler-Ansage + Fokus auf erstes ungültiges Feld beim Absenden.
 - **Feedback:** Lade-/Fehlerzustände als Live-Regions (`role="status"`/`role="alert"`),
   Snackbar mit Icon + verstecktem Severity-Wort (nicht nur Farbe) und assertive Politeness für

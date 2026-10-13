@@ -332,3 +332,55 @@ describe('hasDivergingLegalText', () => {
     expect(hasDivergingLegalText({ ...policy, legalText: '' }, makeTransloco())).toBe(true);
   });
 });
+
+describe('buildLegalClauses — logische Verknüpfung (UND/ODER)', () => {
+  const two: Constraint[] = [
+    { type: 'MEMBERSHIP', value: 'active' },
+    { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+  ];
+
+  it('nutzt bei OR mit mehreren Bedingungen den "mindestens eine"-Einleitungssatz (ACCESS)', () => {
+    const { intro } = buildLegalClauses(
+      { category: 'ACCESS', constraints: two, logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(intro).toBe('legalDescription.introAccessAnyOf');
+  });
+
+  it('nutzt bei OR mit mehreren Bedingungen den "mindestens eine"-Einleitungssatz (CONTRACT)', () => {
+    const { intro } = buildLegalClauses(
+      { category: 'CONTRACT', constraints: two, logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(intro).toBe('legalDescription.introContractAnyOf');
+  });
+
+  it('bleibt bei AND und bei fehlendem logicalOperator beim gewohnten Einleitungssatz', () => {
+    const t = makeTransloco();
+    expect(
+      buildLegalClauses({ category: 'ACCESS', constraints: two, logicalOperator: 'AND' }, t).intro,
+    ).toBe('legalDescription.introAccess');
+    expect(buildLegalClauses({ category: 'ACCESS', constraints: two }, t).intro).toBe(
+      'legalDescription.introAccess',
+    );
+  });
+
+  it('bleibt bei OR mit nur einer Bedingung beim gewohnten Einleitungssatz (UND = ODER)', () => {
+    const { intro } = buildLegalClauses(
+      { category: 'CONTRACT', constraints: [two[0]], logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(intro).toBe('legalDescription.introContract');
+  });
+
+  it('meldet eine Abweichung, wenn der gespeicherte Text zur anderen Verknüpfung gehört', () => {
+    const t = makeTransloco();
+    const andText = buildLegalDescription({ category: 'ACCESS', constraints: two }, t, 'de');
+    expect(
+      hasDivergingLegalText(
+        { category: 'ACCESS', constraints: two, logicalOperator: 'OR', legalText: andText },
+        t,
+      ),
+    ).toBe(true);
+  });
+});

@@ -1,6 +1,6 @@
 import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
-import { Policy } from '@shared/types/policy.model';
+import { logicalOperatorOf, Policy } from '@shared/types/policy.model';
 import {
   CONSTRAINT_METADATA,
   keepKnownConstraints,
@@ -21,7 +21,10 @@ export interface LegalClause {
 }
 
 export interface LegalClauses {
-  /** Einleitungssatz (kategorieabhängig, bzw. der "unrestricted"-Text ohne Bedingungen). */
+  /**
+   * Einleitungssatz (abhängig von Kategorie und Verknüpfung, bzw. der "unrestricted"-Text ohne
+   * Bedingungen).
+   */
   intro: string;
   /** Je Constraint eine eigenständige Klausel (Titel + Text); leer ohne Bedingungen. */
   clauses: LegalClause[];
@@ -32,11 +35,15 @@ export interface LegalClauses {
  * Klausel. Grundlage für die Listendarstellung (ein Unterpunkt pro Bedingung) und für den
  * gespeicherten Text.
  *
+ * Bei ODER-Verknüpfung und mehr als einer Bedingung lautet der Einleitungssatz "mindestens eine
+ * der folgenden Voraussetzungen". Bei nur einer Bedingung sind UND und ODER gleichbedeutend; dann
+ * bleibt es beim gewohnten Einleitungssatz.
+ *
  * Mit `lang` kann eine feste Sprache erzwungen werden (z.B. 'de' für den zu speichernden Text,
  * unabhängig von der aktiven UI-Sprache). Ohne `lang` wird die aktuell aktive Sprache verwendet.
  */
 export function buildLegalClauses(
-  policy: Pick<Policy, 'category' | 'constraints'>,
+  policy: Pick<Policy, 'category' | 'constraints' | 'logicalOperator'>,
   transloco: TranslocoService,
   lang?: string,
 ): LegalClauses {
@@ -52,13 +59,8 @@ export function buildLegalClauses(
     };
   }
 
-  const intro = transloco.translate(
-    policy.category === 'ACCESS'
-      ? 'legalDescription.introAccess'
-      : 'legalDescription.introContract',
-    undefined,
-    lang,
-  );
+  const anyOf = logicalOperatorOf(policy) === 'OR' && constraints.length > 1;
+  const intro = transloco.translate(introKey(policy.category, anyOf), undefined, lang);
 
   const clauses = constraints.map((c) => ({
     title: transloco.translate(CONSTRAINT_METADATA[c.type].labelKey, undefined, lang),
@@ -77,7 +79,7 @@ export function buildLegalClauses(
  * Rückgabe bleibt ein String (Backend-Vertrag `legalText`); die Nummerierung ist locale-neutral.
  */
 export function buildLegalDescription(
-  policy: Pick<Policy, 'category' | 'constraints'>,
+  policy: Pick<Policy, 'category' | 'constraints' | 'logicalOperator'>,
   transloco: TranslocoService,
   lang?: string,
 ): string {
@@ -105,11 +107,19 @@ export function buildLegalDescription(
  * Ohne gespeicherten Text (ältere Datensätze) gibt es nichts zu vergleichen: `false`.
  */
 export function hasDivergingLegalText(
-  policy: Pick<Policy, 'category' | 'constraints' | 'legalText'>,
+  policy: Pick<Policy, 'category' | 'constraints' | 'logicalOperator' | 'legalText'>,
   transloco: TranslocoService,
 ): boolean {
   if (policy.legalText === undefined || policy.legalText === null) return false;
   return policy.legalText !== buildLegalDescription(policy, transloco, 'de');
+}
+
+/** Transloco-Keys bewusst ausgeschrieben statt zusammengesetzt (i18n-Regel: keine dynamischen Keys). */
+function introKey(category: Policy['category'], anyOf: boolean): string {
+  if (category === 'ACCESS') {
+    return anyOf ? 'legalDescription.introAccessAnyOf' : 'legalDescription.introAccess';
+  }
+  return anyOf ? 'legalDescription.introContractAnyOf' : 'legalDescription.introContract';
 }
 
 /**

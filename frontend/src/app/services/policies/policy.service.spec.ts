@@ -66,6 +66,7 @@ describe('PolicyService — Pfad-Konstruktion', () => {
         policyId: 'x',
         category: 'ACCESS',
         constraints: [],
+        logicalOperator: 'AND',
         legalText: '',
       })
       .subscribe();

@@ -19,7 +19,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
-import { Policy, PolicyCategory } from '@shared/types/policy.model';
+import {
+  DEFAULT_LOGICAL_OPERATOR,
+  LogicalOperator,
+  logicalOperatorOf,
+  Policy,
+  PolicyCategory,
+} from '@shared/types/policy.model';
 import {
   buildDefaultConstraint,
   CONSTRAINT_METADATA,
@@ -33,6 +39,8 @@ export interface PolicyDraft {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  /** Verknüpfung der Constraints (`odrl:and` / `odrl:or`). */
+  logicalOperator: LogicalOperator;
   /** Aus category + constraints erzeugter juristischer Text, der mit gespeichert wird. */
   legalText: string;
 }
@@ -68,9 +76,13 @@ export class PolicyBuilderComponent {
   /** Category options in visual order — drives radiogroup arrow-key navigation. */
   private readonly categoryOrder: PolicyCategory[] = ['ACCESS', 'CONTRACT'];
 
+  /** Logical-operator options in visual order — drives radiogroup arrow-key navigation. */
+  private readonly logicalOperatorOrder: LogicalOperator[] = ['AND', 'OR'];
+
   readonly policyId = signal('');
   readonly category = signal<PolicyCategory>('ACCESS');
   readonly constraints = signal<Constraint[]>([]);
+  readonly logicalOperator = signal<LogicalOperator>(DEFAULT_LOGICAL_OPERATOR);
   readonly submitted = signal(false);
 
   readonly existingConstraintTypes = computed<ConstraintType[]>(() =>
@@ -83,6 +95,11 @@ export class PolicyBuilderComponent {
       category: this.category(),
       constraints: this.constraints(),
     }),
+  );
+
+  /** Label zwischen den Constraint-Karten (UND/ODER). */
+  readonly connectorKey = computed(() =>
+    this.logicalOperator() === 'OR' ? 'policyBuilder.orConnector' : 'policyBuilder.andConnector',
   );
 
   readonly isValid = computed(() => this.validationErrors().length === 0);
@@ -108,6 +125,7 @@ export class PolicyBuilderComponent {
         this.policyId.set(initial.policyId);
         this.category.set(initial.category);
         this.constraints.set([...initial.constraints]);
+        this.logicalOperator.set(logicalOperatorOf(initial));
       });
     });
   }
@@ -121,21 +139,47 @@ export class PolicyBuilderComponent {
 
   /** Arrow-key navigation for the category radiogroup (WAI-ARIA radio pattern). */
   onCategoryKeydown(event: KeyboardEvent): void {
+    const nextIndex = this.nextRadioIndex(
+      event,
+      this.categoryOrder.indexOf(this.category()),
+      this.categoryOrder.length,
+    );
+    if (nextIndex === null) return;
+    this.selectCategory(this.categoryOrder[nextIndex]);
+    this.focusRadio(event, nextIndex);
+  }
+
+  selectLogicalOperator(op: LogicalOperator): void {
+    this.logicalOperator.set(op);
+  }
+
+  /** Arrow-key navigation for the logical-operator radiogroup (WAI-ARIA radio pattern). */
+  onLogicalOperatorKeydown(event: KeyboardEvent): void {
+    const nextIndex = this.nextRadioIndex(
+      event,
+      this.logicalOperatorOrder.indexOf(this.logicalOperator()),
+      this.logicalOperatorOrder.length,
+    );
+    if (nextIndex === null) return;
+    this.selectLogicalOperator(this.logicalOperatorOrder[nextIndex]);
+    this.focusRadio(event, nextIndex);
+  }
+
+  /** Wrapping target index for an arrow key, or `null` if the key is not an arrow key. */
+  private nextRadioIndex(event: KeyboardEvent, currentIndex: number, count: number): number | null {
     const forwardKeys = ['ArrowRight', 'ArrowDown'];
     const backwardKeys = ['ArrowLeft', 'ArrowUp'];
-    if (!forwardKeys.includes(event.key) && !backwardKeys.includes(event.key)) return;
+    if (!forwardKeys.includes(event.key) && !backwardKeys.includes(event.key)) return null;
     event.preventDefault();
-
-    const count = this.categoryOrder.length;
-    const currentIndex = this.categoryOrder.indexOf(this.category());
     const step = forwardKeys.includes(event.key) ? 1 : -1;
-    const nextIndex = (currentIndex + step + count) % count;
+    return (currentIndex + step + count) % count;
+  }
 
-    this.selectCategory(this.categoryOrder[nextIndex]);
-
+  /** Moves focus to the radio at `index` within the radiogroup of the event target. */
+  private focusRadio(event: KeyboardEvent, index: number): void {
     const group = (event.currentTarget as HTMLElement).parentElement;
     const radios = group?.querySelectorAll<HTMLElement>('[role="radio"]');
-    radios?.[nextIndex]?.focus();
+    radios?.[index]?.focus();
   }
 
   private isConstraintAllowed(type: ConstraintType, cat: PolicyCategory): boolean {
@@ -176,13 +220,19 @@ export class PolicyBuilderComponent {
     }
     const category = this.category();
     const constraints = this.constraints();
+    const logicalOperator = this.logicalOperator();
     this.save.emit({
       policyId: this.policyId().trim(),
       category,
       constraints,
+      logicalOperator,
       // Gespeichert wird der Text immer auf Deutsch (rechtlich maßgeblich),
       // unabhängig von der aktiven UI-Sprache.
-      legalText: buildLegalDescription({ category, constraints }, this.transloco, 'de'),
+      legalText: buildLegalDescription(
+        { category, constraints, logicalOperator },
+        this.transloco,
+        'de',
+      ),
     });
   }
 

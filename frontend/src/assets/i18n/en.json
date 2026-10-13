@@ -179,7 +179,7 @@
       "category": "Category",
       "categoryHint": "Choose whether the policy governs access to or usage of the data.",
       "constraints": "Constraints",
-      "constraintsHint": "Add one or more constraints. Multiple constraints are combined."
+      "constraintsHint": "Add one or more constraints. With multiple constraints, choose whether all (AND) or at least one (OR) must be met."
     },
     "policyId": {
       "label": "Policy ID",
@@ -191,6 +191,19 @@
       "subtitle": "Choose from the constraints available for the selected category."
     },
     "andConnector": "AND",
+    "orConnector": "OR",
+    "logicalOperator": {
+      "label": "Combination of constraints",
+      "hint": "Defines how multiple constraints are combined.",
+      "AND": {
+        "label": "AND",
+        "description": "All constraints must be met."
+      },
+      "OR": {
+        "label": "OR",
+        "description": "At least one constraint must be met."
+      }
+    },
     "constraint": {
       "empty": "No constraints added yet. Without constraints this policy allows everything.",
       "remove": "Remove constraint",
@@ -246,6 +259,8 @@
     "unrestricted": "This policy contains no restrictions. Access to and usage of the provided data is permitted without limitation.",
     "introAccess": "Access to the provided data is only permitted under the following conditions:",
     "introContract": "Usage of the provided data is only permitted under the following conditions:",
+    "introAccessAnyOf": "Access to the provided data is permitted if at least one of the following conditions is met:",
+    "introContractAnyOf": "Usage of the provided data is permitted if at least one of the following conditions is met:",
     "clause": {
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
       "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place."

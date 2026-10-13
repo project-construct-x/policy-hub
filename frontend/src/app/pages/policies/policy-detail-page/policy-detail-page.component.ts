@@ -14,7 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
 import { PolicyService } from '@services/policies/policy.service';
 import { NotificationService } from '@services/notification/notification.service';
-import { Policy } from '@shared/types/policy.model';
+import { logicalOperatorOf, Policy } from '@shared/types/policy.model';
 import { RelativeDatePipe } from '@shared/pipes/relative-date.pipe';
 import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { ConXCategoryBadgeComponent } from '@ui/category-badge/con-x-category-badge.component';
@@ -54,6 +54,14 @@ export class PolicyDetailPageComponent implements OnInit {
   private readonly transloco = inject(TranslocoService);
 
   readonly policy = signal<Policy | null>(null);
+
+  /** Ältere Datensätze ohne `logicalOperator` gelten als UND (siehe {@link logicalOperatorOf}). */
+  readonly connectorKey = computed(() => {
+    const p = this.policy();
+    return p && logicalOperatorOf(p) === 'OR'
+      ? 'policyBuilder.orConnector'
+      : 'policyBuilder.andConnector';
+  });
   readonly loading = signal(true);
 
   /** Aktive UI-Sprache als Signal – sorgt dafür, dass die Anzeige bei Sprachwechsel neu berechnet wird. */
