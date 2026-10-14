@@ -21,7 +21,7 @@
 
     p {
       margin: 0;
-      color: var(--con-x-text-hint, #2e2e2e);
+      color: var(--con-x-text-secondary, #454545);
       font-size: 0.875rem;
     }
   }
@@ -29,10 +29,6 @@
   &__field {
     width: 100%;
     max-width: 560px;
-
-    mat-hint {
-      color: var(--con-x-text-hint, #2e2e2e);
-    }
   }
 
   &__category-grid {
@@ -71,7 +67,7 @@
     small {
       display: block;
       margin-top: 0.25rem;
-      color: var(--con-x-text-hint, #2e2e2e);
+      color: #5b6b78;
       font-size: 0.8125rem;
     }
 
@@ -110,7 +106,7 @@
 
   &__logic-hint {
     margin: 0;
-    color: var(--con-x-text-hint, #2e2e2e);
+    color: var(--con-x-text-secondary, #454545);
     font-size: 0.875rem;
   }
 
@@ -142,7 +138,7 @@
     }
 
     small {
-      color: var(--con-x-text-hint, #2e2e2e);
+      color: #5b6b78;
       font-size: 0.8125rem;
     }
 
@@ -181,7 +177,7 @@
 
   &__empty {
     margin: 0.5rem 0 0;
-    color: var(--con-x-text-hint, #2e2e2e);
+    color: #5b6b78;
     font-style: italic;
     font-size: 0.875rem;
   }
