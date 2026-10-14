@@ -1,4 +1,4 @@
-import { Policy, PolicyCategory } from '@shared/types/policy.model';
+import { LogicalOperator, Policy, PolicyCategory } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { Page, PageRequest } from '@shared/types/page.model';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
@@ -50,10 +50,11 @@ function buildPolicy(params: {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  logicalOperator?: LogicalOperator;
   createdAt: string;
   updatedAt: string;
 }): Policy {
-  return { ...params };
+  return { logicalOperator: 'AND', ...params };
 }
 
 function generatePolicies(mode: PolicyMockMode): Policy[] {
@@ -101,6 +102,8 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           id: '00000000-0000-0000-0000-000000000006',
           policyId: 'bim-koordination-q2-2027',
           category: 'CONTRACT',
+          // Beispiel für eine ODER-Verknüpfung (Zeitraum wird im ODRL als inneres odrl:and ausgegeben).
+          logicalOperator: 'OR',
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
@@ -214,6 +217,7 @@ export function createMockedPolicy(data: {
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
+  logicalOperator?: LogicalOperator;
   legalText?: string;
 }): Policy {
   if (policies.length === 0 && getCurrentPolicyMockMode() !== 'empty') {
@@ -227,6 +231,8 @@ export function createMockedPolicy(data: {
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
+    // Wie das Backend: fehlt das Feld (älterer Client), gilt AND.
+    logicalOperator: data.logicalOperator ?? 'AND',
     createdAt: now,
     updatedAt: now,
     // Der Rechtstext wird vom Client erzeugt und laut Backend-Vertrag unverändert
@@ -243,6 +249,7 @@ export function updateMockedPolicy(
     policyId: string;
     category: PolicyCategory;
     constraints: Constraint[];
+    logicalOperator?: LogicalOperator;
     legalText?: string;
   },
 ): Policy | undefined {
@@ -257,6 +264,7 @@ export function updateMockedPolicy(
     policyId: data.policyId,
     category: data.category,
     constraints: data.constraints ?? [],
+    logicalOperator: data.logicalOperator ?? 'AND',
     legalText: data.legalText,
     updatedAt: new Date().toISOString(),
   };

@@ -10,6 +10,7 @@ public record Policy(
         String policyId,
         PolicyCategory category,
         List<JsonNode> constraints,
+        LogicalOperator logicalOperator,
         String legalText,
         Instant createdAt,
         Instant updatedAt

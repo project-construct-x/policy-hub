@@ -60,8 +60,8 @@
               @for (c of p.constraints; track $index; let last = $last) {
                 <app-constraint-card [constraint]="c" />
                 @if (!last) {
-                  <div class="pd__and-connector">
-                    <span>{{ t('policyBuilder.andConnector') }}</span>
+                  <div class="pd__logic-connector">
+                    <span data-cy="logic-connector">{{ t(connectorKey()) }}</span>
                   </div>
                 }
               }
