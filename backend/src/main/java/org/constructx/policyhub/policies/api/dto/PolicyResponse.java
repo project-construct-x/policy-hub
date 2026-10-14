@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 
 import java.time.Instant;
@@ -53,6 +54,15 @@ public class PolicyResponse {
                     """
     )
     private final List<JsonNode> constraints;
+
+    @Schema(
+            description = """
+                    Logical combination of the constraints: AND (odrl:and) or OR (odrl:or).
+                    """,
+            example = "AND",
+            allowableValues = {"AND", "OR"}
+    )
+    private final LogicalOperator logicalOperator;
 
     @Schema(
             description = """

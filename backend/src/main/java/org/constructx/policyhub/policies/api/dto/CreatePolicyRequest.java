@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 
 import java.util.List;
@@ -50,6 +51,19 @@ public record CreatePolicyRequest(
         )
         @NotNull(message = "constraints are required")
         List<JsonNode> constraints,
+
+        @Schema(
+                description = """
+                Logical combination of the constraints: AND (all must be fulfilled,
+                odrl:and) or OR (at least one must be fulfilled, odrl:or).
+                Optional; defaults to AND if omitted.
+                """,
+                example = "AND",
+                defaultValue = "AND",
+                allowableValues = {"AND", "OR"},
+                requiredMode = Schema.RequiredMode.NOT_REQUIRED
+        )
+        LogicalOperator logicalOperator,
 
         @Schema(
                 description = """

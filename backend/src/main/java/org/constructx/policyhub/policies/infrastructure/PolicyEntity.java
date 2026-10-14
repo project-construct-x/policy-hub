@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -46,6 +47,10 @@ public class PolicyEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "constraints", nullable = false, columnDefinition = "jsonb")
     private List<JsonNode> constraints;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "logical_operator", nullable = false, length = 3)
+    private LogicalOperator logicalOperator;
 
     @Column(name = "legal_text", nullable = false, columnDefinition = "text")
     private String legalText;

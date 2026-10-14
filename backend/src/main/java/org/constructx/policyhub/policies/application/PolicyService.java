@@ -6,6 +6,7 @@ import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.application.odrl.OdrlPolicyMapper;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.Policy;
 import org.constructx.policyhub.policies.infrastructure.PolicyEntity;
 import org.constructx.policyhub.policies.infrastructure.PolicyMapper;
@@ -83,6 +84,7 @@ public class PolicyService {
                 request.policyId(),
                 request.category(),
                 request.constraints(),
+                LogicalOperator.orDefault(request.logicalOperator()),
                 request.legalText(),
                 null,
                 null
@@ -139,6 +141,7 @@ public class PolicyService {
                 policy.policyId(),
                 policy.category(),
                 policy.constraints(),
+                policy.logicalOperator(),
                 policy.legalText(),
                 policy.createdAt(),
                 policy.updatedAt()

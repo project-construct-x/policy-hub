@@ -9,6 +9,7 @@ import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionRespon
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyResponse;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
 import org.constructx.policyhub.policies.application.PolicyService;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,6 +183,7 @@ class PolicyControllerTest {
                 "zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
                 List.of(membershipConstraint()),
+                LogicalOperator.AND,
                 "Der Zugriff ist aktiven Mitgliedern gestattet."
         );
 
@@ -206,6 +208,7 @@ class PolicyControllerTest {
                         .value("MEMBERSHIP"))
                 .andExpect(jsonPath("$.constraints[0].value")
                         .value("active"))
+                .andExpect(jsonPath("$.logicalOperator").value("AND"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Der Zugriff ist aktiven Mitgliedern gestattet."));
     }
@@ -240,6 +243,7 @@ class PolicyControllerTest {
                 "zugriff-konsortium-mitglieder-updated",
                 PolicyCategory.CONTRACT,
                 List.of(frameworkAgreementConstraint()),
+                LogicalOperator.AND,
                 "Aktualisierter juristischer Text."
         );
 
@@ -248,6 +252,7 @@ class PolicyControllerTest {
                 request.policyId(),
                 request.category(),
                 request.constraints(),
+                LogicalOperator.AND,
                 request.legalText(),
                 CREATED_AT,
                 UPDATED_AT
@@ -319,6 +324,7 @@ class PolicyControllerTest {
                 "zugriff-im-zeitraum",
                 PolicyCategory.ACCESS,
                 List.of(dateRange),
+                LogicalOperator.AND,
                 "Der Zugriff ist im angegebenen Zeitraum gestattet."
         );
 
@@ -327,6 +333,7 @@ class PolicyControllerTest {
                 request.policyId(),
                 request.category(),
                 request.constraints(),
+                LogicalOperator.AND,
                 request.legalText(),
                 CREATED_AT,
                 UPDATED_AT
@@ -364,6 +371,7 @@ class PolicyControllerTest {
                 policyId,
                 category,
                 constraints,
+                LogicalOperator.AND,
                 "Der Zugriff ist aktiven Mitgliedern gestattet.",
                 CREATED_AT,
                 UPDATED_AT
@@ -396,5 +404,132 @@ class PolicyControllerTest {
                   "agreement": "DataExchangeGovernance"
                 }
                 """);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withOrLogicalOperator_passesItThroughAndReturnsIt() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "mitglied-oder-rahmenvertrag",
+                  "category": "ACCESS",
+                  "constraints": [
+                    { "type": "MEMBERSHIP", "value": "active" },
+                    { "type": "FRAMEWORK_AGREEMENT", "agreement": "DataExchangeGovernance" }
+                  ],
+                  "logicalOperator": "OR",
+                  "legalText": "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist."
+                }
+                """;
+
+        when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
+                new PolicyResponse(
+                        POLICY_ID,
+                        "mitglied-oder-rahmenvertrag",
+                        PolicyCategory.ACCESS,
+                        List.of(membershipConstraint(), frameworkAgreementConstraint()),
+                        LogicalOperator.OR,
+                        "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist.",
+                        CREATED_AT,
+                        UPDATED_AT
+                )
+        );
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.logicalOperator").value("OR"));
+
+        verify(policyService).createPolicy(
+                argThat(request -> request.logicalOperator() == LogicalOperator.OR)
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withoutLogicalOperator_isAccepted() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "zugriff-konsortium-mitglieder",
+                  "category": "ACCESS",
+                  "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
+                  "legalText": "Der Zugriff ist aktiven Mitgliedern gestattet."
+                }
+                """;
+
+        when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
+                policyResponse(
+                        "zugriff-konsortium-mitglieder",
+                        PolicyCategory.ACCESS,
+                        List.of(membershipConstraint())
+                )
+        );
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.logicalOperator").value("AND"));
+
+        // The default (AND) is applied in the service, not during deserialization.
+        verify(policyService).createPolicy(
+                argThat(request -> request.logicalOperator() == null)
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withUnknownLogicalOperator_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "zugriff-konsortium-mitglieder",
+                  "category": "ACCESS",
+                  "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
+                  "logicalOperator": "XOR",
+                  "legalText": "Der Zugriff ist aktiven Mitgliedern gestattet."
+                }
+                """;
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_withOrLogicalOperator_passesItThrough() throws Exception {
+        UpdatePolicyRequest request = new UpdatePolicyRequest(
+                "zugriff-konsortium-mitglieder",
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint(), frameworkAgreementConstraint()),
+                LogicalOperator.OR,
+                "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist."
+        );
+
+        when(policyService.updatePolicy(eq(POLICY_ID), eq(request))).thenReturn(
+                new PolicyResponse(
+                        POLICY_ID,
+                        request.policyId(),
+                        request.category(),
+                        request.constraints(),
+                        request.logicalOperator(),
+                        request.legalText(),
+                        CREATED_AT,
+                        UPDATED_AT
+                )
+        );
+
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logicalOperator").value("OR"));
     }
 }
