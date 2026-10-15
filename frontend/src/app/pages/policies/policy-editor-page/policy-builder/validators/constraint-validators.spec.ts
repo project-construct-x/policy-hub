@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Constraint } from '@shared/types/constraint.model';
-import { Policy } from '@shared/types/policy.model';
+import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 
 import { validateConstraint, validatePolicyDraft } from './constraint-validators';
 
@@ -122,7 +122,12 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
 
 describe('validatePolicyDraft', () => {
   function draft(overrides: Partial<Policy> = {}): Partial<Policy> {
-    return { policyId: 'valid-policy', category: 'ACCESS', constraints: [], ...overrides };
+    return {
+      policyId: `${POLICY_ID_PREFIX}valid-policy`,
+      category: 'ACCESS',
+      constraints: [],
+      ...overrides,
+    };
   }
 
   it('liefert keine Fehler für einen gültigen Entwurf', () => {
@@ -136,9 +141,26 @@ describe('validatePolicyDraft', () => {
     });
   });
 
+  it('meldet policyIdRequired, wenn hinter dem Präfix nichts steht', () => {
+    expect(validatePolicyDraft(draft({ policyId: POLICY_ID_PREFIX }))).toContainEqual({
+      field: 'policyId',
+      messageKey: 'validation.policyIdRequired',
+    });
+  });
+
+  it('meldet policyIdPrefixMissing, wenn der Präfix fehlt oder verändert wurde', () => {
+    for (const policyId of ['valid-policy', 'con-x-pHub-valid-policy', 'CON-X-POLICYHUB-x']) {
+      expect(validatePolicyDraft(draft({ policyId }))).toContainEqual({
+        field: 'policyId',
+        messageKey: 'validation.policyIdPrefixMissing',
+      });
+    }
+  });
+
   it('akzeptiert genau 200 Zeichen und lehnt 201 ab (Grenzwert)', () => {
-    expect(validatePolicyDraft(draft({ policyId: 'a'.repeat(200) }))).toEqual([]);
-    expect(validatePolicyDraft(draft({ policyId: 'a'.repeat(201) }))).toContainEqual({
+    const fill = (length: number) => POLICY_ID_PREFIX + 'a'.repeat(length - POLICY_ID_PREFIX.length);
+    expect(validatePolicyDraft(draft({ policyId: fill(200) }))).toEqual([]);
+    expect(validatePolicyDraft(draft({ policyId: fill(201) }))).toContainEqual({
       field: 'policyId',
       messageKey: 'validation.policyIdTooLong',
     });
@@ -212,7 +234,7 @@ describe('validatePolicyDraft — unbekannter Constraint-Typ aus der API', () =>
  */
 describe('validatePolicyDraft — Zeichensatz der policyId', () => {
   function withId(policyId: string): Partial<Policy> {
-    return { policyId, category: 'ACCESS', constraints: [] };
+    return { policyId: `${POLICY_ID_PREFIX}${policyId}`, category: 'ACCESS', constraints: [] };
   }
 
   const accepted = [
@@ -221,6 +243,7 @@ describe('validatePolicyDraft — Zeichensatz der policyId', () => {
     'bim_koordination_2027',
     'e2e-neue-policy',
     'A1',
+    '.beginnt-mit-punkt',
   ];
 
   for (const id of accepted) {
@@ -234,7 +257,6 @@ describe('validatePolicyDraft — Zeichensatz der policyId', () => {
     ['Blank-Node-Referenz', '_:b0'],
     ['Leerzeichen', 'policy mit leerzeichen'],
     ['Pfadtrenner', '../andere-policy'],
-    ['führender Punkt', '.versteckt'],
     ['spitze Klammern', 'policy<script>'],
   ];
 

@@ -184,7 +184,7 @@
     "policyId": {
       "label": "Policy-ID",
       "placeholder": "z.B. meine-policy-01",
-      "hint": "Vergeben Sie eine eindeutige ID ohne Leerzeichen (z.B. geodaten-zugriff-2027)."
+      "hint": "Vergeben Sie dahinter eine eindeutige ID ohne Leerzeichen (z.B. geodaten-zugriff-2027)."
     },
     "palette": {
       "title": "Constraint hinzufügen",
@@ -268,7 +268,8 @@
   },
   "validation": {
     "policyIdRequired": "Policy-ID ist erforderlich",
-    "policyIdTooLong": "Policy-ID darf maximal 200 Zeichen lang sein",
+    "policyIdTooLong": "Policy-ID darf inklusive Präfix maximal 200 Zeichen lang sein",
+    "policyIdPrefixMissing": "Die Policy-ID muss mit „con-x-policyHub-“ beginnen",
     "categoryRequired": "Kategorie muss gewählt werden",
     "constraintNotAllowedInCategory": "Dieser Constraint ist für die gewählte Kategorie nicht zulässig.",
     "dateRangeStartRequired": "Startdatum ist erforderlich",

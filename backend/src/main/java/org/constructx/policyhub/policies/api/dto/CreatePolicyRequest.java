@@ -4,22 +4,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
+import org.constructx.policyhub.policies.domain.PolicyId;
 
 import java.util.List;
 
 public record CreatePolicyRequest(
 
         @Schema(
-                description = "Unique business identifier defined by the client",
-                example = "zugriff-konsortium-mitglieder",
+                description = "Unique business identifier. Must start with the fixed prefix con-x-policyHub-",
+                example = "con-x-policyHub-zugriff-konsortium-mitglieder",
                 minLength = 1,
                 maxLength = 200
         )
         @NotBlank(message = "policyId must not be blank")
         @Size(max = 200, message = "policyId must not exceed 200 characters")
+        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-policyHub-")
         String policyId,
 
         @Schema(

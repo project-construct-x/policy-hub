@@ -4,6 +4,8 @@
 // Wichtig: Mirage-State lebt nur innerhalb einer Seiten-Session → Verifikation über
 // In-App-Navigation (Klick), nicht über ein erneutes cy.visit.
 
+const POLICY_ID_PREFIX = 'con-x-policyHub-';
+
 describe('Policy – Erstellen', () => {
   it('erstellt eine Policy mit MEMBERSHIP-Bedingung und zeigt sie im Detail', () => {
     const newId = 'e2e-neue-policy';
@@ -19,13 +21,20 @@ describe('Policy – Erstellen', () => {
     cy.getByCy('submit-policy').click();
 
     // Erfolg: Weiterleitung auf die Detailseite der neuen Policy + Erfolgs-Snackbar.
-    cy.getByCy('policy-title').should('have.text', newId);
+    cy.getByCy('policy-title').should('have.text', `${POLICY_ID_PREFIX}${newId}`);
     cy.getByCy('snackbar-success').should('exist');
 
     // In der Übersicht wiederfinden (In-App-Navigation, damit Mirage-State erhalten bleibt).
     cy.getByCy('back-to-overview').click();
-    cy.getByCy('policy-row').should('have.attr', 'aria-label', newId);
+    cy.getByCy('policy-row').should('have.attr', 'aria-label', `${POLICY_ID_PREFIX}${newId}`);
     cy.getByCy('policy-row').should('have.length', 7); // 6 + 1 neu
+  });
+
+  it('zeigt den festen Präfix vor dem ID-Feld und kann ihn nicht verändern', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('policyId-prefix').should('have.text', POLICY_ID_PREFIX);
+    cy.getByCy('policyId-input').should('have.value', '');
   });
 
   it('blockiert das Speichern bei leerer policyId und zeigt einen Inline-Fehler', () => {

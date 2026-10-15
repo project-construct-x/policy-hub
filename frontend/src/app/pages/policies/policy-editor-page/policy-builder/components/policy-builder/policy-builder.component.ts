@@ -13,10 +13,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TranslocoDirective, TranslocoService } from '@jsverse/transloco';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { ErrorStateMatcher } from '@angular/material/core';
 import { ConXButtonComponent } from '@ui/button/con-x-button.component';
 import { Constraint, ConstraintType } from '@shared/types/constraint.model';
 import {
@@ -25,6 +22,7 @@ import {
   logicalOperatorOf,
   Policy,
   PolicyCategory,
+  POLICY_ID_PREFIX,
 } from '@shared/types/policy.model';
 import {
   buildDefaultConstraint,
@@ -50,8 +48,6 @@ export interface PolicyDraft {
   imports: [
     FormsModule,
     TranslocoDirective,
-    MatFormFieldModule,
-    MatInputModule,
     MatIconModule,
     ConXButtonComponent,
     ConstraintPaletteComponent,
@@ -79,7 +75,13 @@ export class PolicyBuilderComponent {
   /** Logical-operator options in visual order — drives radiogroup arrow-key navigation. */
   private readonly logicalOperatorOrder: LogicalOperator[] = ['AND', 'OR'];
 
+  /** Fester, nicht editierbarer Präfix der Policy-ID (im Template vor dem Eingabefeld). */
+  readonly policyIdPrefix = POLICY_ID_PREFIX;
+
+  /** Nur der vom Nutzer editierbare Teil hinter dem Präfix. */
   readonly policyId = signal('');
+  /** Vollständige Policy-ID inkl. Präfix — das, was validiert und gespeichert wird. */
+  private readonly fullPolicyId = computed(() => `${POLICY_ID_PREFIX}${this.policyId().trim()}`);
   readonly category = signal<PolicyCategory>('ACCESS');
   readonly constraints = signal<Constraint[]>([]);
   readonly logicalOperator = signal<LogicalOperator>(DEFAULT_LOGICAL_OPERATOR);
@@ -91,7 +93,7 @@ export class PolicyBuilderComponent {
 
   readonly validationErrors = computed(() =>
     validatePolicyDraft({
-      policyId: this.policyId().trim(),
+      policyId: this.fullPolicyId(),
       category: this.category(),
       constraints: this.constraints(),
     }),
@@ -109,20 +111,16 @@ export class PolicyBuilderComponent {
     return this.validationErrors().find((e) => e.field === 'policyId')?.messageKey ?? null;
   });
 
-  // Die Fehleranzeige des policyId-Felds wird exakt an unsere eigene Validierung gekoppelt:
-  // Materials native Validatoren (`required`) decken nicht alle Regeln ab (z.B. "zu lang").
-  // Damit der Matcher überhaupt greift, braucht das Feld ein NgControl — dafür ist im Template
-  // `[ngModel]` gesetzt; nur dann ruft MatInput `updateErrorState()` und damit diesen Matcher auf.
-  readonly policyIdErrorStateMatcher: ErrorStateMatcher = {
-    isErrorState: () => this.policyIdError() !== null,
-  };
-
   constructor() {
     effect(() => {
       const initial = this.initialPolicy();
       if (!initial) return;
       untracked(() => {
-        this.policyId.set(initial.policyId);
+        this.policyId.set(
+          initial.policyId.startsWith(POLICY_ID_PREFIX)
+            ? initial.policyId.slice(POLICY_ID_PREFIX.length)
+            : initial.policyId,
+        );
         this.category.set(initial.category);
         this.constraints.set([...initial.constraints]);
         this.logicalOperator.set(logicalOperatorOf(initial));
@@ -222,7 +220,7 @@ export class PolicyBuilderComponent {
     const constraints = this.constraints();
     const logicalOperator = this.logicalOperator();
     this.save.emit({
-      policyId: this.policyId().trim(),
+      policyId: this.fullPolicyId(),
       category,
       constraints,
       logicalOperator,

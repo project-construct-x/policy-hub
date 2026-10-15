@@ -5,26 +5,45 @@
       <h2>{{ t('policyBuilder.sections.identity') }}</h2>
     </header>
 
-    <mat-form-field appearance="outline" class="pb__field">
-      <mat-label>{{ t('policyBuilder.policyId.label') }}</mat-label>
-      <input
-        matInput
-        type="text"
-        name="policyId"
-        [ngModel]="policyId()"
-        (ngModelChange)="onPolicyIdInput($event)"
-        [placeholder]="t('policyBuilder.policyId.placeholder')"
-        [errorStateMatcher]="policyIdErrorStateMatcher"
-        autocomplete="off"
-        required
-        data-cy="policyId-input"
-      />
+    <div class="pb__id-group">
+      <label class="pb__id-label" for="pb-policy-id">
+        {{ t('policyBuilder.policyId.label') }}
+        <span aria-hidden="true">*</span>
+      </label>
+      <div class="pb__id-control" [class.pb__id-control--error]="policyIdError()">
+        <span class="pb__id-prefix" id="pb-policy-id-prefix" data-cy="policyId-prefix">{{
+          policyIdPrefix
+        }}</span>
+        <input
+          id="pb-policy-id"
+          class="pb__id-input"
+          type="text"
+          name="policyId"
+          [ngModel]="policyId()"
+          (ngModelChange)="onPolicyIdInput($event)"
+          [placeholder]="t('policyBuilder.policyId.placeholder')"
+          [attr.aria-invalid]="policyIdError() ? 'true' : null"
+          aria-describedby="pb-policy-id-prefix pb-policy-id-message"
+          autocomplete="off"
+          required
+          data-cy="policyId-input"
+        />
+      </div>
       @if (policyIdError()) {
-        <mat-error data-cy="policyId-error">{{ t(policyIdError()!) }}</mat-error>
+        <p
+          class="pb__id-message pb__id-message--error"
+          id="pb-policy-id-message"
+          role="alert"
+          data-cy="policyId-error"
+        >
+          {{ t(policyIdError()!) }}
+        </p>
       } @else {
-        <mat-hint>{{ t('policyBuilder.policyId.hint') }}</mat-hint>
+        <p class="pb__id-message" id="pb-policy-id-message">
+          {{ t('policyBuilder.policyId.hint') }}
+        </p>
       }
-    </mat-form-field>
+    </div>
   </section>
 
   <!-- Section: Category -->

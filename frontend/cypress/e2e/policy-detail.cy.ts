@@ -4,7 +4,7 @@
 
 // geodaten-bis-2027: CONTRACT mit 2 Bedingungen (MEMBERSHIP + DATE_RANGE).
 const POLICY_ID = '00000000-0000-0000-0000-000000000004';
-const POLICY_SLUG = 'geodaten-bis-2027';
+const POLICY_SLUG = 'con-x-policyHub-geodaten-bis-2027';
 
 describe('Policy – Detailansicht', () => {
   beforeEach(() => {

@@ -1,5 +1,5 @@
 import { Constraint } from '@shared/types/constraint.model';
-import { Policy } from '@shared/types/policy.model';
+import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 import {
   CONSTRAINT_METADATA,
   isKnownConstraintType,
@@ -25,8 +25,12 @@ export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   const errors: ValidationError[] = [];
 
   const id = (draft.policyId ?? '').trim();
-  if (!id) {
+  // `draft.policyId` ist die vollständige ID inkl. Präfix; ohne Anteil hinter dem Präfix gilt
+  // sie als nicht ausgefüllt.
+  if (!id || id === POLICY_ID_PREFIX) {
     errors.push({ field: 'policyId', messageKey: 'validation.policyIdRequired' });
+  } else if (!id.startsWith(POLICY_ID_PREFIX)) {
+    errors.push({ field: 'policyId', messageKey: 'validation.policyIdPrefixMissing' });
   } else if (id.length > 200) {
     errors.push({ field: 'policyId', messageKey: 'validation.policyIdTooLong' });
   } else if (!POLICY_ID_PATTERN.test(id)) {

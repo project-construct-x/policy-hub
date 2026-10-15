@@ -20,9 +20,12 @@ export function logicalOperatorOf(policy: {
   return policy.logicalOperator === 'OR' ? 'OR' : DEFAULT_LOGICAL_OPERATOR;
 }
 
+/** Fester Präfix jeder im Hub erstellten Policy-ID — macht die Herkunft eindeutig erkennbar. */
+export const POLICY_ID_PREFIX = 'con-x-policyHub-';
+
 export interface Policy {
   id: string;
-  /** Fachliche Policy-ID (z.B. "policy.use-case-quality-assurance"). */
+  /** Fachliche Policy-ID inkl. Präfix {@link POLICY_ID_PREFIX} (z.B. "con-x-policyHub-quality-assurance"). */
   policyId: string;
   category: PolicyCategory;
   constraints: Constraint[];
