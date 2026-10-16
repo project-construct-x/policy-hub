@@ -23,18 +23,15 @@ describe('Policy – Bearbeiten', () => {
     cy.location('pathname').should('eq', `/policies/${POLICY_ID}`);
   });
 
-  it('fügt eine weitere Bedingung hinzu (USE_CASE via mat-select)', () => {
+  it('fügt eine weitere Bedingung hinzu (FRAMEWORK_AGREEMENT)', () => {
     cy.visitWithMode(`/policies/${POLICY_ID}/edit`, 'few');
 
-    cy.getByCy('palette-USE_CASE').click();
-    cy.getByCy('usecase-select').click();
-    // Material-Overlay: erste Option wählen und Panel schließen.
-    cy.get('.mat-mdc-option').first().click();
-    cy.get('body').type('{esc}');
+    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
+    cy.getByCy('constraint-card-FRAMEWORK_AGREEMENT').should('exist');
 
     cy.getByCy('submit-policy').click();
 
     cy.getByCy('policy-title').should('exist');
-    cy.get('app-constraint-card').should('have.length', 2); // MEMBERSHIP + USE_CASE
+    cy.get('app-constraint-card').should('have.length', 2); // MEMBERSHIP + FRAMEWORK_AGREEMENT
   });
 });

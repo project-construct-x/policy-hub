@@ -25,7 +25,7 @@ describe('Policy – Erstellen', () => {
     // In der Übersicht wiederfinden (In-App-Navigation, damit Mirage-State erhalten bleibt).
     cy.getByCy('back-to-overview').click();
     cy.getByCy('policy-row').should('have.attr', 'aria-label', newId);
-    cy.getByCy('policy-row').should('have.length', 8); // 7 + 1 neu
+    cy.getByCy('policy-row').should('have.length', 7); // 6 + 1 neu
   });
 
   it('blockiert das Speichern bei leerer policyId und zeigt einen Inline-Fehler', () => {
@@ -38,18 +38,18 @@ describe('Policy – Erstellen', () => {
     cy.getByCy('policyId-error').should('be.visible');
   });
 
-  it('blockiert das Speichern bei USE_CASE-Bedingung ohne Auswahl und zeigt einen Inline-Fehler', () => {
+  it('blockiert das Speichern bei ZEITRAUM-Bedingung ohne Auswahl und zeigt einen Inline-Fehler', () => {
     cy.visitWithMode('/policies/new', 'few');
 
-    cy.getByCy('policyId-input').type('e2e-usecase-ohne-auswahl');
+    cy.getByCy('policyId-input').type('e2e-zeitraum-ohne-auswahl');
     cy.getByCy('category-access').click();
-    cy.getByCy('palette-USE_CASE').click();
+    cy.getByCy('palette-DATE_RANGE').click();
 
     cy.getByCy('submit-policy').click();
 
     // Speichern ist blockiert → wir bleiben auf der Editor-Seite, Fehler wird sichtbar angezeigt.
     cy.location('pathname').should('eq', '/policies/new');
-    cy.getByCy('usecase-error').should('be.visible');
+    cy.getByCy('daterange-start-error').should('be.visible');
   });
 
   it('erlaubt bei ZEITRAUM nur die Auswahl per Datepicker, kein manuelles Tippen im Feld', () => {

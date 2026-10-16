@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 import { FormsModule } from '@angular/forms';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
@@ -11,10 +10,8 @@ import {
   DateRangeConstraint,
   FrameworkAgreementConstraint,
   MembershipConstraint,
-  UseCaseConstraint,
 } from '@shared/types/constraint.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
-import { USE_CASE_OPTIONS } from '@features/policies/builder/metadata/use-case-options.data';
 import {
   ValidationError,
   validateConstraint,
@@ -30,7 +27,6 @@ function sameDateOrNull(a: Date | null, b: Date | null): boolean {
     FormsModule,
     TranslocoDirective,
     MatFormFieldModule,
-    MatSelectModule,
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -47,7 +43,6 @@ export class ConstraintEditorCardComponent {
   readonly constraintChange = output<Constraint>();
 
   readonly meta = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
-  readonly useCaseOptions = USE_CASE_OPTIONS;
   readonly minDate = new Date();
 
   readonly errors = computed<ValidationError[]>(() =>
@@ -88,12 +83,9 @@ export class ConstraintEditorCardComponent {
   }
 
   // `mat-error` wird von Material nur eingeblendet, wenn der zugehörige Control-Direktive
-  // (hier: mat-select bzw. matStartDate/matEndDate) einen NgControl mit errorState=true hat.
+  // (hier: matStartDate/matEndDate) einen NgControl mit errorState=true hat.
   // Deshalb ein `ngModel` je Feld im Template + ein darauf gekoppelter Matcher — analog
   // `policyIdErrorStateMatcher` in policy-builder.component.ts.
-  readonly useCasesErrorStateMatcher: ErrorStateMatcher = {
-    isErrorState: () => this.hasError('.useCases'),
-  };
   readonly startDateErrorStateMatcher: ErrorStateMatcher = {
     isErrorState: () => this.hasError('.startDate'),
   };
@@ -104,19 +96,11 @@ export class ConstraintEditorCardComponent {
   asMembership(c: Constraint): MembershipConstraint {
     return c as MembershipConstraint;
   }
-  asUseCase(c: Constraint): UseCaseConstraint {
-    return c as UseCaseConstraint;
-  }
   asDateRange(c: Constraint): DateRangeConstraint {
     return c as DateRangeConstraint;
   }
   asFramework(c: Constraint): FrameworkAgreementConstraint {
     return c as FrameworkAgreementConstraint;
-  }
-
-  onUseCaseChange(values: string[]): void {
-    const current = this.asUseCase(this.constraint());
-    this.constraintChange.emit({ ...current, useCases: values });
   }
 
   onStartDateChange(value: Date | null): void {

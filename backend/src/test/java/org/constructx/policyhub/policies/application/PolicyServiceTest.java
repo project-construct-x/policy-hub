@@ -8,6 +8,7 @@ import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
 import org.constructx.policyhub.policies.application.odrl.OdrlPolicyMapper;
 import org.constructx.policyhub.policies.domain.Policy;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.constructx.policyhub.policies.infrastructure.PolicyEntity;
 import org.constructx.policyhub.policies.infrastructure.PolicyMapper;
@@ -218,6 +219,7 @@ class PolicyServiceTest {
                         "zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
                         List.of(constraint),
+                        LogicalOperator.AND,
                         "Legal Text"
                 );
 
@@ -270,6 +272,7 @@ class PolicyServiceTest {
                         "duplicate-policy",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint()),
+                        LogicalOperator.AND,
                         "Legal Text"
                 );
 
@@ -307,6 +310,7 @@ class PolicyServiceTest {
                         "updated-policy",
                         PolicyCategory.ACCESS,
                         List.of(constraint),
+                        LogicalOperator.AND,
                         "Updated Legal Text"
                 );
 
@@ -317,6 +321,7 @@ class PolicyServiceTest {
                 request.policyId(),
                 request.category(),
                 request.constraints(),
+                LogicalOperator.AND,
                 request.legalText(),
                 CREATED_AT,
                 UPDATED_AT
@@ -367,6 +372,7 @@ class PolicyServiceTest {
                         "zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint()),
+                        LogicalOperator.AND,
                         "Legal Text"
                 );
 
@@ -409,6 +415,7 @@ class PolicyServiceTest {
                         "other-policy",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint()),
+                        LogicalOperator.AND,
                         "Legal Text"
                 );
 
@@ -443,6 +450,7 @@ class PolicyServiceTest {
                         "updated-policy",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint()),
+                        LogicalOperator.AND,
                         "Legal Text"
                 );
 
@@ -500,6 +508,7 @@ class PolicyServiceTest {
                 "zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
                 List.of(membershipConstraint()),
+                LogicalOperator.AND,
                 "Legal Text",
                 CREATED_AT,
                 UPDATED_AT
@@ -532,5 +541,74 @@ class PolicyServiceTest {
                   "value": "active"
                 }
                 """);
+    }
+
+    @Test
+    void createPolicy_defaultsMissingLogicalOperatorToAnd() throws Exception {
+        CreatePolicyRequest request =
+                new CreatePolicyRequest(
+                        "zugriff-konsortium-mitglieder",
+                        PolicyCategory.ACCESS,
+                        List.of(membershipConstraint()),
+                        null,
+                        "Legal Text"
+                );
+
+        PolicyEntity entity = createEntity();
+
+        when(policyRepository.existsByPolicyId(request.policyId()))
+                .thenReturn(false);
+        when(policyMapper.toEntity(any(Policy.class)))
+                .thenReturn(entity);
+        when(policyRepository.save(entity))
+                .thenReturn(entity);
+        when(policyMapper.toDomain(entity))
+                .thenReturn(createPolicy());
+
+        policyService.createPolicy(request);
+
+        verify(policyMapper).toEntity(
+                argThat(policy -> policy.logicalOperator() == LogicalOperator.AND)
+        );
+    }
+
+    @Test
+    void createPolicy_keepsOrLogicalOperatorAndReturnsIt() throws Exception {
+        CreatePolicyRequest request =
+                new CreatePolicyRequest(
+                        "zugriff-konsortium-mitglieder",
+                        PolicyCategory.ACCESS,
+                        List.of(membershipConstraint()),
+                        LogicalOperator.OR,
+                        "Legal Text"
+                );
+
+        PolicyEntity entity = createEntity();
+        Policy savedPolicy = new Policy(
+                ID,
+                request.policyId(),
+                request.category(),
+                request.constraints(),
+                LogicalOperator.OR,
+                request.legalText(),
+                CREATED_AT,
+                UPDATED_AT
+        );
+
+        when(policyRepository.existsByPolicyId(request.policyId()))
+                .thenReturn(false);
+        when(policyMapper.toEntity(any(Policy.class)))
+                .thenReturn(entity);
+        when(policyRepository.save(entity))
+                .thenReturn(entity);
+        when(policyMapper.toDomain(entity))
+                .thenReturn(savedPolicy);
+
+        PolicyResponse result = policyService.createPolicy(request);
+
+        assertEquals(LogicalOperator.OR, result.getLogicalOperator());
+        verify(policyMapper).toEntity(
+                argThat(policy -> policy.logicalOperator() == LogicalOperator.OR)
+        );
     }
 }

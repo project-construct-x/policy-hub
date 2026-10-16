@@ -17,11 +17,6 @@ public enum ConstraintType {
     MEMBERSHIP,
 
     /**
-     * Restricts data usage to one or more defined use cases.
-     */
-    USE_CASE,
-
-    /**
      * Restricts access or usage to a defined start and end date.
      */
     DATE_RANGE,

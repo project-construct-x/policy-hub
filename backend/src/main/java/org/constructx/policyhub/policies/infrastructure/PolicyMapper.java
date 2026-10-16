@@ -1,6 +1,7 @@
 package org.constructx.policyhub.policies.infrastructure;
 
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.Policy;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ public class PolicyMapper {
                 entity.getPolicyId(),
                 entity.getCategory(),
                 entity.getConstraints(),
+                LogicalOperator.orDefault(entity.getLogicalOperator()),
                 entity.getLegalText(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -25,6 +27,7 @@ public class PolicyMapper {
         entity.setPolicyId(domain.policyId());
         entity.setCategory(domain.category());
         entity.setConstraints(domain.constraints());
+        entity.setLogicalOperator(LogicalOperator.orDefault(domain.logicalOperator()));
         entity.setLegalText(domain.legalText());
         return entity;
     }
@@ -36,6 +39,7 @@ public class PolicyMapper {
         entity.setPolicyId(request.policyId());
         entity.setCategory(request.category());
         entity.setConstraints(request.constraints());
+        entity.setLogicalOperator(LogicalOperator.orDefault(request.logicalOperator()));
         entity.setLegalText(request.legalText());
     }
 }

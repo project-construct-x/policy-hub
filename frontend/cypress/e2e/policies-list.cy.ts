@@ -12,7 +12,7 @@ describe('Policies – Übersicht, Suche & Filter', () => {
 
   it('rendert alle Policies des "few"-Datensatzes', () => {
     cy.visitWithMode('/policies', 'few');
-    cy.getByCy('policy-row').should('have.length', 7);
+    cy.getByCy('policy-row').should('have.length', 6);
   });
 
   it('filtert per Suche nach policyId-Substring', () => {
@@ -27,7 +27,7 @@ describe('Policies – Übersicht, Suche & Filter', () => {
     cy.getByCy('category-filter').select('ACCESS');
     cy.getByCy('policy-row').should('have.length', 3);
     cy.getByCy('category-filter').select('CONTRACT');
-    cy.getByCy('policy-row').should('have.length', 4);
+    cy.getByCy('policy-row').should('have.length', 3);
   });
 
   it('zeigt den "keine Treffer"-Empty-State bei Suche+Filter ohne Ergebnis', () => {
@@ -44,7 +44,7 @@ describe('Policies – Übersicht, Suche & Filter', () => {
     cy.getByCy('policy-row').should('have.length', 8);
     cy.getByCy('pagination').should('exist');
     cy.getByCy('page-2').click();
-    cy.getByCy('policy-row').should('have.length', 2);
+    cy.getByCy('policy-row').should('have.length', 1);
   });
 
   // Regression: der Paginierungs-Text wurde früher imperativ im Component

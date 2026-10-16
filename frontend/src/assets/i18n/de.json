@@ -78,7 +78,7 @@
         "description": "Use-Cases des Construct-X Datenraums"
       },
       "rules": {
-        "label": "Regeln",
+        "label": "Constraints",
         "description": "Anzahl konfigurierter Constraints"
       }
     },
@@ -137,23 +137,23 @@
     "category": "Kategorie",
     "lastChanged": "Zuletzt geändert",
     "created": "Erstellt",
-    "constraintCount": "Anzahl Berechtigungen",
-    "alwaysTrue": "Diese Policy enthält keine Einschränkungen — sie erlaubt alles.",
+    "constraintCount": "Anzahl Constraints",
+    "alwaysTrue": "Diese Policy enthält keine Constraints — sie erlaubt alles.",
     "odrlRetry": "Erneut versuchen",
     "sections": {
-      "permissions": "Berechtigungen",
-      "legalDescription": "Juristische Beschreibung",
+      "permissions": "Constraints",
+      "legalDescription": "Erläuterung der Constraints",
       "technical": "Technische Details (ODRL / JSON-LD)"
     },
     "notifications": {
       "loadError": "Policy konnte nicht geladen werden.",
       "deleteSuccess": "Policy wurde gelöscht.",
       "deleteError": "Policy konnte nicht gelöscht werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese werden nicht angezeigt.",
+      "unknownConstraints": "Die Policy enthält unbekannte Constraint-Typen. Diese werden nicht angezeigt.",
       "odrlLoadError": "Das ODRL-Dokument laut Backend konnte nicht geladen werden."
     },
-    "legalTextDiverged": "Der gespeicherte Rechtstext weicht von den gespeicherten Bedingungen ab. Rechtlich maßgeblich ist der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
-    "legalTextStored": "Gespeicherten Rechtstext anzeigen"
+    "legalTextDiverged": "Die gespeicherte Erläuterung weicht von den aktuell hinterlegten Constraints ab. Angezeigt wird weiterhin der gespeicherte Text — bitte die Policy erneut speichern oder prüfen lassen.",
+    "legalTextStored": "Gespeicherten Text anzeigen"
   },
   "policyEditor": {
     "notifications": {
@@ -162,7 +162,7 @@
       "createError": "Policy konnte nicht erstellt werden.",
       "updateSuccess": "Policy wurde aktualisiert.",
       "updateError": "Policy konnte nicht aktualisiert werden.",
-      "unknownConstraints": "Die Policy enthält unbekannte Bedingungstypen. Diese wurden aus dem Editor entfernt."
+      "unknownConstraints": "Die Policy enthält unbekannte Constraint-Typen. Diese wurden aus dem Editor entfernt."
     }
   },
   "policyBuilder": {
@@ -171,15 +171,15 @@
       "edit": "Policy bearbeiten"
     },
     "subtitle": {
-      "create": "Definieren Sie eine neue Policy mit eindeutiger Policy-ID, Kategorie und Bedingungen.",
-      "edit": "Bearbeiten Sie die Policy und ihre Bedingungen."
+      "create": "Definieren Sie eine neue Policy mit eindeutiger Policy-ID, Kategorie und Constraints.",
+      "edit": "Bearbeiten Sie die Policy und ihre Constraints."
     },
     "sections": {
       "identity": "Policy-ID",
       "category": "Kategorie",
       "categoryHint": "Wählen Sie, ob die Policy den Zugriff oder die Nutzung der Daten regelt.",
-      "constraints": "Bedingungen",
-      "constraintsHint": "Fügen Sie eine oder mehrere Bedingungen hinzu. Mehrere Bedingungen werden verknüpft."
+      "constraints": "Constraints",
+      "constraintsHint": "Fügen Sie einen oder mehrere Constraints hinzu. Bei mehreren Constraints legen Sie fest, ob alle (UND) oder mindestens einer (ODER) erfüllt sein muss."
     },
     "policyId": {
       "label": "Policy-ID",
@@ -187,20 +187,28 @@
       "hint": "Vergeben Sie eine eindeutige ID ohne Leerzeichen (z.B. geodaten-zugriff-2027)."
     },
     "palette": {
-      "title": "Bedingung hinzufügen",
-      "subtitle": "Wählen Sie aus den verfügbaren Bedingungen für die gewählte Kategorie."
+      "title": "Constraint hinzufügen",
+      "subtitle": "Wählen Sie aus den verfügbaren Constraints für die gewählte Kategorie."
     },
     "andConnector": "UND",
+    "orConnector": "ODER",
+    "logicalOperator": {
+      "label": "Verknüpfung der Constraints",
+      "hint": "Legt fest, wie mehrere Constraints kombiniert werden.",
+      "AND": {
+        "label": "UND",
+        "description": "Alle Constraints müssen erfüllt sein."
+      },
+      "OR": {
+        "label": "ODER",
+        "description": "Mindestens ein Constraint muss erfüllt sein."
+      }
+    },
     "constraint": {
-      "empty": "Noch keine Bedingungen hinzugefügt. Ohne Bedingungen erlaubt diese Policy alles.",
-      "remove": "Bedingung entfernen",
+      "empty": "Noch keine Constraints hinzugefügt. Ohne Constraints erlaubt diese Policy alles.",
+      "remove": "Constraint entfernen",
       "MEMBERSHIP": {
         "hint": "Der Datenkonsument muss ein aktives Mitglied des Datenraums sein. Keine weiteren Angaben nötig."
-      },
-      "USE_CASE": {
-        "label": "Use-Cases",
-        "placeholder": "Use-Cases auswählen",
-        "hint": "Wählen Sie einen oder mehrere Use-Cases aus."
       },
       "DATE_RANGE": {
         "label": "Zeitraum",
@@ -236,12 +244,6 @@
       "legalText": "Der Datenkonsument muss zum Zeitpunkt des Datenzugriffs ein aktives, verifiziertes Mitglied des Construct-X Datenraums sein. Ein Zugriff durch Nicht-Mitglieder oder Organisationen mit ruhender Mitgliedschaft ist ausgeschlossen.",
       "summary": "aktive Dataspace-Mitgliedschaft erforderlich"
     },
-    "USE_CASE": {
-      "label": "Use Case",
-      "description": "Beschränkung auf ausgewählte Use-Cases.",
-      "legalText": "Die Datennutzung ist auf die ausgewählten Use-Cases beschränkt.",
-      "summaryEmpty": "noch keine Use-Cases gewählt"
-    },
     "DATE_RANGE": {
       "label": "Zeitraum",
       "description": "Gültigkeit auf einen Zeitraum von Start- bis Enddatum begrenzt.",
@@ -253,19 +255,13 @@
       "legalText": "Der Datenkonsument muss dem DataExchangeGovernance-Rahmenvertrag zugestimmt haben."
     }
   },
-  "useCase": {
-    "bim-coordination": "BIM-Koordination",
-    "quality-assurance": "Qualitätssicherung",
-    "material-testing": "Materialprüfung",
-    "site-documentation": "Baustellendokumentation",
-    "geodata": "Geodaten"
-  },
   "legalDescription": {
     "unrestricted": "Diese Policy enthält keine Einschränkungen. Der Zugriff auf die bereitgestellten Daten ist uneingeschränkt gestattet.",
     "introAccess": "Der Zugriff auf die bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
     "introContract": "Die Nutzung der bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
+    "introAccessAnyOf": "Der Zugriff auf die bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
+    "introContractAnyOf": "Die Nutzung der bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
     "clause": {
-      "useCase": "Die Daten dürfen ausschließlich im Rahmen der folgenden Use-Cases verarbeitet werden: {{list}}. Eine Nutzung zu anderen Zwecken ist nicht gestattet.",
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
       "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf."
     }
@@ -274,8 +270,7 @@
     "policyIdRequired": "Policy-ID ist erforderlich",
     "policyIdTooLong": "Policy-ID darf maximal 200 Zeichen lang sein",
     "categoryRequired": "Kategorie muss gewählt werden",
-    "constraintNotAllowedInCategory": "Diese Bedingung ist für die gewählte Kategorie nicht zulässig.",
-    "useCaseRequired": "Mindestens ein Use-Case muss gewählt werden",
+    "constraintNotAllowedInCategory": "Dieser Constraint ist für die gewählte Kategorie nicht zulässig.",
     "dateRangeStartRequired": "Startdatum ist erforderlich",
     "dateRangeStartInvalid": "Startdatum ist ungültig",
     "dateRangeStartInPast": "Startdatum muss in der Zukunft liegen",
@@ -283,7 +278,7 @@
     "dateRangeEndInvalid": "Enddatum ist ungültig",
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
     "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen",
-    "constraintUnknownType": "Unbekannter Bedingungstyp — diese Bedingung wird ignoriert.",
+    "constraintUnknownType": "Unbekannter Constraint-Typ — dieser Constraint wird ignoriert.",
     "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {

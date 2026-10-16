@@ -11,19 +11,17 @@ import {
 } from './constraint-metadata';
 
 describe('getAllowedConstraintTypes', () => {
-  it('erlaubt alle vier Typen (inkl. DATE_RANGE) für ACCESS', () => {
+  it('erlaubt alle drei Typen (inkl. DATE_RANGE) für ACCESS', () => {
     expect(getAllowedConstraintTypes('ACCESS')).toEqual([
       'MEMBERSHIP',
-      'USE_CASE',
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
     ]);
   });
 
-  it('erlaubt alle vier Typen für CONTRACT', () => {
+  it('erlaubt alle drei Typen für CONTRACT', () => {
     expect(getAllowedConstraintTypes('CONTRACT')).toEqual([
       'MEMBERSHIP',
-      'USE_CASE',
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
     ]);
@@ -33,10 +31,6 @@ describe('getAllowedConstraintTypes', () => {
 describe('buildDefaultConstraint', () => {
   it('MEMBERSHIP → value "active"', () => {
     expect(buildDefaultConstraint('MEMBERSHIP')).toEqual({ type: 'MEMBERSHIP', value: 'active' });
-  });
-
-  it('USE_CASE → leere useCases-Liste', () => {
-    expect(buildDefaultConstraint('USE_CASE')).toEqual({ type: 'USE_CASE', useCases: [] });
   });
 
   it('DATE_RANGE → leere Datumsangaben (per Validator ungültig, bis Nutzer welche wählt)', () => {

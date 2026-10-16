@@ -12,7 +12,7 @@ und über den **European Accessibility Act** (in Kraft seit Juni 2025) auch rech
 - **Sprache:** `<html lang>` wird bei DE/EN-Wechsel dynamisch aktualisiert; Titel neu übersetzt.
 - **Struktur:** semantische Tabelle in `con-x-policy-table` (`<table>`/`<th scope>`/`<caption>`),
   lückenlose Überschriften-Reihenfolge, `aria-current` in der Navigation.
-- **Formulare:** Labels/ARIA für Suche & Filter, Kategorie-Auswahl als `radiogroup` (Pfeiltasten),
+- **Formulare:** Labels/ARIA für Suche & Filter, Kategorie- und UND/ODER-Auswahl als `radiogroup` (Pfeiltasten),
   Palette-Toggles mit `aria-pressed`, Fehler-Ansage + Fokus auf erstes ungültiges Feld beim Absenden.
 - **Feedback:** Lade-/Fehlerzustände als Live-Regions (`role="status"`/`role="alert"`),
   Snackbar mit Icon + verstecktem Severity-Wort (nicht nur Farbe) und assertive Politeness für
@@ -38,12 +38,16 @@ Das **Marken-Orange `#e53d17`** wird auf Wunsch unverändert beibehalten. Dadurc
 | Links / gefüllte Button-Labels | `#e53d17` auf Weiß | ~4.2:1 | unter AA (Text) |
 | Kategorie-Badge „contract" | `#e53d17` auf `#ebd8d0` | ~3.1:1 | unter AA |
 | Typ-Badge (gelb) | `#f08109` auf `#f4e7d4` | ~2.2:1 | deutlich unter AA |
-| Tertiärtext | `#767676` auf `#fafafa` | grenzwertig | knapp unter AA |
 
 Diese Punkte sind **nicht** Teil der aktuellen Umsetzung. Für volle AA-Konformität beim Text-Kontrast
 müsste eine dunklere Textvariante des Markenorange (z.B. nur für Text/Links/kleine Labels) oder eine
 Anpassung der Badge-Farbpaare eingeführt werden — als bewusste Design-Entscheidung in einem
 Folgeschritt.
+
+**Behoben:** Sekundär-/Tertiärtext (`--con-x-text-secondary`/`-tertiary`) waren zu hell — der
+Tertiärton (`#767676` auf `#fafafa`, ~4.35:1) lag knapp unter AA 1.4.3. Beide Töne wurden
+abgedunkelt (`#555555` → `#454545`, `#767676` → `#636363`); jetzt 9.19:1 bzw. 5.76:1 auf
+`#fafafa`, bei erhaltener dreistufiger Hierarchie primär/sekundär/tertiär.
 
 ## Manuelle Verifikation (empfohlen vor Releases)
 

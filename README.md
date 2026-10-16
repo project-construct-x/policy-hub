@@ -43,9 +43,8 @@ This is a monorepo:
 
 - Developer conventions, architecture decisions and coding guidelines are documented in
   [CLAUDE.md](./CLAUDE.md) — the single source of truth for how this repository is built.
-- UI/UX reference: [docs/design/policy-hub-design.md](./docs/design/policy-hub-design.md) and
-  `docs/design/screens/`; the design source is a Pencil file
-  (`docs/design/Policy_hub.pen`).
+- UI/UX reference: [docs/design/policy-hub-design.md](./docs/design/policy-hub-design.md); the
+  design source is a Pencil file (`docs/design/Policy_hub.pen`).
 - Accessibility: [docs/accessibility.md](./docs/accessibility.md) documents the WCAG 2.2 AA
   target and known residual risks.
 

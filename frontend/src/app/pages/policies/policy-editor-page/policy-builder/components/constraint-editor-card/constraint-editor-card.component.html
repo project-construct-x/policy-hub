@@ -17,30 +17,6 @@
         </p>
       }
 
-      @case ('USE_CASE') {
-        <mat-form-field appearance="outline" class="ce-card__field">
-          <mat-label>{{ t('policyBuilder.constraint.USE_CASE.label') }}</mat-label>
-          <mat-select
-            multiple
-            [name]="'useCases-' + index()"
-            [ngModel]="asUseCase(constraint()).useCases"
-            (ngModelChange)="onUseCaseChange($event)"
-            [errorStateMatcher]="useCasesErrorStateMatcher"
-            [placeholder]="t('policyBuilder.constraint.USE_CASE.placeholder')"
-            data-cy="usecase-select"
-          >
-            @for (opt of useCaseOptions; track opt.id) {
-              <mat-option [value]="opt.id">{{ t(opt.labelKey) }}</mat-option>
-            }
-          </mat-select>
-          @if (hasError('.useCases')) {
-            <mat-error data-cy="usecase-error">{{ t(errorKey('.useCases')!) }}</mat-error>
-          } @else {
-            <mat-hint>{{ t('policyBuilder.constraint.USE_CASE.hint') }}</mat-hint>
-          }
-        </mat-form-field>
-      }
-
       @case ('DATE_RANGE') {
         <mat-form-field
           appearance="outline"

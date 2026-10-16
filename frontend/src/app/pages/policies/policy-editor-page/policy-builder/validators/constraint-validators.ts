@@ -99,12 +99,6 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
       }
       break;
     }
-    case 'USE_CASE': {
-      if (!constraint.useCases || constraint.useCases.length === 0) {
-        errors.push({ field: `${prefix}.useCases`, messageKey: 'validation.useCaseRequired' });
-      }
-      break;
-    }
     case 'MEMBERSHIP':
     case 'FRAMEWORK_AGREEMENT':
       break;

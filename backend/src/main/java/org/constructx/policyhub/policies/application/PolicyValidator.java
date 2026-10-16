@@ -1,6 +1,7 @@
 package org.constructx.policyhub.policies.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.constructx.policyhub.policies.domain.ConstraintType;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.springframework.stereotype.Component;
 
@@ -9,47 +10,15 @@ import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
 
 @Component
 public class PolicyValidator {
-
-    private static final Set<String> SUPPORTED_TYPES = Set.of(
-            "MEMBERSHIP",
-            "USE_CASE",
-            "DATE_RANGE",
-            "FRAMEWORK_AGREEMENT"
-    );
-
-    private static final Map<String, Set<PolicyCategory>> ALLOWED_CATEGORIES =
-            Map.of(
-                    "MEMBERSHIP",
-                    Set.of(
-                            PolicyCategory.ACCESS,
-                            PolicyCategory.CONTRACT
-                    ),
-                    "USE_CASE",
-                    Set.of(
-                            PolicyCategory.ACCESS,
-                            PolicyCategory.CONTRACT
-                    ),
-                    "DATE_RANGE",
-                    Set.of(
-                            PolicyCategory.ACCESS,
-                            PolicyCategory.CONTRACT
-                    ),
-                    "FRAMEWORK_AGREEMENT",
-                    Set.of(
-                            PolicyCategory.ACCESS,
-                            PolicyCategory.CONTRACT
-                    )
-            );
 
     public void validate(
             PolicyCategory category,
             List<JsonNode> constraints
     ) {
-        Set<String> encounteredTypes = new HashSet<>();
+        Set<ConstraintType> encounteredTypes = new HashSet<>();
 
         for (int index = 0; index < constraints.size(); index++) {
             JsonNode constraint = constraints.get(index);
@@ -69,22 +38,40 @@ public class PolicyValidator {
                 );
             }
 
-            String type = typeNode.asText();
-
-            if (!SUPPORTED_TYPES.contains(type)) {
-                throw new InvalidPolicyException(
-                        "Unsupported constraint type: " + type
-                );
-            }
+            String rawType = typeNode.asText();
+            ConstraintType type = parseType(rawType);
 
             if (!encounteredTypes.add(type)) {
                 throw new InvalidPolicyException(
-                        "Constraint type may only occur once: " + type
+                        "Constraint type may only occur once: " + rawType
                 );
             }
 
             validateConstraint(type, constraint, index);
             validateCategoryCompatibility(category, type, index);
+        }
+    }
+
+    /**
+     * Parses the raw, untrusted {@code type} string from the request body into the known
+     * {@link ConstraintType}.
+     *
+     * <p>This is the single point where untrusted input crosses into the enum. Every
+     * constraint type the system knows about is defined exactly once, in
+     * {@link ConstraintType} itself — {@link #validateConstraint} and
+     * {@link #allowedCategories} both switch over that enum without a {@code default} branch,
+     * so adding or removing a value there is enough to make this class fail to compile until
+     * both are updated to match. A type can no longer be silently out of sync between this
+     * class and the enum, the way a hand-maintained {@code Set<String>}/{@code Map<String, ...>}
+     * of type names could be.</p>
+     */
+    private ConstraintType parseType(String rawType) {
+        try {
+            return ConstraintType.valueOf(rawType);
+        } catch (IllegalArgumentException exception) {
+            throw new InvalidPolicyException(
+                    "Unsupported constraint type: " + rawType
+            );
         }
     }
 
@@ -156,24 +143,17 @@ public class PolicyValidator {
     }
 
     private void validateConstraint(
-            String type,
+            ConstraintType type,
             JsonNode constraint,
             int index
     ) {
         switch (type) {
-            case "MEMBERSHIP" ->
+            case MEMBERSHIP ->
                     validateMembership(constraint, index);
-            case "USE_CASE" ->
-                    validateUseCase(constraint, index);
-            case "DATE_RANGE" ->
+            case DATE_RANGE ->
                     validateDateRange(constraint, index);
-            case "FRAMEWORK_AGREEMENT" ->
+            case FRAMEWORK_AGREEMENT ->
                     validateFrameworkAgreement(constraint, index);
-            default ->
-                    throw new InvalidPolicyException(
-                            "constraints[" + index
-                                    + "].type is unsupported: " + type
-                    );
         }
     }
 
@@ -194,25 +174,6 @@ public class PolicyValidator {
         }
     }
 
-    private void validateUseCase(JsonNode constraint, int index) {
-        JsonNode useCases = constraint.get("useCases");
-
-        if (useCases == null || !useCases.isArray()
-                || useCases.isEmpty()) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].useCases must contain at least one value"
-            );
-        }
-
-        for (JsonNode useCase : useCases) {
-            if (!useCase.isTextual() || useCase.asText().isBlank()) {
-                throw new InvalidPolicyException(
-                        "constraints[" + index + "].useCases must contain only non-empty strings"
-                );
-            }
-        }
-    }
-
     private void validateFrameworkAgreement(
             JsonNode constraint,
             int index
@@ -227,28 +188,31 @@ public class PolicyValidator {
         }
     }
 
-
     private void validateCategoryCompatibility(
             PolicyCategory category,
-            String type,
+            ConstraintType type,
             int index
     ) {
-        Set<PolicyCategory> allowedCategories =
-                ALLOWED_CATEGORIES.get(type);
-
-        if (allowedCategories == null) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index
-                            + "].type is unsupported: " + type
-            );
-        }
-
-        if (!allowedCategories.contains(category)) {
+        if (!allowedCategories(type).contains(category)) {
             throw new InvalidPolicyException(
                     "constraints[" + index
                             + "] of type " + type
                             + " is not allowed for category " + category
             );
         }
+    }
+
+    /**
+     * Allowed {@link PolicyCategory} values per constraint type.
+     *
+     * <p>An exhaustive switch (no {@code default} branch) instead of a lookup map: adding a new
+     * {@link ConstraintType} value without adding it here is a compile error, not a type that
+     * silently falls through to "every category is allowed" or "no category is allowed".</p>
+     */
+    private Set<PolicyCategory> allowedCategories(ConstraintType type) {
+        return switch (type) {
+            case MEMBERSHIP, DATE_RANGE, FRAMEWORK_AGREEMENT ->
+                    Set.of(PolicyCategory.ACCESS, PolicyCategory.CONTRACT);
+        };
     }
 }

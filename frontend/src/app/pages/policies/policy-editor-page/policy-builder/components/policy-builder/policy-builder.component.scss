@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .pb {
   display: flex;
   flex-direction: column;
@@ -19,7 +21,7 @@
 
     p {
       margin: 0;
-      color: var(--con-x-text-secondary, #555555);
+      color: var(--con-x-text-secondary, #454545);
       font-size: 0.875rem;
     }
   }
@@ -88,7 +90,75 @@
     margin-top: 1rem;
   }
 
-  &__and-connector {
+  &__logic {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  &__logic-heading {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--con-x-text-primary, #111111);
+  }
+
+  &__logic-hint {
+    margin: 0;
+    color: var(--con-x-text-secondary, #454545);
+    font-size: 0.875rem;
+  }
+
+  &__logic-group {
+    display: grid;
+    // Wie das Kategorie-Grid: min(...) verhindert horizontales Überlaufen bei 400 % Zoom.
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: 0.75rem;
+    max-width: 560px;
+  }
+
+  &__logic-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e6ec;
+    border-radius: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease-in-out;
+
+    strong {
+      color: #1c2e44;
+      font-size: 0.9375rem;
+      letter-spacing: 0.05em;
+    }
+
+    small {
+      color: #5b6b78;
+      font-size: 0.8125rem;
+    }
+
+    &:hover:not(.is-active) {
+      border-color: var(--con-x-light-blue, #c9d8e0);
+      background: #f9fbfd;
+    }
+
+    &:focus-visible {
+      @include focus-ring(2px);
+    }
+
+    &.is-active {
+      border-color: var(--con-x-orange, #e53d17);
+      background: var(--con-x-light-orange, #ebd8d0);
+      box-shadow: 0 2px 6px rgba(229, 61, 23, 0.1);
+    }
+  }
+
+  &__logic-connector {
     display: flex;
     align-items: center;
     justify-content: center;

@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
 
-import { actionForCategory, constraintToOdrl, policyToOdrl } from './policy-odrl.mapper';
+import {
+  actionForCategory,
+  constraintToOdrl,
+  OdrlAndConstraint,
+  OdrlAtomicConstraint,
+  OdrlOrConstraint,
+  policyToOdrl,
+} from './policy-odrl.mapper';
 
 const CX_NS = 'https://w3id.org/catenax/2025/9/policy/';
 
@@ -18,6 +25,15 @@ function buildPolicy(overrides: Partial<Policy> = {}): Policy {
     updatedAt: '2026-01-02T00:00:00Z',
     ...overrides,
   };
+}
+
+/** Die logische Gruppe unter `odrl:constraint` der (einzigen) Permission. */
+function constraintGroup(policy: Policy) {
+  return policyToOdrl(policy).policy['odrl:permission'][0]['odrl:constraint'];
+}
+
+function andGroup(policy: Policy): OdrlAtomicConstraint[] {
+  return (constraintGroup(policy) as OdrlAndConstraint)['odrl:and'] as OdrlAtomicConstraint[];
 }
 
 describe('actionForCategory', () => {
@@ -40,15 +56,6 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
         'odrl:rightOperand': 'active',
       },
     ]);
-  });
-
-  it('USE_CASE → UsagePurpose / odrl:isAnyOf / Array-rightOperand', () => {
-    const c: Constraint = { type: 'USE_CASE', useCases: ['UC.quality-assurance', 'UC.geodata'] };
-    const [result] = constraintToOdrl(c);
-    expect(result['odrl:leftOperand']).toEqual({ '@id': `${CX_NS}UsagePurpose` });
-    expect(result['odrl:operator']).toEqual({ '@id': 'odrl:isAnyOf' });
-    expect(result['odrl:rightOperand']).toEqual(['UC.quality-assurance', 'UC.geodata']);
-    expect(Array.isArray(result['odrl:rightOperand'])).toBe(true);
   });
 
   it('DATE_RANGE → zwei Atomics: Start (gteq) und Ende (lteq)', () => {
@@ -119,10 +126,9 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
 
   it('verpackt eine einzelne Bedingung dennoch in ein odrl:and-Array', () => {
     const policy = buildPolicy({ constraints: [{ type: 'MEMBERSHIP', value: 'active' }] });
-    const permission = policyToOdrl(policy).policy['odrl:permission'][0];
-    expect(permission['odrl:constraint']).toBeDefined();
-    expect(permission['odrl:constraint']!['odrl:and']).toHaveLength(1);
-    expect(permission['odrl:constraint']!['odrl:and'][0]['odrl:leftOperand']).toEqual({
+    expect(constraintGroup(policy)).toBeDefined();
+    expect(andGroup(policy)).toHaveLength(1);
+    expect(andGroup(policy)[0]['odrl:leftOperand']).toEqual({
       '@id': `${CX_NS}Membership`,
     });
   });
@@ -130,28 +136,77 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
   it('kombiniert mehrere Bedingungen (alle Typen) unter odrl:and und erhält die Reihenfolge', () => {
     const constraints: Constraint[] = [
       { type: 'MEMBERSHIP', value: 'active' },
-      { type: 'USE_CASE', useCases: ['UC.geodata'] },
       { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' },
       { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
     ];
     const policy = buildPolicy({ category: 'CONTRACT', constraints });
-    const group = policyToOdrl(policy).policy['odrl:permission'][0]['odrl:constraint']!;
+    const atomics = andGroup(policy);
 
-    // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 5 gesamt.
-    expect(group['odrl:and']).toHaveLength(5);
-    expect(group['odrl:and'].map((a) => a['odrl:leftOperand']['@id'])).toEqual([
+    // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 4 gesamt.
+    expect(atomics).toHaveLength(4);
+    expect(atomics.map((a) => a['odrl:leftOperand']['@id'])).toEqual([
       `${CX_NS}Membership`,
-      `${CX_NS}UsagePurpose`,
       `${CX_NS}FrameworkAgreement`,
       `${CX_NS}DataUsageStartDate`,
       `${CX_NS}DataUsageEndDate`,
     ]);
-    expect(group['odrl:and'].map((a) => a['odrl:operator']['@id'])).toEqual([
+    expect(atomics.map((a) => a['odrl:operator']['@id'])).toEqual([
       'odrl:eq',
-      'odrl:isAnyOf',
       'odrl:eq',
       'odrl:gteq',
       'odrl:lteq',
     ]);
+  });
+});
+
+describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
+  const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
+  const agreement: Constraint = {
+    type: 'FRAMEWORK_AGREEMENT',
+    agreement: 'DataExchangeGovernance',
+  };
+  const dateRange: Constraint = {
+    type: 'DATE_RANGE',
+    startDate: '2026-06-01',
+    endDate: '2027-12-31',
+  };
+
+  it('nutzt ohne logicalOperator (Altdaten) odrl:and', () => {
+    const policy = buildPolicy({ constraints: [membership, agreement] });
+    expect(constraintGroup(policy)).toHaveProperty('odrl:and');
+    expect(constraintGroup(policy)).not.toHaveProperty('odrl:or');
+  });
+
+  it('nutzt bei AND odrl:and und lässt DATE_RANGE flach (unverändert zur bisherigen Ausgabe)', () => {
+    const policy = buildPolicy({ logicalOperator: 'AND', constraints: [membership, dateRange] });
+    expect(constraintGroup(policy)).toEqual({
+      'odrl:and': [...constraintToOdrl(membership), ...constraintToOdrl(dateRange)],
+    });
+  });
+
+  it('nutzt bei OR odrl:or mit je einem atomaren Constraint pro Bedingung', () => {
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [membership, agreement] });
+    expect(constraintGroup(policy)).toEqual({
+      'odrl:or': [...constraintToOdrl(membership), ...constraintToOdrl(agreement)],
+    });
+  });
+
+  it('verschachtelt DATE_RANGE bei OR als inneres odrl:and (Start UND Ende)', () => {
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [membership, dateRange] });
+    const nodes = (constraintGroup(policy) as OdrlOrConstraint)['odrl:or'];
+
+    expect(nodes).toHaveLength(2);
+    expect(nodes[0]).toEqual(constraintToOdrl(membership)[0]);
+    expect(nodes[1]).toEqual({ 'odrl:and': constraintToOdrl(dateRange) });
+  });
+
+  it('verpackt bei OR auch eine einzelne Bedingung in odrl:or', () => {
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [agreement] });
+    expect(constraintGroup(policy)).toEqual({ 'odrl:or': constraintToOdrl(agreement) });
+  });
+
+  it('lässt odrl:constraint bei OR ohne Bedingungen komplett weg', () => {
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [] });
+    expect(constraintGroup(policy)).toBeUndefined();
   });
 });

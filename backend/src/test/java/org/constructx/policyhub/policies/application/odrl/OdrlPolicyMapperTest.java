@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
 import org.constructx.policyhub.policies.domain.Policy;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,13 @@ public class OdrlPolicyMapperTest {
     private Policy createPolicy(
             List<JsonNode> constraints
     ) {
+        return createPolicy(constraints, LogicalOperator.AND);
+    }
+
+    private Policy createPolicy(
+            List<JsonNode> constraints,
+            LogicalOperator logicalOperator
+    ) {
         return new Policy(
                 UUID.fromString(
                         "00000000-0000-0000-0000-000000000001"
@@ -34,6 +42,7 @@ public class OdrlPolicyMapperTest {
                 "Policy Id",
                 PolicyCategory.CONTRACT,
                 constraints,
+                logicalOperator,
                 "Legal Text",
                 Instant.parse("2026-03-15T10:30:00Z"),
                 Instant.parse("2026-04-29T09:40:00Z")
@@ -81,6 +90,7 @@ public class OdrlPolicyMapperTest {
             "Policy Id", 
             PolicyCategory.ACCESS, 
             List.of(), 
+            LogicalOperator.AND, 
             "Legal Text", 
             Instant.now(), 
             Instant.now()
@@ -114,6 +124,7 @@ public class OdrlPolicyMapperTest {
             "Policy Id", 
             PolicyCategory.ACCESS, 
             List.of(), 
+            LogicalOperator.AND, 
             "Legal Text", 
             Instant.now(), 
             Instant.now()
@@ -137,6 +148,7 @@ public class OdrlPolicyMapperTest {
             "Policy Id", 
             PolicyCategory.CONTRACT, 
             List.of(), 
+            LogicalOperator.AND, 
             "Legal Text", 
             Instant.now(), 
             Instant.now()
@@ -160,6 +172,7 @@ public class OdrlPolicyMapperTest {
             "Policy Id", 
             PolicyCategory.CONTRACT, 
             List.of(), 
+            LogicalOperator.AND, 
             "Legal Text", 
             Instant.now(), 
             Instant.now()
@@ -193,6 +206,7 @@ public class OdrlPolicyMapperTest {
             "Policy Id", 
             PolicyCategory.CONTRACT, 
             List.of(policyConstraint), 
+            LogicalOperator.AND, 
             "Legal Text", 
             Instant.now(), 
             Instant.now()
@@ -370,68 +384,13 @@ public class OdrlPolicyMapperTest {
     }
 
     @Test
-    void policyToOdrl_mapsUseCasesAsArray()
-            throws Exception {
-        JsonNode useCase = objectMapper.readTree("""
-            {
-              "type": "USE_CASE",
-              "useCases": [
-                "UC.quality-assurance",
-                "UC.material-testing"
-              ]
-            }
-            """);
-
-        Policy policy = createPolicy(
-                List.of(useCase)
-        );
-
-        JsonNode actual = mapToJson(policy);
-
-        JsonNode atomic = actual
-                .path("policy")
-                .path("odrl:permission")
-                .path(0)
-                .path("odrl:constraint")
-                .path("odrl:and")
-                .path(0);
-
-        assertEquals(
-                CX_POLICY_NS + "UsagePurpose",
-                atomic.path("odrl:leftOperand")
-                        .path("@id")
-                        .asText()
-        );
-
-        assertEquals(
-                "odrl:isAnyOf",
-                atomic.path("odrl:operator")
-                        .path("@id")
-                        .asText()
-        );
-
-        JsonNode rightOperand =
-                atomic.path("odrl:rightOperand");
-
-        assertTrue(rightOperand.isArray());
-        assertEquals(2, rightOperand.size());
-        assertEquals(
-                "UC.quality-assurance",
-                rightOperand.get(0).asText()
-        );
-        assertEquals(
-                "UC.material-testing",
-                rightOperand.get(1).asText()
-        );
-    }
-
-    @Test
     void policyToOdrl_usesBusinessPolicyIdAsOdrlId() {
         Policy policy = new Policy(
                 UUID.randomUUID(),
                 "bim-koordination-q2-2027",
                 PolicyCategory.CONTRACT,
                 List.of(),
+                LogicalOperator.AND,
                 "Legal Text",
                 Instant.now(),
                 Instant.now()
@@ -443,5 +402,140 @@ public class OdrlPolicyMapperTest {
                 "bim-koordination-q2-2027",
                 actual.path("@id").asText()
         );
+    }
+
+    private JsonNode constraintGroup(Policy policy) {
+        return mapToJson(policy)
+                .path("policy")
+                .path("odrl:permission")
+                .path(0)
+                .path("odrl:constraint");
+    }
+
+    private JsonNode membership() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "MEMBERSHIP",
+              "value": "active"
+            }
+            """);
+    }
+
+    private JsonNode frameworkAgreement() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "FRAMEWORK_AGREEMENT",
+              "agreement": "DataExchangeGovernance"
+            }
+            """);
+    }
+
+    private JsonNode dateRange() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "DATE_RANGE",
+              "startDate": "2027-01-01",
+              "endDate": "2027-06-30"
+            }
+            """);
+    }
+
+    @Test
+    void policyToOdrl_treatsMissingLogicalOperatorAsAnd() throws Exception {
+        Policy policy = createPolicy(
+                List.of(membership(), frameworkAgreement()),
+                null
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+
+        assertTrue(constraint.has("odrl:and"));
+        assertFalse(constraint.has("odrl:or"));
+        assertEquals(2, constraint.path("odrl:and").size());
+    }
+
+    @Test
+    void policyToOdrl_keepsDateRangeFlatForAnd() throws Exception {
+        Policy policy = createPolicy(
+                List.of(membership(), dateRange()),
+                LogicalOperator.AND
+        );
+
+        JsonNode and = constraintGroup(policy).path("odrl:and");
+
+        assertEquals(3, and.size());
+        assertAtomicConstraint(and.get(0), "Membership", "odrl:eq", "active");
+        assertAtomicConstraint(and.get(1), "DataUsageStartDate", "odrl:gteq", "2027-01-01");
+        assertAtomicConstraint(and.get(2), "DataUsageEndDate", "odrl:lteq", "2027-06-30");
+    }
+
+    @Test
+    void policyToOdrl_mapsOrToOdrlOrWithOneOperandPerConstraint() throws Exception {
+        Policy policy = createPolicy(
+                List.of(membership(), frameworkAgreement()),
+                LogicalOperator.OR
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+        JsonNode or = constraint.path("odrl:or");
+
+        assertFalse(constraint.has("odrl:and"));
+        assertEquals(2, or.size());
+        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
+        assertAtomicConstraint(
+                or.get(1),
+                "FrameworkAgreement",
+                "odrl:eq",
+                "DataExchangeGovernance"
+        );
+    }
+
+    @Test
+    void policyToOdrl_nestsDateRangeAsAndInsideOr() throws Exception {
+        Policy policy = createPolicy(
+                List.of(membership(), dateRange()),
+                LogicalOperator.OR
+        );
+
+        JsonNode or = constraintGroup(policy).path("odrl:or");
+
+        // DATE_RANGE stays "start AND end"; flat inside odrl:or it would mean "start OR end"
+        assertEquals(2, or.size());
+        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
+
+        JsonNode nestedAnd = or.get(1).path("odrl:and");
+        assertEquals(2, nestedAnd.size());
+        assertAtomicConstraint(nestedAnd.get(0), "DataUsageStartDate", "odrl:gteq", "2027-01-01");
+        assertAtomicConstraint(nestedAnd.get(1), "DataUsageEndDate", "odrl:lteq", "2027-06-30");
+    }
+
+    @Test
+    void policyToOdrl_wrapsSingleConstraintInOdrlOrForOr() throws Exception {
+        Policy policy = createPolicy(
+                List.of(frameworkAgreement()),
+                LogicalOperator.OR
+        );
+
+        JsonNode or = constraintGroup(policy).path("odrl:or");
+
+        assertEquals(1, or.size());
+        assertAtomicConstraint(
+                or.get(0),
+                "FrameworkAgreement",
+                "odrl:eq",
+                "DataExchangeGovernance"
+        );
+    }
+
+    @Test
+    void policyToOdrl_omitsConstraintForOrWithoutConstraints() {
+        Policy policy = createPolicy(List.of(), LogicalOperator.OR);
+
+        JsonNode permission = mapToJson(policy)
+                .path("policy")
+                .path("odrl:permission")
+                .path(0);
+
+        assertFalse(permission.has("odrl:constraint"));
     }
 }

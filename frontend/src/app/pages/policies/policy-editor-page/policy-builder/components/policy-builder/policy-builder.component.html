@@ -86,6 +86,53 @@
       (toggleConstraint)="toggleConstraint($event)"
     />
 
+    <!-- Die Verknüpfung ist erst ab zwei Bedingungen relevant; gespeichert wird der Wert immer. -->
+    @if (constraints().length > 1) {
+      <div class="pb__logic">
+        <h3 id="pb-logic-heading" class="pb__logic-heading">
+          {{ t('policyBuilder.logicalOperator.label') }}
+        </h3>
+        <p id="pb-logic-hint" class="pb__logic-hint">
+          {{ t('policyBuilder.logicalOperator.hint') }}
+        </p>
+        <div
+          class="pb__logic-group"
+          role="radiogroup"
+          aria-labelledby="pb-logic-heading"
+          aria-describedby="pb-logic-hint"
+        >
+          <button
+            type="button"
+            role="radio"
+            class="pb__logic-option"
+            [class.is-active]="logicalOperator() === 'AND'"
+            [attr.aria-checked]="logicalOperator() === 'AND'"
+            [attr.tabindex]="logicalOperator() === 'AND' ? 0 : -1"
+            (click)="selectLogicalOperator('AND')"
+            (keydown)="onLogicalOperatorKeydown($event)"
+            data-cy="logical-operator-AND"
+          >
+            <strong>{{ t('policyBuilder.logicalOperator.AND.label') }}</strong>
+            <small>{{ t('policyBuilder.logicalOperator.AND.description') }}</small>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            class="pb__logic-option"
+            [class.is-active]="logicalOperator() === 'OR'"
+            [attr.aria-checked]="logicalOperator() === 'OR'"
+            [attr.tabindex]="logicalOperator() === 'OR' ? 0 : -1"
+            (click)="selectLogicalOperator('OR')"
+            (keydown)="onLogicalOperatorKeydown($event)"
+            data-cy="logical-operator-OR"
+          >
+            <strong>{{ t('policyBuilder.logicalOperator.OR.label') }}</strong>
+            <small>{{ t('policyBuilder.logicalOperator.OR.description') }}</small>
+          </button>
+        </div>
+      </div>
+    }
+
     @if (constraints().length > 0) {
       <div class="pb__constraint-list">
         @for (c of constraints(); track $index; let i = $index, last = $last) {
@@ -96,8 +143,8 @@
             (constraintChange)="updateConstraint(i, $event)"
           />
           @if (!last) {
-            <div class="pb__and-connector">
-              <span>{{ t('policyBuilder.andConnector') }}</span>
+            <div class="pb__logic-connector">
+              <span data-cy="logic-connector">{{ t(connectorKey()) }}</span>
             </div>
           }
         }

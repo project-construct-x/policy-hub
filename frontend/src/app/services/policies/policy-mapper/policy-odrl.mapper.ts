@@ -1,5 +1,5 @@
 import { Constraint } from '@shared/types/constraint.model';
-import { Policy, PolicyCategory } from '@shared/types/policy.model';
+import { logicalOperatorOf, Policy, PolicyCategory } from '@shared/types/policy.model';
 
 const CX_POLICY_NS = 'https://w3id.org/catenax/2025/9/policy/';
 const ODRL_USE = 'odrl:use';
@@ -11,15 +11,24 @@ const ODRL_CONTEXT = {
   odrl: 'http://www.w3.org/ns/odrl/2/',
 };
 
-interface OdrlAtomicConstraint {
+export interface OdrlAtomicConstraint {
   'odrl:leftOperand': { '@id': string };
   'odrl:operator': { '@id': string };
   'odrl:rightOperand': string | string[];
 }
 
-interface OdrlConstraintGroup {
-  'odrl:and': OdrlAtomicConstraint[];
+export interface OdrlAndConstraint {
+  'odrl:and': OdrlConstraintNode[];
 }
+
+export interface OdrlOrConstraint {
+  'odrl:or': OdrlConstraintNode[];
+}
+
+export type OdrlConstraintGroup = OdrlAndConstraint | OdrlOrConstraint;
+
+/** Element einer logischen Gruppe: ein atomarer Constraint oder eine verschachtelte Gruppe. */
+export type OdrlConstraintNode = OdrlAtomicConstraint | OdrlConstraintGroup;
 
 interface OdrlPermission {
   'odrl:action': { '@id': string };
@@ -53,7 +62,7 @@ export function actionForCategory(category: PolicyCategory): string {
 /**
  * Übersetzt einen fachlichen Constraint in ein oder mehrere atomare ODRL-Constraints.
  * Die meisten Typen liefern genau eines; ein `DATE_RANGE` liefert zwei (Start via `gteq`,
- * Ende via `lteq`), die in `policyToOdrl` per `flatMap` zusammengeführt werden.
+ * Ende via `lteq`), die in `odrlConstraintGroup` gruppiert werden.
  */
 export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
   switch (c.type) {
@@ -63,14 +72,6 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}Membership` },
           'odrl:operator': { '@id': 'odrl:eq' },
           'odrl:rightOperand': c.value,
-        },
-      ];
-    case 'USE_CASE':
-      return [
-        {
-          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}UsagePurpose` },
-          'odrl:operator': { '@id': 'odrl:isAnyOf' },
-          'odrl:rightOperand': c.useCases,
         },
       ];
     case 'DATE_RANGE':
@@ -97,12 +98,38 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
   }
 }
 
+/**
+ * Bildet die Constraints einer Policy auf die logische Gruppe unter `odrl:constraint` ab.
+ *
+ * - `AND`: alle atomaren Constraints flach in `odrl:and` (identisch zur bisherigen Ausgabe).
+ * - `OR`: je fachlichem Constraint ein Element in `odrl:or`. Liefert ein Constraint mehrere
+ *   atomare Constraints (`DATE_RANGE`: Start UND Ende), werden sie in ein inneres `odrl:and`
+ *   gewickelt — flach im `odrl:or` hieße es sonst "Startdatum ODER Enddatum".
+ *
+ * Ohne Constraints gibt es keine Gruppe (`undefined`).
+ */
+export function odrlConstraintGroup(
+  policy: Pick<Policy, 'constraints' | 'logicalOperator'>,
+): OdrlConstraintGroup | undefined {
+  if (policy.constraints.length === 0) return undefined;
+
+  if (logicalOperatorOf(policy) === 'OR') {
+    const nodes = policy.constraints.map((c): OdrlConstraintNode => {
+      const atomics = constraintToOdrl(c);
+      return atomics.length === 1 ? atomics[0] : { 'odrl:and': atomics };
+    });
+    return { 'odrl:or': nodes };
+  }
+
+  return { 'odrl:and': policy.constraints.flatMap(constraintToOdrl) };
+}
+
 export function policyToOdrl(policy: Policy): OdrlPolicyDefinition {
-  const atomics = policy.constraints.flatMap(constraintToOdrl);
+  const group = odrlConstraintGroup(policy);
 
   const permissionObj: OdrlPermission = {
     'odrl:action': { '@id': actionForCategory(policy.category) },
-    ...(atomics.length > 0 && { 'odrl:constraint': { 'odrl:and': atomics } }),
+    ...(group && { 'odrl:constraint': group }),
   };
 
   return {
