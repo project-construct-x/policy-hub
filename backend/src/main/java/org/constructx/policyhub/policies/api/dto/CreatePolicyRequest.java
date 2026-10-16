@@ -15,14 +15,14 @@ import java.util.List;
 public record CreatePolicyRequest(
 
         @Schema(
-                description = "Unique business identifier. Must start with the fixed prefix con-x-policyHub-",
-                example = "con-x-policyHub-zugriff-konsortium-mitglieder",
+                description = "Unique business identifier. Must start with the fixed prefix con-x-ph-",
+                example = "con-x-ph-zugriff-konsortium-mitglieder",
                 minLength = 1,
                 maxLength = 200
         )
         @NotBlank(message = "policyId must not be blank")
         @Size(max = 200, message = "policyId must not exceed 200 characters")
-        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-policyHub-")
+        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-ph-")
         String policyId,
 
         @Schema(

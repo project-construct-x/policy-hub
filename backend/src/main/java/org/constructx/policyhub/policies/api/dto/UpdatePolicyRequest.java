@@ -14,7 +14,7 @@ import java.util.List;
 public record UpdatePolicyRequest(
         @NotBlank
         @Size(max = 200)
-        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-policyHub-")
+        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-ph-")
         String policyId,
 
         @NotNull

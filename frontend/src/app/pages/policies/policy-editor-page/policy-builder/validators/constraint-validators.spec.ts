@@ -149,7 +149,7 @@ describe('validatePolicyDraft', () => {
   });
 
   it('meldet policyIdPrefixMissing, wenn der Präfix fehlt oder verändert wurde', () => {
-    for (const policyId of ['valid-policy', 'con-x-pHub-valid-policy', 'CON-X-POLICYHUB-x']) {
+    for (const policyId of ['valid-policy', 'con-x-policyHub-valid-policy', 'CON-X-PH-x']) {
       expect(validatePolicyDraft(draft({ policyId }))).toContainEqual({
         field: 'policyId',
         messageKey: 'validation.policyIdPrefixMissing',

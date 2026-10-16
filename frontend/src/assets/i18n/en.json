@@ -269,7 +269,7 @@
   "validation": {
     "policyIdRequired": "Policy ID is required",
     "policyIdTooLong": "Policy ID must be at most 200 characters long including the prefix",
-    "policyIdPrefixMissing": "The policy ID must start with “con-x-policyHub-”",
+    "policyIdPrefixMissing": "The policy ID must start with “con-x-ph-”",
     "categoryRequired": "A category must be selected",
     "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
     "dateRangeStartRequired": "Start date is required",

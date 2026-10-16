@@ -6,7 +6,7 @@ package org.constructx.policyhub.policies.domain;
  */
 public final class PolicyId {
 
-    public static final String PREFIX = "con-x-policyHub-";
+    public static final String PREFIX = "con-x-ph-";
 
     /** Prefix followed by at least one non-whitespace character. */
     public static final String PATTERN = "^" + PREFIX + "\\S.*$";

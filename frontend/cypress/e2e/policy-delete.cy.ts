@@ -3,7 +3,7 @@
 // Kernablauf: Policy löschen (mit Bestätigungsdialog) sowie Abbrechen des Löschvorgangs.
 
 const POLICY_ID = '00000000-0000-0000-0000-000000000002';
-const POLICY_SLUG = 'con-x-policyHub-zugriff-konsortium-mitglieder';
+const POLICY_SLUG = 'con-x-ph-zugriff-konsortium-mitglieder';
 
 describe('Policy – Löschen', () => {
   it('löscht eine Policy nach Bestätigung und entfernt sie aus der Liste', () => {

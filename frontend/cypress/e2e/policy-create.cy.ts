@@ -4,7 +4,7 @@
 // Wichtig: Mirage-State lebt nur innerhalb einer Seiten-Session → Verifikation über
 // In-App-Navigation (Klick), nicht über ein erneutes cy.visit.
 
-const POLICY_ID_PREFIX = 'con-x-policyHub-';
+const POLICY_ID_PREFIX = 'con-x-ph-';
 
 describe('Policy – Erstellen', () => {
   it('erstellt eine Policy mit MEMBERSHIP-Bedingung und zeigt sie im Detail', () => {
