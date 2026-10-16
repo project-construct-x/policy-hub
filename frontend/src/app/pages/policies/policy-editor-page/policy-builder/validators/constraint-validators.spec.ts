@@ -158,7 +158,8 @@ describe('validatePolicyDraft', () => {
   });
 
   it('akzeptiert genau 200 Zeichen und lehnt 201 ab (Grenzwert)', () => {
-    const fill = (length: number) => POLICY_ID_PREFIX + 'a'.repeat(length - POLICY_ID_PREFIX.length);
+    const fill = (length: number) =>
+      POLICY_ID_PREFIX + 'a'.repeat(length - POLICY_ID_PREFIX.length);
     expect(validatePolicyDraft(draft({ policyId: fill(200) }))).toEqual([]);
     expect(validatePolicyDraft(draft({ policyId: fill(201) }))).toContainEqual({
       field: 'policyId',

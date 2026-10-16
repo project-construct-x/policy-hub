@@ -26,6 +26,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -551,5 +552,46 @@ class PolicyControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.logicalOperator").value("OR"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_whenPolicyIdLacksHubPrefix_returnsBadRequest() throws Exception {
+        UpdatePolicyRequest request = new UpdatePolicyRequest(
+                "zugriff-konsortium-mitglieder",
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint()),
+                LogicalOperator.AND,
+                "Der Zugriff ist aktiven Mitgliedern gestattet."
+        );
+
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyNoInteractions(policyService);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_whenPolicyIdIsOnlyThePrefix_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "con-x-policyHub-",
+                  "category": "ACCESS",
+                  "constraints": [],
+                  "legalText": "Der Zugriff ist gestattet."
+                }
+                """;
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
     }
 }

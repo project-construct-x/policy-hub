@@ -35,6 +35,21 @@ describe('Policy – Erstellen', () => {
 
     cy.getByCy('policyId-prefix').should('have.text', POLICY_ID_PREFIX);
     cy.getByCy('policyId-input').should('have.value', '');
+
+    // Das Präfix ist kein Teil des Eingabefelds: Löschen im Input lässt es unberührt.
+    cy.getByCy('policyId-input').type('abc{selectall}{backspace}');
+    cy.getByCy('policyId-input').should('have.value', '');
+    cy.getByCy('policyId-prefix').should('have.text', POLICY_ID_PREFIX);
+  });
+
+  it('blockiert das Speichern, wenn hinter dem Präfix nichts steht', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('policyId-input').type('   ');
+    cy.getByCy('submit-policy').click();
+
+    cy.location('pathname').should('eq', '/policies/new');
+    cy.getByCy('policyId-error').should('be.visible');
   });
 
   it('blockiert das Speichern bei leerer policyId und zeigt einen Inline-Fehler', () => {
