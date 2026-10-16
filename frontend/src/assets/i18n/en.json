@@ -184,7 +184,7 @@
     "policyId": {
       "label": "Policy ID",
       "placeholder": "my-policy-01",
-      "hint": "Choose a unique ID without spaces (e.g. geodata-access-2027)."
+      "hint": "Enter a unique ID without spaces after it (e.g. geodata-access-2027)."
     },
     "palette": {
       "title": "Add constraint",
@@ -268,7 +268,8 @@
   },
   "validation": {
     "policyIdRequired": "Policy ID is required",
-    "policyIdTooLong": "Policy ID must be at most 200 characters long",
+    "policyIdTooLong": "Policy ID must be at most 200 characters long including the prefix",
+    "policyIdPrefixMissing": "The policy ID must start with “con-x-ph-”",
     "categoryRequired": "A category must be selected",
     "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
     "dateRangeStartRequired": "Start date is required",

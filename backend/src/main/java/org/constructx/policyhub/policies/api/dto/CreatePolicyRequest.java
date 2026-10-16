@@ -8,21 +8,22 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
+import org.constructx.policyhub.policies.domain.PolicyId;
 
 import java.util.List;
 
 public record CreatePolicyRequest(
 
         @Schema(
-                description = "Unique business identifier defined by the client",
-                example = "zugriff-konsortium-mitglieder",
+                description = "Unique business identifier. Must start with the fixed prefix con-x-ph-",
+                example = "con-x-ph-zugriff-konsortium-mitglieder",
                 minLength = 1,
                 maxLength = 200,
-                pattern = PolicyIdRules.PATTERN
+                pattern = PolicyId.PATTERN
         )
         @NotBlank(message = "policyId must not be blank")
         @Size(max = 200, message = "policyId must not exceed 200 characters")
-        @Pattern(regexp = PolicyIdRules.PATTERN, message = PolicyIdRules.PATTERN_MESSAGE)
+        @Pattern(regexp = PolicyId.PATTERN, message = PolicyId.PATTERN_MESSAGE)
         String policyId,
 
         @Schema(
