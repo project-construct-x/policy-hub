@@ -22,7 +22,6 @@ public record UpdatePolicyRequest(
         @NotNull
         List<JsonNode> constraints,
 
-        /** Optional; defaults to AND if omitted. */
         LogicalOperator logicalOperator,
 
         @NotBlank
