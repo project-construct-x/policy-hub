@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
-import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionResponse;
-import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyResponse;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
 import org.constructx.policyhub.policies.application.PolicyService;
+import org.constructx.policyhub.policies.application.odrl.OdrlPolicyMapper;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
+import org.constructx.policyhub.policies.domain.Policy;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -293,26 +295,87 @@ class PolicyControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "USER")
-    void getOdrlPolicyDefinitionById_returnsOkWithOdrlPolicy()
+    void getOdrlPolicyDefinitionById_serializesConnectorReadyJsonLd()
             throws Exception {
-        OdrlPolicyResponse odrlPolicyResponse =
-                new OdrlPolicyResponse(null, null, null, null, null);
+        Policy policy = new Policy(
+                POLICY_ID,
+                "nutzung-konsortium-2027",
+                PolicyCategory.CONTRACT,
+                List.of(
+                        membershipConstraint(),
+                        objectMapper.readTree("""
+                            {
+                              "type": "FRAMEWORK_AGREEMENT",
+                              "agreement": "DataExchangeGovernance"
+                            }
+                            """),
+                        dateRangeConstraint()
+                ),
+                LogicalOperator.AND,
+                "Rechtstext",
+                CREATED_AT,
+                UPDATED_AT
+        );
 
         when(policyService.getOdrlPolicyDefinitionById(POLICY_ID))
-                .thenReturn(
-                        new OdrlPolicyDefinitionResponse(
-                                null,
-                                null,
-                                null,
-                                odrlPolicyResponse
-                        )
-                );
+                .thenReturn(new OdrlPolicyMapper().policyToOdrl(policy));
 
-        mockMvc.perform(
+        String actual = mockMvc.perform(
                         get("/api/v1/policies/{id}/odrl", POLICY_ID)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.policy").exists());
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String expected = """
+            {
+              "@context": {
+                "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
+                "edc": "https://w3id.org/edc/v0.0.1/ns/",
+                "odrl": "http://www.w3.org/ns/odrl/2/"
+              },
+              "@type": "PolicyDefinition",
+              "@id": "nutzung-konsortium-2027",
+              "policy": {
+                "@context": "http://www.w3.org/ns/odrl.jsonld",
+                "@type": "Set",
+                "odrl:permission": [
+                  {
+                    "odrl:action": { "@id": "odrl:use" },
+                    "odrl:constraint": {
+                      "odrl:and": [
+                        {
+                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
+                          "odrl:operator": { "@id": "odrl:eq" },
+                          "odrl:rightOperand": "active"
+                        },
+                        {
+                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/FrameworkAgreement" },
+                          "odrl:operator": { "@id": "odrl:eq" },
+                          "odrl:rightOperand": "DataExchangeGovernance"
+                        },
+                        {
+                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
+                          "odrl:operator": { "@id": "odrl:gteq" },
+                          "odrl:rightOperand": "2026-08-01"
+                        },
+                        {
+                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
+                          "odrl:operator": { "@id": "odrl:lteq" },
+                          "odrl:rightOperand": "2027-12-31"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "odrl:prohibition": [],
+                "odrl:obligation": []
+              }
+            }
+            """;
+
+        JSONAssert.assertEquals(expected, actual, JSONCompareMode.STRICT);
     }
 
     @Test

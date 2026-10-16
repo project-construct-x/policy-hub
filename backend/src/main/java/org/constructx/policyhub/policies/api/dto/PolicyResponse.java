@@ -1,7 +1,7 @@
 package org.constructx.policyhub.policies.api.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.jayway.jsonpath.internal.filter.LogicalOperator;
+import org.constructx.policyhub.policies.domain.LogicalOperator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 

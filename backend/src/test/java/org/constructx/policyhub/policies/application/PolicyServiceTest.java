@@ -606,7 +606,7 @@ class PolicyServiceTest {
 
         PolicyResponse result = policyService.createPolicy(request);
 
-        assertEquals(LogicalOperator.OR, result.getLogicalOperator());
+        assertEquals(LogicalOperator.OR, result.logicalOperator());
         verify(policyMapper).toEntity(
                 argThat(policy -> policy.logicalOperator() == LogicalOperator.OR)
         );
