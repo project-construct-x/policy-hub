@@ -1,39 +1,35 @@
 package org.constructx.policyhub.policies.api.dto;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@AllArgsConstructor
 @Schema(description = "Persisted Policy Hub policy")
-public class PolicyResponse {
+public record PolicyResponse(
 
-    @Schema(
-            description = "Backend-generated technical identifier of the policy",
-            example = "00000000-0000-0000-0000-000000000001"
-    )
-    private final UUID id;
+        @Schema(
+                description = "Backend-generated technical identifier of the policy",
+                example = "00000000-0000-0000-0000-000000000001"
+        )
+        UUID id,
 
-    @Schema(
-            description = "Unique business identifier defined by the client",
-            example = "con-x-ph-oeffentlicher-zugriff-projektdokumentation"
-    )
-    private final String policyId;
+        @Schema(
+                description = "Unique business identifier defined by the client",
+                example = "con-x-ph-oeffentlicher-zugriff-projektdokumentation"
+        )
+        String policyId,
 
-    @Schema(
-            description = "Policy category",
-            example = "ACCESS",
-            allowableValues = {"ACCESS", "CONTRACT"}
-    )
-    private final PolicyCategory category;
+        @Schema(
+                description = "Policy category",
+                example = "ACCESS",
+                allowableValues = {"ACCESS", "CONTRACT"}
+        )
+        PolicyCategory category,
 
     @Schema(
             description = """
@@ -53,7 +49,7 @@ public class PolicyResponse {
                     ]
                     """
     )
-    private final List<JsonNode> constraints;
+    List<JsonNode> constraints,
 
     @Schema(
             description = """
@@ -62,7 +58,7 @@ public class PolicyResponse {
             example = "AND",
             allowableValues = {"AND", "OR"}
     )
-    private final LogicalOperator logicalOperator;
+    LogicalOperator logicalOperator,
 
     @Schema(
             description = """
@@ -71,17 +67,18 @@ public class PolicyResponse {
                     """,
             example = "Der Zugriff ist ausschließlich aktiven Mitgliedern gestattet."
     )
-    private final String legalText;
+    String legalText,
 
-    @Schema(
-            description = "Creation timestamp in ISO-8601 format",
-            example = "2026-03-15T10:30:00Z"
-    )
-    private final Instant createdAt;
+        @Schema(
+                description = "Creation timestamp in ISO-8601 format",
+                example = "2026-03-15T10:30:00Z"
+        )
+        Instant createdAt,
 
-    @Schema(
-            description = "Timestamp of the most recent update in ISO-8601 format",
-            example = "2026-04-29T09:40:00Z"
-    )
-    private final Instant updatedAt;
+        @Schema(
+                description = "Timestamp of the most recent update in ISO-8601 format",
+                example = "2026-04-29T09:40:00Z"
+        )
+        Instant updatedAt
+) {
 }

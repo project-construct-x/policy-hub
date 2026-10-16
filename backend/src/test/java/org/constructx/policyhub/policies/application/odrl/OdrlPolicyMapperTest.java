@@ -2,6 +2,7 @@ package org.constructx.policyhub.policies.application.odrl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
@@ -380,6 +381,29 @@ public class OdrlPolicyMapperTest {
                 "DataUsageEndDate",
                 "odrl:lteq",
                 "2027-06-30"
+        );
+    }
+
+    @Test
+    void policyToOdrl_withUnknownConstraintType_failsInsteadOfDroppingIt() throws Exception {
+        Policy policy = createPolicy(List.of(
+                objectMapper.readTree("""
+                        { "type": "MEMBERSHIP", "value": "active" }
+                        """),
+                objectMapper.readTree("""
+                        { "type": "GIBTS_NICHT", "value": "x" }
+                        """)
+        ));
+
+        UnsupportedConstraintException ex = assertThrows(
+                UnsupportedConstraintException.class,
+                () -> odrlPolicyMapper.policyToOdrl(policy)
+        );
+
+        assertEquals(
+                "Policy Policy Id contains unsupported constraint type 'GIBTS_NICHT'; "
+                        + "ODRL export is not possible",
+                ex.getMessage()
         );
     }
 
