@@ -29,10 +29,17 @@ public interface PolicyApi {
             summary = "Get policies",
             description = "Returns stored policies using pagination."
     )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Policies returned successfully"
-    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Policies returned successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Unknown sort property",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
+    })
     ResponseEntity<Page<PolicyResponse>> getAllPolicies(
             @ParameterObject Pageable pageable
     );
@@ -45,6 +52,11 @@ public interface PolicyApi {
             @ApiResponse(
                     responseCode = "200",
                     description = "Policy returned successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Path variable id is not a valid UUID",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -68,6 +80,11 @@ public interface PolicyApi {
             @ApiResponse(
                     responseCode = "200",
                     description = "ODRL representation returned successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Path variable id is not a valid UUID",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -118,7 +135,7 @@ public interface PolicyApi {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Policy request is incomplete or invalid",
+                    description = "Policy request is incomplete or invalid, or id is not a valid UUID",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
@@ -145,6 +162,11 @@ public interface PolicyApi {
             @ApiResponse(
                     responseCode = "204",
                     description = "Policy deleted successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Path variable id is not a valid UUID",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",

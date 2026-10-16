@@ -1,6 +1,7 @@
 package org.constructx.policyhub.policies.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.UUID;
 
 import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -101,6 +103,28 @@ class PolicyRepositoryIT {
                         UUID.randomUUID(), "invalid-operator", "CONTRACT", "Rechtstext", "XOR"
                 )
         );
+    }
+
+    @Test
+    void policyId_duplicateViolatesNamedUniqueConstraint() {
+        persist("duplicate-policy-id", PolicyCategory.CONTRACT, List.of(), LogicalOperator.AND);
+
+        PolicyEntity duplicate = new PolicyEntity();
+        duplicate.setPolicyId("duplicate-policy-id");
+        duplicate.setCategory(PolicyCategory.CONTRACT);
+        duplicate.setConstraints(List.of());
+        duplicate.setLogicalOperator(LogicalOperator.AND);
+        duplicate.setLegalText("Rechtstext");
+
+        DataIntegrityViolationException ex = assertThrows(
+                DataIntegrityViolationException.class,
+                () -> policyRepository.saveAndFlush(duplicate)
+        );
+
+        // GlobalExceptionHandler maps exactly this constraint name to 409.
+        ConstraintViolationException violation =
+                assertInstanceOf(ConstraintViolationException.class, ex.getCause());
+        assertEquals("uk_policies_policy_id", violation.getConstraintName());
     }
 
     private UUID persist(

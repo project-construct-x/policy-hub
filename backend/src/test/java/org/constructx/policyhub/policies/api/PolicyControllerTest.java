@@ -11,6 +11,11 @@ import org.constructx.policyhub.policies.application.odrl.OdrlPolicyMapper;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.Policy;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
+import org.constructx.policyhub.policies.infrastructure.PolicyEntity;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
+import org.springframework.data.util.TypeInformation;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -21,6 +26,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -32,10 +38,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.data.domain.Page;
@@ -609,5 +619,107 @@ class PolicyControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.logicalOperator").value("OR"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void getPolicyById_withInvalidUuid_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/v1/policies/{id}", "not-a-uuid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message")
+                        .value("Invalid value 'not-a-uuid' for parameter 'id'"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies/not-a-uuid"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void patchPolicy_returnsMethodNotAllowedWithAllowHeader() throws Exception {
+        mockMvc.perform(patch("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf()))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(header().string("Allow", allOf(
+                        containsString("GET"),
+                        containsString("PUT"),
+                        containsString("DELETE"))))
+                .andExpect(jsonPath("$.status").value(405))
+                .andExpect(jsonPath("$.error").value("Method Not Allowed"))
+                .andExpect(jsonPath("$.message")
+                        .value("Method 'PATCH' is not supported for this endpoint"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies/" + POLICY_ID));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void getAllPolicies_withUnknownSortProperty_returnsBadRequest() throws Exception {
+        when(policyService.getAllPolicies(any(Pageable.class)))
+                .thenThrow(new PropertyReferenceException(
+                        "gibtsNicht",
+                        TypeInformation.of(PolicyEntity.class),
+                        List.of()
+                ));
+
+        mockMvc.perform(get("/api/v1/policies").param("sort", "gibtsNicht,asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Bad Request"))
+                .andExpect(jsonPath("$.message").value("Unknown sort property 'gibtsNicht'"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withConcurrentDuplicatePolicyId_returnsConflict() throws Exception {
+        when(policyService.createPolicy(any(CreatePolicyRequest.class)))
+                .thenThrow(dataIntegrityViolation("uk_policies_policy_id"));
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validCreateRequestJson()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.error").value("Conflict"))
+                .andExpect(jsonPath("$.message")
+                        .value("A policy with this policyId already exists"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withOtherIntegrityViolation_returnsInternalServerError() throws Exception {
+        when(policyService.createPolicy(any(CreatePolicyRequest.class)))
+                .thenThrow(dataIntegrityViolation("chk_policies_logical_operator"));
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(validCreateRequestJson()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+                .andExpect(jsonPath("$.message").value("An unexpected error occurred"));
+    }
+
+    private static DataIntegrityViolationException dataIntegrityViolation(String constraintName) {
+        return new DataIntegrityViolationException(
+                "could not execute statement",
+                new ConstraintViolationException(
+                        "could not execute statement",
+                        new SQLException("violates constraint " + constraintName),
+                        constraintName
+                )
+        );
+    }
+
+    private String validCreateRequestJson() throws Exception {
+        return objectMapper.writeValueAsString(new CreatePolicyRequest(
+                "concurrent-duplicate",
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint()),
+                LogicalOperator.AND,
+                "Rechtstext"
+        ));
     }
 }
