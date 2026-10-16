@@ -430,6 +430,39 @@ class PolicyControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "USER")
+    void getOdrlPolicyDefinitionById_withUnknownConstraintType_returnsUnprocessableEntity()
+            throws Exception {
+        Policy policy = new Policy(
+                POLICY_ID,
+                "con-x-ph-altbestand",
+                PolicyCategory.ACCESS,
+                List.of(
+                        membershipConstraint(),
+                        objectMapper.readTree("""
+                                { "type": "GIBTS_NICHT", "value": "x" }
+                                """)
+                ),
+                LogicalOperator.AND,
+                "Rechtstext",
+                CREATED_AT,
+                UPDATED_AT
+        );
+
+        when(policyService.getOdrlPolicyDefinitionById(POLICY_ID))
+                .thenAnswer(invocation -> new OdrlPolicyMapper().policyToOdrl(policy));
+
+        mockMvc.perform(get("/api/v1/policies/{id}/odrl", POLICY_ID))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Unprocessable Entity"))
+                .andExpect(jsonPath("$.message").value(
+                        "Policy con-x-ph-altbestand contains unsupported constraint type "
+                                + "'GIBTS_NICHT'; ODRL export is not possible"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies/" + POLICY_ID + "/odrl"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
     void createPolicy_withDateRange_returnsCreatedPolicy() throws Exception {
         JsonNode dateRange = dateRangeConstraint();
 

@@ -40,7 +40,7 @@ automatic reason to prefer either implementation.
 |---|---|---|---|
 | `GET /api/v1/policies` | Query: `page`, `size`, `sort` | `200`, paginated `Policy` response | `400` for invalid query parameters; `401` unauthenticated |
 | `GET /api/v1/policies/{id}` | `{id}` is the backend UUID | `200`, `Policy` | `404` not found; `401` unauthenticated |
-| `GET /api/v1/policies/{id}/odrl` | `{id}` is the backend UUID | `200`, ODRL `PolicyDefinition` | `404` not found; `401` unauthenticated |
+| `GET /api/v1/policies/{id}/odrl` | `{id}` is the backend UUID | `200`, ODRL `PolicyDefinition` | `404` not found; `422` stored constraint with missing or unknown type; `401` unauthenticated |
 | `POST /api/v1/policies` | `CreatePolicyRequest` JSON | `201`, created `Policy` | `400` invalid request; `409` duplicate `policyId`; `401` unauthenticated |
 | `PUT /api/v1/policies/{id}` | Full `UpdatePolicyRequest` JSON; all editable fields required | `200`, updated `Policy` | `400` invalid request; `404` not found; `409` duplicate `policyId`; `401` unauthenticated |
 | `DELETE /api/v1/policies/{id}` | `{id}` is the backend UUID | `204`, no response body | `404` not found; `401` unauthenticated |
@@ -131,6 +131,11 @@ The constraints are combined below `odrl:permission[0]."odrl:constraint"` accord
   constraints (`DATE_RANGE`) is wrapped in a nested `odrl:and`, so the period keeps meaning
   "start AND end" instead of "start OR end".
 - Without constraints, `odrl:constraint` is omitted entirely.
+- A stored constraint with a missing or unknown `type` (e.g. from seed data, manual database
+  changes or a type removed from the provisional model) is never skipped: dropping an `AND` operand
+  would export a less strict policy. The request fails with `422` and names the policy and the
+  type. `GET /api/v1/policies/{id}` and the list still return the policy unchanged; a `PUT` without
+  the unknown constraint repairs it.
 
 Example (`OR`, `MEMBERSHIP` + `DATE_RANGE`):
 
@@ -183,8 +188,8 @@ Application errors use this JSON shape:
 }
 ```
 
-The backend currently uses `400` for malformed or invalid input, `404` for missing policies, and
-`409` for a duplicate `policyId`. Authentication failures are handled by Spring Security and are
+The backend currently uses `400` for malformed or invalid input, `404` for missing policies,
+`409` for a duplicate `policyId`, and `422` when a stored policy cannot be exported as ODRL. Authentication failures are handled by Spring Security and are
 not guaranteed to use the application error body above. Clients should branch on HTTP status and
 must not depend on the exact wording of `message` for program logic.
 

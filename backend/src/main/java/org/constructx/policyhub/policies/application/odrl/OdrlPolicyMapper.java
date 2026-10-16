@@ -30,7 +30,12 @@ public class OdrlPolicyMapper {
 
     public OdrlPolicyDefinitionResponse policyToOdrl(Policy policy) {
         final OdrlIdResponse action = new OdrlIdResponse(actionForCategory(policy.category()));
-        final OdrlConstraintResponse constraint = odrlConstraint(policy);
+        final OdrlConstraintResponse constraint;
+        try {
+            constraint = odrlConstraint(policy);
+        } catch (UnsupportedConstraintException e) {
+            throw new UnsupportedConstraintException(policy.policyId(), e.rawType());
+        }
         final OdrlPermissionResponse permission = new OdrlPermissionResponse(action, constraint);
 
         return new OdrlPolicyDefinitionResponse(

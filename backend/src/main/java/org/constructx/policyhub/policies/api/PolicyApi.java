@@ -90,6 +90,12 @@ public interface PolicyApi {
                     responseCode = "404",
                     description = "Policy not found",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Stored policy contains a constraint with missing or unknown type "
+                            + "and cannot be exported as ODRL",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<OdrlPolicyDefinitionResponse> getOdrlPolicyDefinitionById(

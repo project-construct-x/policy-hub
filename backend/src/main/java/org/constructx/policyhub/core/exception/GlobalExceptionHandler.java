@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.constructx.policyhub.policies.application.DuplicatePolicyIdException;
 import org.constructx.policyhub.policies.application.InvalidPolicyException;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
+import org.constructx.policyhub.policies.application.odrl.UnsupportedConstraintException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,26 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(
                         HttpStatus.CONFLICT.value(),
                         "Conflict",
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
+    }
+
+    @ExceptionHandler(UnsupportedConstraintException.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedConstraintException(
+            UnsupportedConstraintException ex,
+            HttpServletRequest request
+    ) {
+        log.warn(
+                "ODRL export failed on {}: {}",
+                request.getRequestURI(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ErrorResponse.of(
+                        HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                        "Unprocessable Entity",
                         ex.getMessage(),
                         request.getRequestURI()
                 ));
