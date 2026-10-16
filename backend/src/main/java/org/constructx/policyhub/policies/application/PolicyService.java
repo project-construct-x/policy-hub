@@ -110,10 +110,10 @@ public class PolicyService {
     ) {
         log.info("Updating policy with id {}", id);
 
-        policyValidator.validate(request.constraints());
-
         PolicyEntity entity = policyRepository.findById(id)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
+
+        policyValidator.validate(request.constraints());
 
         policyRepository.findByPolicyId(request.policyId())
                 .filter(existing -> !existing.getId().equals(id))

@@ -595,6 +595,22 @@ class PolicyControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_withUnknownId_returnsNotFound() throws Exception {
+        when(policyService.updatePolicy(eq(POLICY_ID), any(UpdatePolicyRequest.class)))
+                .thenThrow(new PolicyNotFoundException(POLICY_ID));
+
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson("zugriff-konsortium-mitglieder")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.path").value("/api/v1/policies/" + POLICY_ID));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
     void updatePolicy_withOrLogicalOperator_passesItThrough() throws Exception {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
                 "zugriff-konsortium-mitglieder",

@@ -468,12 +468,37 @@ class PolicyServiceTest {
                 () -> policyService.updatePolicy(ID, request)
         );
 
-        verify(policyValidator).validate(request.constraints());
-
         verify(policyRepository).findById(ID);
+
+        verify(policyValidator, never()).validate(any());
 
         verify(policyRepository, never())
                 .save(any());
+    }
+
+    @Test
+    void updatePolicy_withUnknownIdAndInvalidConstraints_throwsNotFound()
+            throws Exception {
+        UpdatePolicyRequest request =
+                new UpdatePolicyRequest(
+                        "updated-policy",
+                        PolicyCategory.ACCESS,
+                        List.of(objectMapper.readTree("""
+                                { "type": "UNKNOWN_TYPE" }
+                                """)),
+                        LogicalOperator.AND,
+                        "Legal Text"
+                );
+
+        when(policyRepository.findById(ID))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                PolicyNotFoundException.class,
+                () -> policyService.updatePolicy(ID, request)
+        );
+
+        verify(policyValidator, never()).validate(any());
     }
 
     @Test
