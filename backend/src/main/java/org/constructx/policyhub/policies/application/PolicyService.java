@@ -14,7 +14,9 @@ import org.constructx.policyhub.policies.infrastructure.PolicyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,14 @@ public class PolicyService {
                 pageable.getPageSize()
         );
 
-        return policyRepository.findAll(pageable)
+        Sort sort = pageable.getSort();
+        if(sort.getOrderFor("id") == null){
+            sort = sort.and(Sort.by("id"));
+        }
+
+        Pageable stable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        return policyRepository.findAll(stable)
                 .map(policyMapper::toDomain)
                 .map(this::toResponse);
     }

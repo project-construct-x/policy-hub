@@ -42,6 +42,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -136,6 +137,20 @@ class PolicyControllerTest {
                         pageable.getPageNumber() == 2
                                 && pageable.getPageSize() == 5
                 )
+        );
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void getAllPolicies_withoutParams_usesDefaultPageAndSort() throws Exception {
+        when(policyService.getAllPolicies(any(Pageable.class)))
+                .thenReturn(Page.empty());
+
+        mockMvc.perform(get("/api/v1/policies"))
+                .andExpect(status().isOk());
+
+        verify(policyService).getAllPolicies(
+                PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "updatedAt"))
         );
     }
 

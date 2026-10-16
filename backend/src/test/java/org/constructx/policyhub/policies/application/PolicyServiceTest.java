@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
 import java.util.List;
@@ -83,7 +84,7 @@ class PolicyServiceTest {
                         1
                 );
 
-        when(policyRepository.findAll(pageable))
+        when(policyRepository.findAll(any(Pageable.class)))
                 .thenReturn(entityPage);
 
         when(policyMapper.toDomain(entity))
@@ -114,21 +115,35 @@ class PolicyServiceTest {
                 response.legalText()
         );
 
-        verify(policyRepository).findAll(pageable);
+        verify(policyRepository).findAll(PageRequest.of(0, 20, Sort.by("id")));
         verify(policyMapper).toDomain(entity);
     }
 
     @Test
-    void getAllPolicies_passesPageableToRepository() {
-        Pageable pageable = PageRequest.of(2, 5);
+    void getAllPolicies_appendsIdTieBreakerToRequestedSort() {
+        Pageable pageable = PageRequest.of(2, 5, Sort.by(Sort.Direction.DESC, "updatedAt"));
 
-        when(policyRepository.findAll(pageable))
+        when(policyRepository.findAll(any(Pageable.class)))
                 .thenReturn(Page.empty(pageable));
 
         Page<PolicyResponse> result =
                 policyService.getAllPolicies(pageable);
 
         assertTrue(result.isEmpty());
+
+        verify(policyRepository).findAll(
+                PageRequest.of(2, 5, Sort.by(Sort.Order.desc("updatedAt"), Sort.Order.asc("id")))
+        );
+    }
+
+    @Test
+    void getAllPolicies_keepsClientSortOnIdWithoutDuplicatingIt() {
+        Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "id"));
+
+        when(policyRepository.findAll(any(Pageable.class)))
+                .thenReturn(Page.empty(pageable));
+
+        policyService.getAllPolicies(pageable);
 
         verify(policyRepository).findAll(pageable);
     }

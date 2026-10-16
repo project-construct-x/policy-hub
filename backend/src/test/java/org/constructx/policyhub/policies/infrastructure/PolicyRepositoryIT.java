@@ -117,7 +117,6 @@ class PolicyRepositoryIT {
         entity.setLegalText("Rechtstext");
 
         UUID id = policyRepository.saveAndFlush(entity).getId();
-        // Forces the reload to hit the database instead of the persistence context.
         entityManager.clear();
         return id;
     }
