@@ -3,6 +3,7 @@ package org.constructx.policyhub.policies.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
+import org.constructx.policyhub.policies.api.dto.PolicyIdRules;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.data.util.TypeInformation;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -716,6 +720,102 @@ class PolicyControllerTest {
     private String validCreateRequestJson() throws Exception {
         return objectMapper.writeValueAsString(new CreatePolicyRequest(
                 "concurrent-duplicate",
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint()),
+                LogicalOperator.AND,
+                "Rechtstext"
+        ));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "a",
+            "7",
+            "zugriff-konsortium-mitglieder",
+            "policy.use-case_quality-assurance",
+            "Policy.V2"
+    })
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withValidPolicyId_isAccepted(String policyId) throws Exception {
+        when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
+                policyResponse(policyId, PolicyCategory.ACCESS, List.of(membershipConstraint()))
+        );
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRequestJson(policyId)))
+                .andExpect(status().isCreated());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "https://evil.example/policy",
+            "_:b0",
+            "-leading-hyphen",
+            ".leading-dot",
+            "_leading-underscore",
+            "with space",
+            " policy-1",
+            "policy-1 ",
+            "policy/1",
+            "policy#1",
+            "umlaut-ä"
+    })
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withInvalidPolicyId_returnsBadRequest(String policyId) throws Exception {
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRequestJson(policyId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString(PolicyIdRules.PATTERN_MESSAGE)));
+
+        verify(policyService, never()).createPolicy(any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"zugriff-konsortium-mitglieder", "policy.use-case_quality-assurance"})
+    @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_withValidPolicyId_isAccepted(String policyId) throws Exception {
+        when(policyService.updatePolicy(eq(POLICY_ID), any(UpdatePolicyRequest.class))).thenReturn(
+                policyResponse(policyId, PolicyCategory.ACCESS, List.of(membershipConstraint()))
+        );
+
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson(policyId)))
+                .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"https://evil.example/policy", "_:b0", "with space", "policy-1 "})
+    @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_withInvalidPolicyId_returnsBadRequest(String policyId) throws Exception {
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson(policyId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString(PolicyIdRules.PATTERN_MESSAGE)));
+
+        verify(policyService, never()).updatePolicy(any(), any());
+    }
+
+    private String createRequestJson(String policyId) throws Exception {
+        return objectMapper.writeValueAsString(new CreatePolicyRequest(
+                policyId,
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint()),
+                LogicalOperator.AND,
+                "Rechtstext"
+        ));
+    }
+
+    private String updateRequestJson(String policyId) throws Exception {
+        return objectMapper.writeValueAsString(new UpdatePolicyRequest(
+                policyId,
                 PolicyCategory.ACCESS,
                 List.of(membershipConstraint()),
                 LogicalOperator.AND,

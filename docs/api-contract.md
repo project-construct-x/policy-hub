@@ -55,7 +55,7 @@ The current JSON fields are:
 | Field | Request | Response | Meaning and constraints |
 |---|---|---|---|
 | `id` | Not accepted | Required | Backend-generated UUID; resource identifier used in routes. |
-| `policyId` | Required | Required | Client-defined business identifier, non-blank, at most 200 characters, unique. Used as the ODRL `@id`. |
+| `policyId` | Required | Required | Client-defined business identifier, at most 200 characters, unique, matching `^[a-zA-Z0-9][a-zA-Z0-9._-]*$` (no leading/trailing whitespace; not trimmed by the backend). Used as the ODRL `@id`, so IRIs or blank node references are rejected. |
 | `category` | Required | Required | `ACCESS` or `CONTRACT`. |
 | `constraints` | Required | Required | Ordered JSON array of supported constraint objects; see below. An empty array is valid. |
 | `logicalOperator` | Optional | Required | `AND` or `OR`: how the constraints are combined (`odrl:and` / `odrl:or`). Omitted or `null` in a request means `AND`; responses always contain a value. Policies created before this field existed are `AND`. Unknown values are rejected with `400`. |

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.constructx.policyhub.policies.domain.LogicalOperator;
 import org.constructx.policyhub.policies.domain.PolicyCategory;
@@ -16,10 +17,12 @@ public record CreatePolicyRequest(
                 description = "Unique business identifier defined by the client",
                 example = "zugriff-konsortium-mitglieder",
                 minLength = 1,
-                maxLength = 200
+                maxLength = 200,
+                pattern = PolicyIdRules.PATTERN
         )
         @NotBlank(message = "policyId must not be blank")
         @Size(max = 200, message = "policyId must not exceed 200 characters")
+        @Pattern(regexp = PolicyIdRules.PATTERN, message = PolicyIdRules.PATTERN_MESSAGE)
         String policyId,
 
         @Schema(
