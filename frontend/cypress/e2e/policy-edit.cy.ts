@@ -12,13 +12,14 @@ describe('Policy – Bearbeiten', () => {
 
     cy.visitWithMode(`/policies/${POLICY_ID}/edit`, 'few');
 
-    // Vorbefüllung prüfen, dann überschreiben.
+    // Vorbefüllung prüfen (Präfix steht fest vor dem Feld, das Feld enthält nur den Rest), dann überschreiben.
+    cy.getByCy('policyId-prefix').should('have.text', 'con-x-ph-');
     cy.getByCy('policyId-input').should('have.value', ORIGINAL_SLUG);
     cy.getByCy('policyId-input').clear().type(updatedId);
 
     cy.getByCy('submit-policy').click();
 
-    cy.getByCy('policy-title').should('have.text', updatedId);
+    cy.getByCy('policy-title').should('have.text', `con-x-ph-${updatedId}`);
     cy.getByCy('snackbar-success').should('exist');
     cy.location('pathname').should('eq', `/policies/${POLICY_ID}`);
   });

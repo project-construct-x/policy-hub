@@ -49,7 +49,7 @@ describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
 
     cy.getByCy('submit-policy').click();
 
-    cy.getByCy('policy-title').should('have.text', newId);
+    cy.getByCy('policy-title').should('have.text', `con-x-ph-${newId}`);
     cy.getByCy('logic-connector').should('have.text', 'ODER');
     cy.getByCy('legal-text').should('contain', 'mindestens eine der folgenden Voraussetzungen');
 

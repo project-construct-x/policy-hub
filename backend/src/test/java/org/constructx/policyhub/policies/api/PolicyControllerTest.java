@@ -26,6 +26,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -77,7 +78,7 @@ class PolicyControllerTest {
         JsonNode constraint = membershipConstraint();
 
         PolicyResponse response = policyResponse(
-            "zugriff-konsortium-mitglieder",
+            "con-x-ph-zugriff-konsortium-mitglieder",
             PolicyCategory.ACCESS,
             List.of(constraint)
         );
@@ -98,7 +99,7 @@ class PolicyControllerTest {
             .andExpect(jsonPath("$.content[0].id")
                     .value(POLICY_ID.toString()))
             .andExpect(jsonPath("$.content[0].policyId")
-                    .value("zugriff-konsortium-mitglieder"))
+                    .value("con-x-ph-zugriff-konsortium-mitglieder"))
             .andExpect(jsonPath("$.content[0].category")
                     .value("ACCESS"))
             .andExpect(jsonPath("$.content[0].constraints").isArray())
@@ -142,7 +143,7 @@ class PolicyControllerTest {
     void getPolicyById_returnsOkWithPolicy() throws Exception {
         when(policyService.getPolicyById(POLICY_ID)).thenReturn(
                 policyResponse(
-                        "zugriff-konsortium-mitglieder",
+                        "con-x-ph-zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint())
                 )
@@ -152,7 +153,7 @@ class PolicyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(POLICY_ID.toString()))
                 .andExpect(jsonPath("$.policyId")
-                        .value("zugriff-konsortium-mitglieder"))
+                        .value("con-x-ph-zugriff-konsortium-mitglieder"))
                 .andExpect(jsonPath("$.category").value("ACCESS"))
                 .andExpect(jsonPath("$.constraints[0].type")
                         .value("MEMBERSHIP"))
@@ -180,7 +181,7 @@ class PolicyControllerTest {
     @WithMockUser(username = "admin", roles = "USER")
     void createPolicy_returnsCreatedPolicy() throws Exception {
         CreatePolicyRequest request = new CreatePolicyRequest(
-                "zugriff-konsortium-mitglieder",
+                "con-x-ph-zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
                 List.of(membershipConstraint()),
                 LogicalOperator.AND,
@@ -202,7 +203,7 @@ class PolicyControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(POLICY_ID.toString()))
                 .andExpect(jsonPath("$.policyId")
-                        .value("zugriff-konsortium-mitglieder"))
+                        .value("con-x-ph-zugriff-konsortium-mitglieder"))
                 .andExpect(jsonPath("$.category").value("ACCESS"))
                 .andExpect(jsonPath("$.constraints[0].type")
                         .value("MEMBERSHIP"))
@@ -211,6 +212,26 @@ class PolicyControllerTest {
                 .andExpect(jsonPath("$.logicalOperator").value("AND"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Der Zugriff ist aktiven Mitgliedern gestattet."));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_whenPolicyIdLacksHubPrefix_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "zugriff-konsortium-mitglieder",
+                  "category": "ACCESS",
+                  "constraints": [],
+                  "legalText": "Der Zugriff ist gestattet."
+                }
+                """;
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
     }
 
     @Test
@@ -240,7 +261,7 @@ class PolicyControllerTest {
     @WithMockUser(username = "admin", roles = "USER")
     void updatePolicy_returnsUpdatedPolicy() throws Exception {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
-                "zugriff-konsortium-mitglieder-updated",
+                "con-x-ph-zugriff-konsortium-mitglieder-updated",
                 PolicyCategory.CONTRACT,
                 List.of(frameworkAgreementConstraint()),
                 LogicalOperator.AND,
@@ -268,7 +289,7 @@ class PolicyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(POLICY_ID.toString()))
                 .andExpect(jsonPath("$.policyId")
-                        .value("zugriff-konsortium-mitglieder-updated"))
+                        .value("con-x-ph-zugriff-konsortium-mitglieder-updated"))
                 .andExpect(jsonPath("$.category").value("CONTRACT"))
                 .andExpect(jsonPath("$.constraints[0].type")
                         .value("FRAMEWORK_AGREEMENT"))
@@ -321,7 +342,7 @@ class PolicyControllerTest {
         JsonNode dateRange = dateRangeConstraint();
 
         CreatePolicyRequest request = new CreatePolicyRequest(
-                "zugriff-im-zeitraum",
+                "con-x-ph-zugriff-im-zeitraum",
                 PolicyCategory.ACCESS,
                 List.of(dateRange),
                 LogicalOperator.AND,
@@ -411,7 +432,7 @@ class PolicyControllerTest {
     void createPolicy_withOrLogicalOperator_passesItThroughAndReturnsIt() throws Exception {
         String requestBody = """
                 {
-                  "policyId": "mitglied-oder-rahmenvertrag",
+                  "policyId": "con-x-ph-mitglied-oder-rahmenvertrag",
                   "category": "ACCESS",
                   "constraints": [
                     { "type": "MEMBERSHIP", "value": "active" },
@@ -425,7 +446,7 @@ class PolicyControllerTest {
         when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
                 new PolicyResponse(
                         POLICY_ID,
-                        "mitglied-oder-rahmenvertrag",
+                        "con-x-ph-mitglied-oder-rahmenvertrag",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint(), frameworkAgreementConstraint()),
                         LogicalOperator.OR,
@@ -452,7 +473,7 @@ class PolicyControllerTest {
     void createPolicy_withoutLogicalOperator_isAccepted() throws Exception {
         String requestBody = """
                 {
-                  "policyId": "zugriff-konsortium-mitglieder",
+                  "policyId": "con-x-ph-zugriff-konsortium-mitglieder",
                   "category": "ACCESS",
                   "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
                   "legalText": "Der Zugriff ist aktiven Mitgliedern gestattet."
@@ -461,7 +482,7 @@ class PolicyControllerTest {
 
         when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
                 policyResponse(
-                        "zugriff-konsortium-mitglieder",
+                        "con-x-ph-zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
                         List.of(membershipConstraint())
                 )
@@ -485,7 +506,7 @@ class PolicyControllerTest {
     void createPolicy_withUnknownLogicalOperator_returnsBadRequest() throws Exception {
         String requestBody = """
                 {
-                  "policyId": "zugriff-konsortium-mitglieder",
+                  "policyId": "con-x-ph-zugriff-konsortium-mitglieder",
                   "category": "ACCESS",
                   "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
                   "logicalOperator": "XOR",
@@ -505,7 +526,7 @@ class PolicyControllerTest {
     @WithMockUser(username = "admin", roles = "USER")
     void updatePolicy_withOrLogicalOperator_passesItThrough() throws Exception {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
-                "zugriff-konsortium-mitglieder",
+                "con-x-ph-zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
                 List.of(membershipConstraint(), frameworkAgreementConstraint()),
                 LogicalOperator.OR,
@@ -531,5 +552,46 @@ class PolicyControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.logicalOperator").value("OR"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void updatePolicy_whenPolicyIdLacksHubPrefix_returnsBadRequest() throws Exception {
+        UpdatePolicyRequest request = new UpdatePolicyRequest(
+                "zugriff-konsortium-mitglieder",
+                PolicyCategory.ACCESS,
+                List.of(membershipConstraint()),
+                LogicalOperator.AND,
+                "Der Zugriff ist aktiven Mitgliedern gestattet."
+        );
+
+        mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
+
+        verifyNoInteractions(policyService);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_whenPolicyIdIsOnlyThePrefix_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "con-x-ph-",
+                  "category": "ACCESS",
+                  "constraints": [],
+                  "legalText": "Der Zugriff ist gestattet."
+                }
+                """;
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400));
     }
 }

@@ -1,4 +1,9 @@
-import { LogicalOperator, Policy, PolicyCategory } from '@shared/types/policy.model';
+import {
+  LogicalOperator,
+  Policy,
+  POLICY_ID_PREFIX,
+  PolicyCategory,
+} from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { Page, PageRequest } from '@shared/types/page.model';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
@@ -54,7 +59,7 @@ function buildPolicy(params: {
   createdAt: string;
   updatedAt: string;
 }): Policy {
-  return { logicalOperator: 'AND', ...params };
+  return { logicalOperator: 'AND', ...params, policyId: `${POLICY_ID_PREFIX}${params.policyId}` };
 }
 
 function generatePolicies(mode: PolicyMockMode): Policy[] {

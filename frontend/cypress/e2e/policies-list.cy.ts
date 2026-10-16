@@ -19,7 +19,7 @@ describe('Policies – Übersicht, Suche & Filter', () => {
     cy.visitWithMode('/policies', 'few');
     cy.getByCy('search-input').type('geodaten');
     cy.getByCy('policy-row').should('have.length', 1);
-    cy.getByCy('policy-row').should('have.attr', 'aria-label', 'geodaten-bis-2027');
+    cy.getByCy('policy-row').should('have.attr', 'aria-label', 'con-x-ph-geodaten-bis-2027');
   });
 
   it('filtert nach Kategorie ACCESS bzw. CONTRACT', () => {

@@ -26,9 +26,73 @@
     }
   }
 
-  &__field {
-    width: 100%;
-    max-width: 560px;
+  // Policy-ID als Input-Group: fester Präfix (abgesetztes Segment) + Eingabe in einem Rahmen.
+  &__id-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    max-width: 640px;
+  }
+
+  &__id-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--con-x-text-primary, #111111);
+  }
+
+  &__id-control {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--con-x-text-tertiary, #636363);
+    border-radius: 4px;
+    background: var(--con-x-bg-primary, #ffffff);
+    overflow: hidden;
+
+    &:focus-within {
+      @include focus-ring(2px);
+    }
+
+    &--error {
+      border-color: var(--con-x-error, #d32f2f);
+    }
+  }
+
+  // Fest und nicht editierbar: abgesetzter Hintergrund + Trennlinie zum Input.
+  &__id-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    background: #f0f0f0;
+    border-right: 1px solid var(--con-x-border-color, #e5e5e5);
+    color: var(--con-x-text-secondary, #454545);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  &__id-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.875rem 0.75rem;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--con-x-text-primary, #111111);
+    // Der Fokus-Ring sitzt auf `__id-control` (`:focus-within`).
+    outline: none;
+
+    &::placeholder {
+      color: var(--con-x-text-tertiary, #636363);
+    }
+  }
+
+  &__id-message {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--con-x-text-secondary, #454545);
+
+    &--error {
+      color: var(--con-x-error, #d32f2f);
+    }
   }
 
   &__category-grid {

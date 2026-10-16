@@ -24,7 +24,7 @@ public class PolicyResponse {
 
     @Schema(
             description = "Unique business identifier defined by the client",
-            example = "oeffentlicher-zugriff-projektdokumentation"
+            example = "con-x-ph-oeffentlicher-zugriff-projektdokumentation"
     )
     private final String policyId;
 
