@@ -264,10 +264,7 @@ class PolicyServiceTest {
                 result.policyId()
         );
 
-        verify(policyValidator).validate(
-                request.category(),
-                request.constraints()
-        );
+        verify(policyValidator).validate(request.constraints());
 
         verify(policyRepository)
                 .existsByPolicyId(request.policyId());
@@ -300,10 +297,7 @@ class PolicyServiceTest {
                 () -> policyService.createPolicy(request)
         );
 
-        verify(policyValidator).validate(
-                request.category(),
-                request.constraints()
-        );
+        verify(policyValidator).validate(request.constraints());
 
         verify(policyRepository)
                 .existsByPolicyId(request.policyId());
@@ -367,10 +361,7 @@ class PolicyServiceTest {
                 result.legalText()
         );
 
-        verify(policyValidator).validate(
-                request.category(),
-                request.constraints()
-        );
+        verify(policyValidator).validate(request.constraints());
 
         verify(policyMapper)
                 .updateEntity(request, entity);
@@ -477,10 +468,7 @@ class PolicyServiceTest {
                 () -> policyService.updatePolicy(ID, request)
         );
 
-        verify(policyValidator).validate(
-                request.category(),
-                request.constraints()
-        );
+        verify(policyValidator).validate(request.constraints());
 
         verify(policyRepository).findById(ID);
 

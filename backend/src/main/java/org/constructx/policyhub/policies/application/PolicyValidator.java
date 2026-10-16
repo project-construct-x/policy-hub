@@ -2,7 +2,6 @@ package org.constructx.policyhub.policies.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.constructx.policyhub.policies.domain.ConstraintType;
-import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,10 +13,7 @@ import java.util.Set;
 @Component
 public class PolicyValidator {
 
-    public void validate(
-            PolicyCategory category,
-            List<JsonNode> constraints
-    ) {
+    public void validate(List<JsonNode> constraints) {
         Set<ConstraintType> encounteredTypes = new HashSet<>();
 
         for (int index = 0; index < constraints.size(); index++) {
@@ -48,7 +44,6 @@ public class PolicyValidator {
             }
 
             validateConstraint(type, constraint, index);
-            validateCategoryCompatibility(category, type, index);
         }
     }
 
@@ -58,10 +53,9 @@ public class PolicyValidator {
      *
      * <p>This is the single point where untrusted input crosses into the enum. Every
      * constraint type the system knows about is defined exactly once, in
-     * {@link ConstraintType} itself — {@link #validateConstraint} and
-     * {@link #allowedCategories} both switch over that enum without a {@code default} branch,
-     * so adding or removing a value there is enough to make this class fail to compile until
-     * both are updated to match. A type can no longer be silently out of sync between this
+     * {@link ConstraintType} itself — {@link #validateConstraint} switches over that enum without
+     * a {@code default} branch, so adding or removing a value there is enough to make this class
+     * fail to compile until it is updated to match. A type can no longer be silently out of sync between this
      * class and the enum, the way a hand-maintained {@code Set<String>}/{@code Map<String, ...>}
      * of type names could be.</p>
      */
@@ -186,33 +180,5 @@ public class PolicyValidator {
                     "constraints[" + index + "].agreement is required"
             );
         }
-    }
-
-    private void validateCategoryCompatibility(
-            PolicyCategory category,
-            ConstraintType type,
-            int index
-    ) {
-        if (!allowedCategories(type).contains(category)) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index
-                            + "] of type " + type
-                            + " is not allowed for category " + category
-            );
-        }
-    }
-
-    /**
-     * Allowed {@link PolicyCategory} values per constraint type.
-     *
-     * <p>An exhaustive switch (no {@code default} branch) instead of a lookup map: adding a new
-     * {@link ConstraintType} value without adding it here is a compile error, not a type that
-     * silently falls through to "every category is allowed" or "no category is allowed".</p>
-     */
-    private Set<PolicyCategory> allowedCategories(ConstraintType type) {
-        return switch (type) {
-            case MEMBERSHIP, DATE_RANGE, FRAMEWORK_AGREEMENT ->
-                    Set.of(PolicyCategory.ACCESS, PolicyCategory.CONTRACT);
-        };
     }
 }

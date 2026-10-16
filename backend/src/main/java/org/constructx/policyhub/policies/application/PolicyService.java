@@ -79,10 +79,7 @@ public class PolicyService {
     public PolicyResponse createPolicy(CreatePolicyRequest request) {
         log.info("Creating policy with policyId {}", request.policyId());
 
-        policyValidator.validate(
-                request.category(),
-                request.constraints()
-        );
+        policyValidator.validate(request.constraints());
 
         if (policyRepository.existsByPolicyId(request.policyId())) {
             throw new DuplicatePolicyIdException(request.policyId());
@@ -113,10 +110,7 @@ public class PolicyService {
     ) {
         log.info("Updating policy with id {}", id);
 
-        policyValidator.validate(
-                request.category(),
-                request.constraints()
-        );
+        policyValidator.validate(request.constraints());
 
         PolicyEntity entity = policyRepository.findById(id)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
