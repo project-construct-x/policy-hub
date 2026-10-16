@@ -101,8 +101,9 @@ The collection response uses Spring's `Page` JSON shape:
 ```
 
 - `page` is zero-based and defaults to `0`; `size` defaults to `20`.
-- `sort` uses Spring Data syntax, for example `updatedAt,desc`. Unspecified sort order is not a
-  stable ordering guarantee; clients needing deterministic ordering should request one explicitly.
+- `sort` uses Spring Data syntax, for example `updatedAt,desc`, and defaults to `updatedAt,desc`.
+  The backend always appends `id,asc` as a tie-breaker (unless `id` is already part of the sort),
+  so the ordering is total and paging never returns an entry twice or skips one.
 - `number` in the response is zero-based. `content` contains only the requested page.
 - Search/filter parameters are not currently supported by the backend.
 
@@ -134,28 +135,30 @@ The constraints are combined below `odrl:permission[0]."odrl:constraint"` accord
 Example (`OR`, `MEMBERSHIP` + `DATE_RANGE`):
 
 ```json
-"odrl:constraint": {
-  "odrl:or": [
-    {
-      "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
-      "odrl:operator": { "@id": "odrl:eq" },
-      "odrl:rightOperand": "active"
-    },
-    {
-      "odrl:and": [
-        {
-          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
-          "odrl:operator": { "@id": "odrl:gteq" },
-          "odrl:rightOperand": "2027-01-01"
-        },
-        {
-          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
-          "odrl:operator": { "@id": "odrl:lteq" },
-          "odrl:rightOperand": "2027-06-30"
-        }
-      ]
-    }
-  ]
+{
+  "odrl:constraint": {
+    "odrl:or": [
+      {
+        "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
+        "odrl:operator": { "@id": "odrl:eq" },
+        "odrl:rightOperand": "active"
+      },
+      {
+        "odrl:and": [
+          {
+            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
+            "odrl:operator": { "@id": "odrl:gteq" },
+            "odrl:rightOperand": "2027-01-01"
+          },
+          {
+            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
+            "odrl:operator": { "@id": "odrl:lteq" },
+            "odrl:rightOperand": "2027-06-30"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
