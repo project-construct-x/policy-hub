@@ -53,7 +53,10 @@ public class OdrlPolicyMapper {
     }
 
     private String actionForCategory(PolicyCategory category) {
-        return category == PolicyCategory.ACCESS ? CX_ACCESS : ODRL_USE;
+        return switch (category) {
+            case ACCESS -> CX_ACCESS;
+            case CONTRACT -> ODRL_USE;
+        };
     }
 
     /**
