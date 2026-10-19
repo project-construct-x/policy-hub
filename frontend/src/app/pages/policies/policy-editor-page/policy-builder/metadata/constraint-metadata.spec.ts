@@ -11,19 +11,21 @@ import {
 } from './constraint-metadata';
 
 describe('getAllowedConstraintTypes', () => {
-  it('erlaubt alle drei Typen (inkl. DATE_RANGE) für ACCESS', () => {
+  it('erlaubt alle Typen (inkl. DATE_RANGE) für ACCESS', () => {
     expect(getAllowedConstraintTypes('ACCESS')).toEqual([
       'MEMBERSHIP',
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
+      'PARTICIPANT_DID',
     ]);
   });
 
-  it('erlaubt alle drei Typen für CONTRACT', () => {
+  it('erlaubt alle Typen für CONTRACT', () => {
     expect(getAllowedConstraintTypes('CONTRACT')).toEqual([
       'MEMBERSHIP',
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
+      'PARTICIPANT_DID',
     ]);
   });
 });
@@ -45,6 +47,13 @@ describe('buildDefaultConstraint', () => {
     expect(buildDefaultConstraint('FRAMEWORK_AGREEMENT')).toEqual({
       type: 'FRAMEWORK_AGREEMENT',
       agreement: 'DataExchangeGovernance',
+    });
+  });
+
+  it('PARTICIPANT_DID → leere Liste (per Validator ungültig, bis Nutzer DIDs ergänzt)', () => {
+    expect(buildDefaultConstraint('PARTICIPANT_DID')).toEqual({
+      type: 'PARTICIPANT_DID',
+      dids: [],
     });
   });
 });

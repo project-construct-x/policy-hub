@@ -67,6 +67,15 @@
           <code>{{ asFramework(constraint()).agreement }}</code>
         </p>
       }
+
+      @case ('PARTICIPANT_DID') {
+        <app-participant-did-input
+          [dids]="asParticipantDid(constraint()).dids"
+          [submitErrorKey]="errorKey('.dids')"
+          (didsChange)="onDidsChange($event)"
+          (pendingInputChange)="pendingInputChange.emit($event)"
+        />
+      }
     }
   </div>
 </article>

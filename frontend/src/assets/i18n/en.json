@@ -41,6 +41,12 @@
       "startInput": "Start date of the validity period",
       "endInput": "End date of the validity period"
     },
+    "participantDid": {
+      "list": "Participant list (did:web)",
+      "remove": "Remove participant:",
+      "removed": "Participant removed",
+      "added": "{{count}} participant(s) added"
+    },
     "severity": {
       "success": "Success",
       "error": "Error",
@@ -218,6 +224,11 @@
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "The consumer must have agreed to this framework agreement:"
+      },
+      "PARTICIPANT_DID": {
+        "label": "Participants (did:web)",
+        "placeholder": "did:web:example.com",
+        "hint": "Confirm with Enter or comma. Several DIDs can be pasted at once."
       }
     },
     "actions": {
@@ -253,6 +264,12 @@
       "label": "Framework agreement",
       "description": "Agreement to the framework contract required.",
       "legalText": "The consumer must have agreed to the DataExchangeGovernance framework agreement."
+    },
+    "PARTICIPANT_DID": {
+      "label": "Participant selection",
+      "description": "Only the listed participants (did:web) satisfy the policy.",
+      "legalText": "Only the explicitly named participants may access the data.",
+      "summary": "{{count}} participant(s) (did:web)"
     }
   },
   "legalDescription": {
@@ -263,7 +280,8 @@
     "introContractAnyOf": "Usage of the provided data is permitted if at least one of the following conditions is met:",
     "clause": {
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
-      "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place."
+      "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place.",
+      "participantDid": "The data consumer must be one of the following participants, identified by their did:web identity: {{dids}}. Any usage of the data by other participants is prohibited."
     }
   },
   "validation": {
@@ -280,6 +298,9 @@
     "dateRangeEndInPast": "End date must be in the future",
     "dateRangeStartAfterEnd": "The start date must be before the end date",
     "constraintUnknownType": "Unknown constraint type — this constraint is ignored.",
+    "participantDidRequired": "At least one participant (did:web) is required",
+    "participantDidInvalid": "Please enter the participant ID in the correct format, e.g., did:web:firma.de",
+    "participantDidDuplicate": "This participant is already in the list",
     "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {

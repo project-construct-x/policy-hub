@@ -1,0 +1,40 @@
+<mat-form-field appearance="outline" class="pdi" *transloco="let t" data-cy="participant-did-field">
+  <mat-label>{{ t('policyBuilder.constraint.PARTICIPANT_DID.label') }}</mat-label>
+  <mat-chip-grid
+    #chipGrid
+    [formControl]="control"
+    [errorStateMatcher]="errorStateMatcher"
+    [attr.aria-label]="t('a11y.participantDid.list')"
+  >
+    @for (did of dids(); track $index) {
+      <mat-chip-row (removed)="remove(did)" data-cy="participant-did-chip">
+        {{ did }}
+        <button
+          type="button"
+          matChipRemove
+          [attr.aria-label]="t('a11y.participantDid.remove') + ' ' + did"
+          data-cy="participant-did-remove"
+        >
+          <mat-icon aria-hidden="true">cancel</mat-icon>
+        </button>
+      </mat-chip-row>
+    }
+    <input
+      [matChipInputFor]="chipGrid"
+      [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+      matChipInputAddOnBlur
+      (matChipInputTokenEnd)="onTokenEnd($event)"
+      (paste)="onPaste($event)"
+      (input)="onInput($event)"
+      [placeholder]="t('policyBuilder.constraint.PARTICIPANT_DID.placeholder')"
+      autocomplete="off"
+      spellcheck="false"
+      data-cy="participant-did-input"
+    />
+  </mat-chip-grid>
+  @if (errorKey(); as key) {
+    <mat-error data-cy="participant-did-error">{{ t(key) }}</mat-error>
+  } @else {
+    <mat-hint>{{ t('policyBuilder.constraint.PARTICIPANT_DID.hint') }}</mat-hint>
+  }
+</mat-form-field>

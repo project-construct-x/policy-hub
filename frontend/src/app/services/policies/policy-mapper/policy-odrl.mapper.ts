@@ -4,6 +4,8 @@ import { logicalOperatorOf, Policy, PolicyCategory } from '@shared/types/policy.
 const CX_POLICY_NS = 'https://w3id.org/catenax/2025/9/policy/';
 const ODRL_USE = 'odrl:use';
 const CX_ACCESS = `${CX_POLICY_NS}access`;
+/** Teilnehmer-Identität im EDC-Namespace; Format wie in der HTX Connector Management UI. */
+const EDC_CONNECTOR = 'edc:connector';
 
 const ODRL_CONTEXT = {
   '@vocab': 'https://w3id.org/edc/v0.0.1/ns/',
@@ -93,6 +95,16 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}FrameworkAgreement` },
           'odrl:operator': { '@id': 'odrl:eq' },
           'odrl:rightOperand': c.agreement,
+        },
+      ];
+    case 'PARTICIPANT_DID':
+      // Komma-getrennter String statt Array: so erwartet es der Connector (die HTX Connector UI
+      // schreibt und liest `edc:connector` genauso). did:web-Werte enthalten keine Kommas.
+      return [
+        {
+          'odrl:leftOperand': { '@id': EDC_CONNECTOR },
+          'odrl:operator': { '@id': 'odrl:eq' },
+          'odrl:rightOperand': c.dids.join(','),
         },
       ];
   }
