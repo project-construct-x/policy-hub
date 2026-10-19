@@ -45,7 +45,7 @@ public class PolicyService {
         );
 
         Sort sort = pageable.getSort();
-        if(sort.getOrderFor("id") == null){
+        if (sort.getOrderFor("id") == null) {
             sort = sort.and(Sort.by("id"));
         }
 

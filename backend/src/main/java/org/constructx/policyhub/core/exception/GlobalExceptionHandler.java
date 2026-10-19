@@ -236,16 +236,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    private static boolean violates(Throwable ex) {
-        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
-            if (cause instanceof ConstraintViolationException violation
-                    && GlobalExceptionHandler.POLICY_ID_UNIQUE_CONSTRAINT.equalsIgnoreCase(violation.getConstraintName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception ex, HttpServletRequest request) {
@@ -257,5 +247,15 @@ public class GlobalExceptionHandler {
                         "Internal Server Error",
                         "An unexpected error occurred",
                         request.getRequestURI()));
+    }
+
+    private static boolean violates(Throwable ex) {
+        for (Throwable cause = ex; cause != null; cause = cause.getCause()) {
+            if (cause instanceof ConstraintViolationException violation
+                && GlobalExceptionHandler.POLICY_ID_UNIQUE_CONSTRAINT.equalsIgnoreCase(violation.getConstraintName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
