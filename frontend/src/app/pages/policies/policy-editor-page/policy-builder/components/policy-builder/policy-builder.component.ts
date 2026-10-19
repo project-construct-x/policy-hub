@@ -104,7 +104,18 @@ export class PolicyBuilderComponent {
     this.logicalOperator() === 'OR' ? 'policyBuilder.orConnector' : 'policyBuilder.andConnector',
   );
 
-  readonly isValid = computed(() => this.validationErrors().length === 0);
+  /**
+   * Constraint-Typen, deren Eingabefeld noch nicht übernommenen (und damit ungültigen) Text
+   * enthält, z.B. eine abgelehnte did:web. Solcher Text darf nicht stillschweigend verloren
+   * gehen, deshalb blockiert er das Speichern. Beim Entfernen eines Constraints wird der Eintrag
+   * verworfen (`prunePendingInput`), sonst blockierte er nach erneutem Hinzufügen weiter.
+   */
+  private readonly pendingInputTypes = signal<ReadonlySet<ConstraintType>>(new Set());
+  private readonly hasPendingInput = computed(() => this.pendingInputTypes().size > 0);
+
+  readonly isValid = computed(
+    () => this.validationErrors().length === 0 && !this.hasPendingInput(),
+  );
 
   readonly policyIdError = computed(() => {
     if (!this.submitted()) return null;
@@ -133,6 +144,7 @@ export class PolicyBuilderComponent {
     this.category.set(c);
     // Filter out constraints not allowed in the new category
     this.constraints.update((list) => list.filter((cn) => this.isConstraintAllowed(cn.type, c)));
+    this.prunePendingInput();
   }
 
   /** Arrow-key navigation for the category radiogroup (WAI-ARIA radio pattern). */
@@ -192,6 +204,7 @@ export class PolicyBuilderComponent {
       }
       return [...list, buildDefaultConstraint(type)];
     });
+    this.prunePendingInput();
   }
 
   updateConstraint(index: number, c: Constraint): void {
@@ -202,8 +215,23 @@ export class PolicyBuilderComponent {
     });
   }
 
+  setPendingInput(type: ConstraintType, pending: boolean): void {
+    this.pendingInputTypes.update((set) => {
+      const next = new Set(set);
+      if (pending) next.add(type);
+      else next.delete(type);
+      return next;
+    });
+  }
+
   removeConstraint(index: number): void {
     this.constraints.update((list) => list.filter((_, i) => i !== index));
+    this.prunePendingInput();
+  }
+
+  private prunePendingInput(): void {
+    const existing = this.existingConstraintTypes();
+    this.pendingInputTypes.update((set) => new Set([...set].filter((t) => existing.includes(t))));
   }
 
   onPolicyIdInput(value: string): void {
@@ -245,7 +273,11 @@ export class PolicyBuilderComponent {
     setTimeout(() => {
       const firstInvalid =
         this.host.nativeElement.querySelector<HTMLElement>('[aria-invalid="true"]');
-      firstInvalid?.focus();
+      // Zusammengesetzte Controls (z.B. `mat-chip-grid`) tragen `aria-invalid` auch selbst; ihr
+      // Fokus-Handler springt auf den ersten Chip. Fokussiert wird das fehlerhafte Eingabefeld.
+      const target =
+        firstInvalid?.querySelector<HTMLElement>('input[aria-invalid="true"]') ?? firstInvalid;
+      target?.focus();
     });
   }
 }

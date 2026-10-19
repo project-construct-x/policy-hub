@@ -39,12 +39,22 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     defaultOperator: 'eq',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
+  PARTICIPANT_DID: {
+    type: 'PARTICIPANT_DID',
+    labelKey: 'constraint.PARTICIPANT_DID.label',
+    descriptionKey: 'constraint.PARTICIPANT_DID.description',
+    legalTextKey: 'constraint.PARTICIPANT_DID.legalText',
+    icon: 'badge',
+    defaultOperator: 'eq',
+    allowedIn: ['ACCESS', 'CONTRACT'],
+  },
 };
 
 export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
   'MEMBERSHIP',
   'DATE_RANGE',
   'FRAMEWORK_AGREEMENT',
+  'PARTICIPANT_DID',
 ];
 
 export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
@@ -77,5 +87,7 @@ export function buildDefaultConstraint(type: ConstraintType): Constraint {
       return { type: 'DATE_RANGE', startDate: '', endDate: '' };
     case 'FRAMEWORK_AGREEMENT':
       return { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
+    case 'PARTICIPANT_DID':
+      return { type: 'PARTICIPANT_DID', dids: [] };
   }
 }

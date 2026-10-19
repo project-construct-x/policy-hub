@@ -1,4 +1,8 @@
-export type ConstraintType = 'MEMBERSHIP' | 'DATE_RANGE' | 'FRAMEWORK_AGREEMENT';
+export type ConstraintType =
+  | 'MEMBERSHIP'
+  | 'DATE_RANGE'
+  | 'FRAMEWORK_AGREEMENT'
+  | 'PARTICIPANT_DID';
 
 export type Operator = 'eq' | 'isAnyOf' | 'gteq' | 'lteq';
 
@@ -18,4 +22,14 @@ export interface FrameworkAgreementConstraint {
   agreement: string;
 }
 
-export type Constraint = MembershipConstraint | DateRangeConstraint | FrameworkAgreementConstraint;
+/** Nur die aufgeführten Teilnehmer (did:web-Identitäten) erfüllen die Policy. */
+export interface ParticipantDidConstraint {
+  type: 'PARTICIPANT_DID';
+  dids: string[];
+}
+
+export type Constraint =
+  | MembershipConstraint
+  | DateRangeConstraint
+  | FrameworkAgreementConstraint
+  | ParticipantDidConstraint;

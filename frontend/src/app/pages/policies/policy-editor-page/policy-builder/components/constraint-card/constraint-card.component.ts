@@ -18,6 +18,11 @@ export class ConstraintCardComponent {
   readonly metadata = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
 
   readonly summary = computed(() => formatSummary(this.constraint(), this.transloco));
+
+  readonly dids = computed<readonly string[]>(() => {
+    const c = this.constraint();
+    return c.type === 'PARTICIPANT_DID' && Array.isArray(c.dids) ? c.dids : [];
+  });
 }
 
 function formatSummary(c: Constraint, transloco: TranslocoService): string {
@@ -32,6 +37,11 @@ function formatSummary(c: Constraint, transloco: TranslocoService): string {
     }
     case 'FRAMEWORK_AGREEMENT':
       return c.agreement;
+    case 'PARTICIPANT_DID':
+      // Nur die Anzahl als Parameter; die DIDs selbst rendert das Template per Interpolation.
+      return transloco.translate('constraint.PARTICIPANT_DID.summary', {
+        count: Array.isArray(c.dids) ? c.dids.length : 0,
+      });
   }
 }
 
