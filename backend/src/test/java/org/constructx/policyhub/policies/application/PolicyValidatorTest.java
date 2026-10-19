@@ -2,7 +2,6 @@ package org.constructx.policyhub.policies.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.constructx.policyhub.policies.domain.PolicyCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,32 +24,14 @@ class PolicyValidatorTest {
     }
 
     @Test
-    void validate_dateRangeForAccess_isValid() throws Exception {
+    void validate_dateRange_isValid() throws Exception {
         JsonNode constraint = dateRange(
                 LocalDate.now().plusDays(1),
                 LocalDate.now().plusMonths(1)
         );
 
         assertDoesNotThrow(() ->
-                policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
-        );
-    }
-
-    @Test
-    void validate_dateRangeForContract_isValid() throws Exception {
-        JsonNode constraint = dateRange(
-                LocalDate.now().plusDays(1),
-                LocalDate.now().plusMonths(1)
-        );
-
-        assertDoesNotThrow(() ->
-                policyValidator.validate(
-                        PolicyCategory.CONTRACT,
-                        List.of(constraint)
-                )
+                policyValidator.validate(List.of(constraint))
         );
     }
 
@@ -66,10 +47,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -90,10 +68,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -115,10 +90,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -140,10 +112,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -162,10 +131,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -184,10 +150,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -206,10 +169,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.ACCESS,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(
@@ -230,10 +190,7 @@ class PolicyValidatorTest {
 
         InvalidPolicyException exception = assertThrows(
                 InvalidPolicyException.class,
-                () -> policyValidator.validate(
-                        PolicyCategory.CONTRACT,
-                        List.of(constraint)
-                )
+                () -> policyValidator.validate(List.of(constraint))
         );
 
         assertEquals(

@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Getter
 @AllArgsConstructor
-@Schema(description = "Persisted Policy Hub policy")
+@Schema(description = "Standard error response returned for failed requests")
 public class ErrorResponse {
 
     @Schema(example = "2026-07-21T12:00:00Z")

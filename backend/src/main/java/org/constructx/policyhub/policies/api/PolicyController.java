@@ -9,6 +9,8 @@ import org.constructx.policyhub.policies.api.dto.odrl.OdrlPolicyDefinitionRespon
 import org.constructx.policyhub.policies.application.PolicyService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ public class PolicyController implements PolicyApi {
     @Override
     @GetMapping
     public ResponseEntity<Page<PolicyResponse>> getAllPolicies(
-            Pageable pageable
+            @PageableDefault(size = 20, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(
                 policyService.getAllPolicies(pageable)

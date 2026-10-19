@@ -40,7 +40,7 @@ automatic reason to prefer either implementation.
 |---|---|---|---|
 | `GET /api/v1/policies` | Query: `page`, `size`, `sort` | `200`, paginated `Policy` response | `400` for invalid query parameters; `401` unauthenticated |
 | `GET /api/v1/policies/{id}` | `{id}` is the backend UUID | `200`, `Policy` | `404` not found; `401` unauthenticated |
-| `GET /api/v1/policies/{id}/odrl` | `{id}` is the backend UUID | `200`, ODRL `PolicyDefinition` | `404` not found; `401` unauthenticated |
+| `GET /api/v1/policies/{id}/odrl` | `{id}` is the backend UUID | `200`, ODRL `PolicyDefinition` | `404` not found; `422` stored constraint with missing or unknown type; `401` unauthenticated |
 | `POST /api/v1/policies` | `CreatePolicyRequest` JSON | `201`, created `Policy` | `400` invalid request; `409` duplicate `policyId`; `401` unauthenticated |
 | `PUT /api/v1/policies/{id}` | Full `UpdatePolicyRequest` JSON; all editable fields required | `200`, updated `Policy` | `400` invalid request; `404` not found; `409` duplicate `policyId`; `401` unauthenticated |
 | `DELETE /api/v1/policies/{id}` | `{id}` is the backend UUID | `204`, no response body | `404` not found; `401` unauthenticated |
@@ -55,7 +55,7 @@ The current JSON fields are:
 | Field | Request | Response | Meaning and constraints |
 |---|---|---|---|
 | `id` | Not accepted | Required | Backend-generated UUID; resource identifier used in routes. |
-| `policyId` | Required | Required | Business identifier, at most 200 characters including the prefix, unique. Must start with the fixed prefix `con-x-ph-` followed by at least one more character; otherwise `400`. The prefix marks policies created in the Hub; the frontend prepends it and does not let users change it. Existing records were migrated by prepending it. Used as the ODRL `@id`. |
+| `policyId` | Required | Required | Business identifier, at most 200 characters including the prefix, unique, matching `^con-x-ph-[a-zA-Z0-9._-]+$`; otherwise `400`. The fixed prefix `con-x-ph-` marks policies created in the Hub; the frontend prepends it and does not let users change it. Existing records were migrated by prepending it. No whitespace; not trimmed by the backend. Used as the ODRL `@id`, so IRIs or blank node references are rejected. |
 | `category` | Required | Required | `ACCESS` or `CONTRACT`. |
 | `constraints` | Required | Required | Ordered JSON array of supported constraint objects; see below. An empty array is valid. |
 | `logicalOperator` | Optional | Required | `AND` or `OR`: how the constraints are combined (`odrl:and` / `odrl:or`). Omitted or `null` in a request means `AND`; responses always contain a value. Policies created before this field existed are `AND`. Unknown values are rejected with `400`. |
@@ -101,8 +101,9 @@ The collection response uses Spring's `Page` JSON shape:
 ```
 
 - `page` is zero-based and defaults to `0`; `size` defaults to `20`.
-- `sort` uses Spring Data syntax, for example `updatedAt,desc`. Unspecified sort order is not a
-  stable ordering guarantee; clients needing deterministic ordering should request one explicitly.
+- `sort` uses Spring Data syntax, for example `updatedAt,desc`, and defaults to `updatedAt,desc`.
+  The backend always appends `id,asc` as a tie-breaker (unless `id` is already part of the sort),
+  so the ordering is total and paging never returns an entry twice or skips one.
 - `number` in the response is zero-based. `content` contains only the requested page.
 - Search/filter parameters are not currently supported by the backend.
 
@@ -130,32 +131,39 @@ The constraints are combined below `odrl:permission[0]."odrl:constraint"` accord
   constraints (`DATE_RANGE`) is wrapped in a nested `odrl:and`, so the period keeps meaning
   "start AND end" instead of "start OR end".
 - Without constraints, `odrl:constraint` is omitted entirely.
+- A stored constraint with a missing or unknown `type` (e.g. from seed data, manual database
+  changes or a type removed from the provisional model) is never skipped: dropping an `AND` operand
+  would export a less strict policy. The request fails with `422` and names the policy and the
+  type. `GET /api/v1/policies/{id}` and the list still return the policy unchanged; a `PUT` without
+  the unknown constraint repairs it.
 
 Example (`OR`, `MEMBERSHIP` + `DATE_RANGE`):
 
 ```json
-"odrl:constraint": {
-  "odrl:or": [
-    {
-      "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
-      "odrl:operator": { "@id": "odrl:eq" },
-      "odrl:rightOperand": "active"
-    },
-    {
-      "odrl:and": [
-        {
-          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
-          "odrl:operator": { "@id": "odrl:gteq" },
-          "odrl:rightOperand": "2027-01-01"
-        },
-        {
-          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
-          "odrl:operator": { "@id": "odrl:lteq" },
-          "odrl:rightOperand": "2027-06-30"
-        }
-      ]
-    }
-  ]
+{
+  "odrl:constraint": {
+    "odrl:or": [
+      {
+        "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
+        "odrl:operator": { "@id": "odrl:eq" },
+        "odrl:rightOperand": "active"
+      },
+      {
+        "odrl:and": [
+          {
+            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
+            "odrl:operator": { "@id": "odrl:gteq" },
+            "odrl:rightOperand": "2027-01-01"
+          },
+          {
+            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
+            "odrl:operator": { "@id": "odrl:lteq" },
+            "odrl:rightOperand": "2027-06-30"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -180,8 +188,8 @@ Application errors use this JSON shape:
 }
 ```
 
-The backend currently uses `400` for malformed or invalid input, `404` for missing policies, and
-`409` for a duplicate `policyId`. Authentication failures are handled by Spring Security and are
+The backend currently uses `400` for malformed or invalid input, `404` for missing policies,
+`409` for a duplicate `policyId`, and `422` when a stored policy cannot be exported as ODRL. Authentication failures are handled by Spring Security and are
 not guaranteed to use the application error body above. Clients should branch on HTTP status and
 must not depend on the exact wording of `message` for program logic.
 

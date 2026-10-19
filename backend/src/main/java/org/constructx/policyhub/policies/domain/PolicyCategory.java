@@ -14,5 +14,7 @@ public enum PolicyCategory {
      * Defines conditions that must be fulfilled for the usage of data
      * within a contractual context.
      */
-    CONTRACT
+    CONTRACT,
+
+
 }
