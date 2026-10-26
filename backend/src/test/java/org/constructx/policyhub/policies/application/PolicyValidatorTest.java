@@ -2,8 +2,12 @@ package org.constructx.policyhub.policies.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -197,6 +201,151 @@ class PolicyValidatorTest {
                 "Unsupported constraint type: END_DATE",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    void validate_participantDid_isValid() throws Exception {
+        JsonNode constraint = participantDid(
+                "did:web:a.example",
+                "did:web:b.example"
+        );
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "did:web:example.com",
+            "did:web:localhost%3A8443",
+            "did:web:example.com:user:alice",
+            "did:web:example.com%3A8443:participants:acme_1",
+            "did:web:example.com:path%20segment"
+    })
+    void validate_participantDidWithValidDid_isValid(String did)
+            throws Exception {
+        JsonNode constraint = participantDid(did);
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{ \"type\": \"PARTICIPANT_DID\" }",
+            "{ \"type\": \"PARTICIPANT_DID\", \"dids\": \"did:web:a.example\" }",
+            "{ \"type\": \"PARTICIPANT_DID\", \"dids\": [] }"
+    })
+    void validate_participantDidWithoutEntries_throwsException(String json)
+            throws Exception {
+        JsonNode constraint = objectMapper.readTree(json);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].dids must contain at least one entry",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_participantDidWithNonStringEntry_throwsException()
+            throws Exception {
+        JsonNode constraint = objectMapper.readTree("""
+                {
+                  "type": "PARTICIPANT_DID",
+                  "dids": ["did:web:a.example", 42]
+                }
+                """);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].dids[1] must be a string",
+                exception.getMessage()
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "did:web:",
+            "did:key:z6Mkabc",
+            "DID:web:example.com",
+            "did:web:-example.com",
+            "did:web:example..com",
+            "did:web:example.com:",
+            "did:web:a.example,did:web:b.example",
+            "did:web:a example",
+            " did:web:a.example",
+            "did:web:a.example ",
+            "did:web:{{dids}}"
+    })
+    void validate_participantDidWithInvalidDid_throwsException(String did)
+            throws Exception {
+        JsonNode constraint = participantDid("did:web:valid.example", did);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].dids[1] must be a valid did:web identifier",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_participantDidWithCaseInsensitiveDuplicate_throwsException()
+            throws Exception {
+        JsonNode constraint = participantDid(
+                "did:web:a.example",
+                "did:web:A.Example"
+        );
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].dids[1] is a duplicate",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_participantDidTwice_throwsException() throws Exception {
+        JsonNode first = participantDid("did:web:a.example");
+        JsonNode second = participantDid("did:web:b.example");
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(first, second))
+        );
+
+        assertEquals(
+                "Constraint type may only occur once: PARTICIPANT_DID",
+                exception.getMessage()
+        );
+    }
+
+    private JsonNode participantDid(String... dids) {
+        ObjectNode constraint = objectMapper.createObjectNode();
+        constraint.put("type", "PARTICIPANT_DID");
+        ArrayNode didArray = constraint.putArray("dids");
+        for (String did : dids) {
+            didArray.add(did);
+        }
+        return constraint;
     }
 
     private JsonNode dateRange(

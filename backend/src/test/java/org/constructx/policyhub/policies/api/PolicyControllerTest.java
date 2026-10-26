@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.constructx.policyhub.policies.api.dto.CreatePolicyRequest;
 import org.constructx.policyhub.policies.api.dto.PolicyResponse;
 import org.constructx.policyhub.policies.api.dto.UpdatePolicyRequest;
+import org.constructx.policyhub.policies.application.InvalidPolicyException;
 import org.constructx.policyhub.policies.application.PolicyNotFoundException;
 import org.constructx.policyhub.policies.application.PolicyService;
 import org.constructx.policyhub.policies.application.odrl.OdrlPolicyMapper;
@@ -499,6 +500,80 @@ class PolicyControllerTest {
                         .value("2026-08-01"))
                 .andExpect(jsonPath("$.constraints[0].endDate")
                         .value("2027-12-31"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withParticipantDid_returnsCreatedPolicy() throws Exception {
+        JsonNode participantDid = objectMapper.readTree("""
+                {
+                  "type": "PARTICIPANT_DID",
+                  "dids": ["did:web:a.example", "did:web:b.example"]
+                }
+                """);
+
+        CreatePolicyRequest request = new CreatePolicyRequest(
+                "con-x-ph-zugriff-teilnehmer",
+                PolicyCategory.ACCESS,
+                List.of(participantDid),
+                LogicalOperator.AND,
+                "Der Zugriff ist nur den angegebenen Teilnehmern gestattet."
+        );
+
+        PolicyResponse response = new PolicyResponse(
+                POLICY_ID,
+                request.policyId(),
+                request.category(),
+                request.constraints(),
+                LogicalOperator.AND,
+                request.legalText(),
+                CREATED_AT,
+                UPDATED_AT
+        );
+
+        when(policyService.createPolicy(eq(request)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.constraints[0].type")
+                        .value("PARTICIPANT_DID"))
+                .andExpect(jsonPath("$.constraints[0].dids[0]")
+                        .value("did:web:a.example"))
+                .andExpect(jsonPath("$.constraints[0].dids[1]")
+                        .value("did:web:b.example"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withInvalidParticipantDid_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "con-x-ph-zugriff-teilnehmer",
+                  "category": "ACCESS",
+                  "constraints": [
+                    { "type": "PARTICIPANT_DID", "dids": ["did:key:z6Mkabc"] }
+                  ],
+                  "legalText": "Der Zugriff ist nur den angegebenen Teilnehmern gestattet."
+                }
+                """;
+
+        when(policyService.createPolicy(any(CreatePolicyRequest.class)))
+                .thenThrow(new InvalidPolicyException(
+                        "constraints[0].dids[0] must be a valid did:web identifier"
+                ));
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value(
+                        "constraints[0].dids[0] must be a valid did:web identifier"));
     }
 
     @Test

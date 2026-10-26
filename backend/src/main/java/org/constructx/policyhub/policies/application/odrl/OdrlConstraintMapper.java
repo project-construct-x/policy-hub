@@ -5,12 +5,16 @@ import org.constructx.policyhub.policies.api.dto.odrl.OdrlAtomicConstraintRespon
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlIdResponse;
 import org.constructx.policyhub.policies.domain.ConstraintType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OdrlConstraintMapper {
 
     private static final String CX_POLICY_NS =
             "https://w3id.org/catenax/2025/9/policy/";
+
+    /** Participant identity in the EDC namespace, not the Catena-X one. */
+    private static final String EDC_CONNECTOR = "edc:connector";
 
     private OdrlConstraintMapper() {
     }
@@ -29,6 +33,9 @@ public class OdrlConstraintMapper {
 
             case FRAMEWORK_AGREEMENT ->
                     List.of(mapFrameworkAgreement(constraint));
+
+            case PARTICIPANT_DID ->
+                    List.of(mapParticipantDid(constraint));
         };
     }
 
@@ -96,6 +103,19 @@ public class OdrlConstraintMapper {
                 ),
                 new OdrlIdResponse(OdrlOperator.EQ.value()),
                 constraint.get("agreement")
+        );
+    }
+
+    private static OdrlAtomicConstraintResponse mapParticipantDid(
+            JsonNode constraint
+    ) {
+        List<String> dids = new ArrayList<>();
+        constraint.get("dids").forEach(did -> dids.add(did.asText()));
+
+        return new OdrlAtomicConstraintResponse(
+                new OdrlIdResponse(EDC_CONNECTOR),
+                new OdrlIdResponse(OdrlOperator.EQ.value()),
+                String.join(",", dids)
         );
     }
 

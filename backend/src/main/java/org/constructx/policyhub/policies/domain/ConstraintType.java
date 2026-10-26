@@ -24,5 +24,11 @@ public enum ConstraintType {
     /**
      * Requires acceptance of a defined framework agreement.
      */
-    FRAMEWORK_AGREEMENT
+    FRAMEWORK_AGREEMENT,
+
+    /**
+     * Restricts access or usage to the listed participants, identified by
+     * their did:web identifiers.
+     */
+    PARTICIPANT_DID
 }

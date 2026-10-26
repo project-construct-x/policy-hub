@@ -464,6 +464,59 @@ public class OdrlPolicyMapperTest {
             """);
     }
 
+    private JsonNode participantDid() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "PARTICIPANT_DID",
+              "dids": ["did:web:a.example", "did:web:b.example"]
+            }
+            """);
+    }
+
+    private void assertParticipantDidConstraint(JsonNode actual) {
+        assertEquals(
+                "edc:connector",
+                actual.path("odrl:leftOperand").path("@id").asText()
+        );
+        assertEquals(
+                "odrl:eq",
+                actual.path("odrl:operator").path("@id").asText()
+        );
+        assertEquals(
+                "did:web:a.example,did:web:b.example",
+                actual.path("odrl:rightOperand").asText()
+        );
+    }
+
+    @Test
+    void policyToOdrl_keepsParticipantDidFlatForAnd() throws Exception {
+        Policy policy = createPolicy(
+                List.of(participantDid(), membership()),
+                LogicalOperator.AND
+        );
+
+        JsonNode and = constraintGroup(policy).path("odrl:and");
+
+        assertEquals(2, and.size());
+        assertParticipantDidConstraint(and.get(0));
+        assertAtomicConstraint(and.get(1), "Membership", "odrl:eq", "active");
+    }
+
+    @Test
+    void policyToOdrl_mapsParticipantDidAsSingleOperandForOr() throws Exception {
+        Policy policy = createPolicy(
+                List.of(participantDid(), membership()),
+                LogicalOperator.OR
+        );
+
+        JsonNode or = constraintGroup(policy).path("odrl:or");
+
+        assertEquals(2, or.size());
+        assertFalse(or.get(0).has("odrl:and"));
+        assertParticipantDidConstraint(or.get(0));
+        assertAtomicConstraint(or.get(1), "Membership", "odrl:eq", "active");
+    }
+
     @Test
     void policyToOdrl_treatsMissingLogicalOperatorAsAnd() throws Exception {
         Policy policy = createPolicy(

@@ -8,10 +8,25 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Component
 public class PolicyValidator {
+
+    /**
+     * did:web identifier: host, optional port as {@code %3A<port>}, optional
+     * {@code :}-separated path segments. Must stay identical to
+     * {@code DID_WEB_PATTERN} in the frontend constraint validators. Commas are
+     * excluded, which keeps the comma-joined ODRL right operand unambiguous.
+     */
+    private static final Pattern DID_WEB = Pattern.compile(
+            "did:web:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?"
+                    + "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*"
+                    + "(?:%3[Aa]\\d{1,5})?"
+                    + "(?::(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+)*"
+    );
 
     public void validate(List<JsonNode> constraints) {
         Set<ConstraintType> encounteredTypes = new HashSet<>();
@@ -148,6 +163,8 @@ public class PolicyValidator {
                     validateDateRange(constraint, index);
             case FRAMEWORK_AGREEMENT ->
                     validateFrameworkAgreement(constraint, index);
+            case PARTICIPANT_DID ->
+                    validateParticipantDid(constraint, index);
         }
     }
 
@@ -179,6 +196,45 @@ public class PolicyValidator {
             throw new InvalidPolicyException(
                     "constraints[" + index + "].agreement is required"
             );
+        }
+    }
+
+    private void validateParticipantDid(
+            JsonNode constraint,
+            int index
+    ) {
+        JsonNode dids = constraint.get("dids");
+
+        if (dids == null || !dids.isArray() || dids.isEmpty()) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].dids must contain at least one entry"
+            );
+        }
+
+        Set<String> seen = new HashSet<>();
+
+        for (int didIndex = 0; didIndex < dids.size(); didIndex++) {
+            JsonNode did = dids.get(didIndex);
+            String path = "constraints[" + index + "].dids[" + didIndex + "]";
+
+            if (!did.isTextual()) {
+                throw new InvalidPolicyException(
+                        path + " must be a string"
+                );
+            }
+
+            if (!DID_WEB.matcher(did.asText()).matches()) {
+                throw new InvalidPolicyException(
+                        path + " must be a valid did:web identifier"
+                );
+            }
+
+            if (!seen.add(did.asText().toLowerCase(Locale.ROOT))) {
+                throw new InvalidPolicyException(
+                        path + " is a duplicate"
+                );
+            }
         }
     }
 }
