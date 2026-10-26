@@ -14,7 +14,9 @@ import org.constructx.policyhub.policies.infrastructure.PolicyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +44,14 @@ public class PolicyService {
                 pageable.getPageSize()
         );
 
-        return policyRepository.findAll(pageable)
+        Sort sort = pageable.getSort();
+        if (sort.getOrderFor("id") == null) {
+            sort = sort.and(Sort.by("id"));
+        }
+
+        Pageable stable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        return policyRepository.findAll(stable)
                 .map(policyMapper::toDomain)
                 .map(this::toResponse);
     }
@@ -70,10 +79,7 @@ public class PolicyService {
     public PolicyResponse createPolicy(CreatePolicyRequest request) {
         log.info("Creating policy with policyId {}", request.policyId());
 
-        policyValidator.validate(
-                request.category(),
-                request.constraints()
-        );
+        policyValidator.validate(request.constraints());
 
         if (policyRepository.existsByPolicyId(request.policyId())) {
             throw new DuplicatePolicyIdException(request.policyId());
@@ -104,13 +110,10 @@ public class PolicyService {
     ) {
         log.info("Updating policy with id {}", id);
 
-        policyValidator.validate(
-                request.category(),
-                request.constraints()
-        );
-
         PolicyEntity entity = policyRepository.findById(id)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
+
+        policyValidator.validate(request.constraints());
 
         policyRepository.findByPolicyId(request.policyId())
                 .filter(existing -> !existing.getId().equals(id))

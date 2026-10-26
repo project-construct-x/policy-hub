@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OdrlConstraintMapperTest {
 
@@ -88,6 +90,32 @@ class OdrlConstraintMapperTest {
         );
 
         assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void constraintToOdrl_withUnknownType_throwsUnsupportedConstraint() throws Exception {
+        JsonNode constraint = createConstraint("GIBTS_NICHT", "\"value\": \"x\"");
+
+        UnsupportedConstraintException ex = assertThrows(
+                UnsupportedConstraintException.class,
+                () -> OdrlConstraintMapper.constraintToOdrl(constraint)
+        );
+
+        assertTrue(ex.getMessage().contains("'GIBTS_NICHT'"));
+    }
+
+    @Test
+    void constraintToOdrl_withMissingType_throwsUnsupportedConstraint() throws Exception {
+        JsonNode constraint = objectMapper.readTree("""
+                { "value": "active" }
+                """);
+
+        UnsupportedConstraintException ex = assertThrows(
+                UnsupportedConstraintException.class,
+                () -> OdrlConstraintMapper.constraintToOdrl(constraint)
+        );
+
+        assertTrue(ex.getMessage().contains("without type"));
     }
 
     private JsonNode createConstraint(

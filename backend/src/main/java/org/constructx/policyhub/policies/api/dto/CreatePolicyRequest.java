@@ -18,11 +18,12 @@ public record CreatePolicyRequest(
                 description = "Unique business identifier. Must start with the fixed prefix con-x-ph-",
                 example = "con-x-ph-zugriff-konsortium-mitglieder",
                 minLength = 1,
-                maxLength = 200
+                maxLength = 200,
+                pattern = PolicyId.PATTERN
         )
         @NotBlank(message = "policyId must not be blank")
         @Size(max = 200, message = "policyId must not exceed 200 characters")
-        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-ph-")
+        @Pattern(regexp = PolicyId.PATTERN, message = PolicyId.PATTERN_MESSAGE)
         String policyId,
 
         @Schema(

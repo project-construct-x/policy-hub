@@ -18,9 +18,7 @@ public class OdrlConstraintMapper {
     public static List<OdrlAtomicConstraintResponse> constraintToOdrl(
             JsonNode constraint
     ) {
-        ConstraintType type = ConstraintType.valueOf(
-                constraint.get("type").asText()
-        );
+        ConstraintType type = constraintType(constraint);
 
         return switch (type) {
             case MEMBERSHIP ->
@@ -32,6 +30,20 @@ public class OdrlConstraintMapper {
             case FRAMEWORK_AGREEMENT ->
                     List.of(mapFrameworkAgreement(constraint));
         };
+    }
+
+    private static ConstraintType constraintType(JsonNode constraint) {
+        JsonNode typeNode = constraint.get("type");
+        if (typeNode == null || typeNode.isNull()) {
+            throw new UnsupportedConstraintException(null);
+        }
+
+        String rawType = typeNode.asText();
+        try {
+            return ConstraintType.valueOf(rawType);
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedConstraintException(rawType);
+        }
     }
 
     private static OdrlAtomicConstraintResponse mapMembership(

@@ -20,6 +20,7 @@ ghcrCreds:
   registry: ghcr.io
   username: ""
   password: ""
+revisionHistoryLimit: 3
 # ---------------------------------------------------------------------------
 # Backend (Spring Boot)
 # ---------------------------------------------------------------------------
@@ -27,7 +28,7 @@ backend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-backend
     # Tag is maintained by the CI commit-back step; "latest" is only a placeholder.
-    tag: 3ce26ee
+    tag: da527f6
     pullPolicy: IfNotPresent
   replicaCount: 1
   # Spring profile driving application-prod.yaml.
@@ -46,7 +47,7 @@ backend:
 frontend:
   image:
     repository: ghcr.io/project-construct-x/policy-hub-frontend
-    tag: 3ce26ee
+    tag: da527f6
     pullPolicy: IfNotPresent
   replicaCount: 2
   service:

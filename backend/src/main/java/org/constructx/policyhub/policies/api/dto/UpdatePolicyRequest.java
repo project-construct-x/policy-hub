@@ -14,7 +14,7 @@ import java.util.List;
 public record UpdatePolicyRequest(
         @NotBlank
         @Size(max = 200)
-        @Pattern(regexp = PolicyId.PATTERN, message = "policyId must start with the prefix con-x-ph-")
+        @Pattern(regexp = PolicyId.PATTERN, message = PolicyId.PATTERN_MESSAGE)
         String policyId,
 
         @NotNull
@@ -23,7 +23,6 @@ public record UpdatePolicyRequest(
         @NotNull
         List<JsonNode> constraints,
 
-        /** Optional; defaults to AND if omitted. */
         LogicalOperator logicalOperator,
 
         @NotBlank
