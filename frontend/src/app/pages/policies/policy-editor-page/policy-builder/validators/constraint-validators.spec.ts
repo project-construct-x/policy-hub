@@ -55,16 +55,10 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
       });
     });
 
-    it('meldet dateRangeStartInPast für ein Startdatum in der Vergangenheit', () => {
-      const errors = validateConstraint({
-        type: 'DATE_RANGE',
-        startDate: '2020-01-01',
-        endDate: '2099-12-31',
-      });
-      expect(errors).toContainEqual({
-        field: 'constraint[0].startDate',
-        messageKey: 'validation.dateRangeStartInPast',
-      });
+    it('akzeptiert ein Startdatum in der Vergangenheit (laufender Zeitraum bleibt bearbeitbar)', () => {
+      expect(
+        validateConstraint({ type: 'DATE_RANGE', startDate: '2020-01-01', endDate: '2099-12-31' }),
+      ).toEqual([]);
     });
 
     it('meldet dateRangeEndInPast für ein Enddatum in der Vergangenheit', () => {

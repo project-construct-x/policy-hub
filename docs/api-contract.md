@@ -76,7 +76,7 @@ in a policy. The current backend accepts all four types in both categories (`ACC
 | Type | Required fields | Current validation |
 |---|---|---|
 | `MEMBERSHIP` | `value` | Must be the string `active`. |
-| `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date; `startDate` must not be after `endDate`. |
+| `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date, except that on update an unchanged `startDate` already stored in the policy stays valid (a running period remains editable); `startDate` must not be after `endDate`. |
 | `FRAMEWORK_AGREEMENT` | `agreement` | Must be a non-blank string. |
 | `PARTICIPANT_DID` | `dids` | Non-empty array of strings; each entry must be a valid `did:web` identifier (host, optional port as `%3A<port>`, optional `:`-separated path segments; no surrounding whitespace, no commas) and entries must be unique, compared case-insensitively. Entries are stored as sent. Errors name the entry, e.g. `constraints[0].dids[1]`. |
 

@@ -87,25 +87,58 @@ describe('Policy – Erstellen', () => {
     cy.getByCy('daterange-start-input').should('have.attr', 'readonly');
     cy.getByCy('daterange-end-input').should('have.attr', 'readonly');
 
-    // Über den Kalender ausgewählte Werte müssen trotzdem ankommen.
-    cy.get('.ce-card__field--datepicker mat-datepicker-toggle button').click();
+    // Über den Kalender ausgewählte Werte müssen trotzdem ankommen (je Feld ein eigener Picker).
+    cy.getByCy('daterange-start-field').find('mat-datepicker-toggle button').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').first().click();
+    cy.waitForDatepickerClosed();
+    cy.getByCy('daterange-end-field').find('mat-datepicker-toggle button').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').last().click();
 
     cy.getByCy('daterange-start-input').invoke('val').should('not.be.empty');
     cy.getByCy('daterange-end-input').invoke('val').should('not.be.empty');
   });
 
-  it('öffnet den Datepicker bei Klick auf die gesamte ZEITRAUM-Leiste, nicht nur auf das Icon', () => {
+  it('öffnet den Datepicker bei Klick auf das gesamte Start- bzw. End-Feld, nicht nur auf das Icon', () => {
     cy.visitWithMode('/policies/new', 'few');
 
     cy.getByCy('category-access').click();
     cy.getByCy('palette-DATE_RANGE').click();
 
     cy.get('.mat-calendar').should('not.exist');
-    // Klick auf die Leiste selbst (nicht auf das Kalender-Icon) muss den Picker öffnen.
-    cy.getByCy('daterange-field').click();
+    // Klick auf das Feld selbst (nicht auf das Kalender-Icon) muss den jeweiligen Picker öffnen.
+    cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar').should('be.visible');
+    cy.get('body').type('{esc}');
+    cy.get('.mat-calendar').should('not.exist');
+
+    cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
+    cy.get('.mat-calendar').should('be.visible');
+  });
+
+  it('sperrt vergangene Tage für den Start und Tage vor dem Start für das Ende', () => {
+    cy.visitWithMode('/policies/new', 'few');
+
+    cy.getByCy('category-access').click();
+    cy.getByCy('palette-DATE_RANGE').click();
+
+    // Ein Monat weiter: der ganze Monat liegt in der Zukunft, der Start ist der 2. des Monats.
+    cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
+    cy.get('.mat-calendar-next-button').click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+    cy.waitForDatepickerClosed();
+
+    // Der End-Picker öffnet im Monat des Starts; der 1. (vor dem Start) ist gesperrt.
+    cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
+    cy.get('.mat-calendar-body-cell').first().should('have.class', 'mat-calendar-body-disabled');
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)')
+      .first()
+      .should('contain.text', '2');
   });
 
   it('erlaubt es, das Startdatum nach einer vollständigen Auswahl erneut zu ändern', () => {
@@ -114,24 +147,26 @@ describe('Policy – Erstellen', () => {
     cy.getByCy('category-access').click();
     cy.getByCy('palette-DATE_RANGE').click();
 
-    // Immer einen Monat weiterblättern, statt Zellen im aktuell angezeigten Monat per Index zu
-    // picken (`.eq(5)`/`.eq(6)`): je nach heutigem Datum kann der aktuelle Monat weniger als die
-    // erwartete Anzahl auswählbarer (nicht vergangener) Tage übrig haben, was den Test am
-    // Monatsende flaky macht. Ein voller Folgemonat hat garantiert genug Tage.
-    cy.getByCy('daterange-field').click();
+    // Immer einen Monat weiterblättern, damit die Auswahl unabhängig vom heutigen Datum im selben
+    // (vollständigen) Monat liegt und der Test nicht am Monatsende flaky wird.
+    cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-next-button').click();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
+    cy.waitForDatepickerClosed();
+    cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+    cy.waitForDatepickerClosed();
 
     cy.getByCy('daterange-start-input')
       .invoke('val')
       .then((firstStart) => {
-        // Erneut öffnen, einen weiteren Monat weiterblättern und ein komplett anderes
-        // Datumspaar wählen — das Startdatum darf nicht an der ersten Auswahl "kleben bleiben".
-        cy.getByCy('daterange-field').click();
-        cy.get('.mat-calendar-next-button').click();
-        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
-        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+        // Erneut öffnen und einen anderen Start wählen — das Startdatum darf nicht an der ersten
+        // Auswahl "kleben bleiben".
+        cy.getByCy('daterange-start-field').click();
+        cy.waitForDatepickerOpen();
+        cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(3).click();
 
         cy.getByCy('daterange-start-input').invoke('val').should('not.eq', firstStart);
       });

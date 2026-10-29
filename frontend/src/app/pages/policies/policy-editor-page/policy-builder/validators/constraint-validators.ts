@@ -155,7 +155,7 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
         `${prefix}.startDate`,
         'dateRangeStartRequired',
         'dateRangeStartInvalid',
-        'dateRangeStartInPast',
+        null,
         today,
         errors,
       );
@@ -200,16 +200,19 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
 }
 
 /**
- * Validiert ein einzelnes Pflicht-Datum (required + parsebar + nicht in der Vergangenheit)
- * und hängt gefundene Fehler an `errors`. Gibt bei gültigem Wert das `Date` zurück, sonst `null`
- * (für die anschließende Start-≤-Ende-Prüfung).
+ * Validiert ein einzelnes Pflicht-Datum (required + parsebar) und hängt gefundene Fehler an
+ * `errors`. Ist `inPastKey` gesetzt, wird zusätzlich "nicht in der Vergangenheit" geprüft. Gibt
+ * bei gültigem Wert das `Date` zurück, sonst `null` (für die anschließende Start-≤-Ende-Prüfung).
+ *
+ * Das Startdatum wird bewusst NICHT gegen heute geprüft: Ein gespeicherter Zeitraum, der bereits
+ * läuft, hat ein Startdatum in der Vergangenheit und muss weiter bearbeitbar bleiben.
  */
 function validateDate(
   value: string,
   field: string,
   requiredKey: string,
   invalidKey: string,
-  inPastKey: string,
+  inPastKey: string | null,
   today: Date,
   errors: ValidationError[],
 ): Date | null {
@@ -222,7 +225,7 @@ function validateDate(
     errors.push({ field, messageKey: `validation.${invalidKey}` });
     return null;
   }
-  if (date < today) {
+  if (inPastKey && date < today) {
     errors.push({ field, messageKey: `validation.${inPastKey}` });
     return null;
   }

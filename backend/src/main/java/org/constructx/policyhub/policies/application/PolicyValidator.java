@@ -29,6 +29,19 @@ public class PolicyValidator {
     );
 
     public void validate(List<JsonNode> constraints) {
+        // New policy: no stored constraints, so a DATE_RANGE start date must not be in the past.
+        validate(constraints, List.of());
+    }
+
+    /**
+     * Validates constraints of an edited policy. A DATE_RANGE start date in the past is only
+     * accepted if it is unchanged from the stored policy, so that an already running period stays
+     * editable while a new or changed start date can never lie in the past.
+     */
+    public void validate(
+            List<JsonNode> constraints,
+            List<JsonNode> storedConstraints
+    ) {
         Set<ConstraintType> encounteredTypes = new HashSet<>();
 
         for (int index = 0; index < constraints.size(); index++) {
@@ -58,7 +71,7 @@ public class PolicyValidator {
                 );
             }
 
-            validateConstraint(type, constraint, index);
+            validateConstraint(type, constraint, index, storedConstraints);
         }
     }
 
@@ -113,7 +126,8 @@ public class PolicyValidator {
 
     private void validateDateRange(
             JsonNode constraint,
-            int index
+            int index,
+            List<JsonNode> storedConstraints
     ) {
         LocalDate today = LocalDate.now();
 
@@ -129,7 +143,8 @@ public class PolicyValidator {
                 index
         );
 
-        if (startDate.isBefore(today)) {
+        if (startDate.isBefore(today)
+                && !isStoredStartDate(startDate, storedConstraints)) {
             throw new InvalidPolicyException(
                     "constraints[" + index
                             + "].startDate must not be in the past"
@@ -151,16 +166,29 @@ public class PolicyValidator {
         }
     }
 
+    private boolean isStoredStartDate(
+            LocalDate startDate,
+            List<JsonNode> storedConstraints
+    ) {
+        return storedConstraints.stream()
+                .filter(stored -> stored != null && stored.isObject())
+                .filter(stored -> ConstraintType.DATE_RANGE.name()
+                        .equals(stored.path("type").asText()))
+                .anyMatch(stored -> startDate.toString()
+                        .equals(stored.path("startDate").asText()));
+    }
+
     private void validateConstraint(
             ConstraintType type,
             JsonNode constraint,
-            int index
+            int index,
+            List<JsonNode> storedConstraints
     ) {
         switch (type) {
             case MEMBERSHIP ->
                     validateMembership(constraint, index);
             case DATE_RANGE ->
-                    validateDateRange(constraint, index);
+                    validateDateRange(constraint, index, storedConstraints);
             case FRAMEWORK_AGREEMENT ->
                     validateFrameworkAgreement(constraint, index);
             case PARTICIPANT_DID ->

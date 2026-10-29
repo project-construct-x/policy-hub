@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoDirective } from '@jsverse/transloco';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
 import {
@@ -19,10 +20,6 @@ import {
 } from '@features/policies/builder/validators/constraint-validators';
 import { ParticipantDidInputComponent } from '@features/policies/builder/components/participant-did-input/participant-did-input.component';
 
-function sameDateOrNull(a: Date | null, b: Date | null): boolean {
-  return a === b || (a !== null && b !== null && a.getTime() === b.getTime());
-}
-
 @Component({
   selector: 'app-constraint-editor-card',
   imports: [
@@ -30,6 +27,7 @@ function sameDateOrNull(a: Date | null, b: Date | null): boolean {
     TranslocoDirective,
     MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
     ParticipantDidInputComponent,
@@ -48,24 +46,33 @@ export class ConstraintEditorCardComponent {
   readonly pendingInputChange = output<boolean>();
 
   readonly meta = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
-  readonly minDate = new Date();
+
+  // Start und Ende haben je einen eigenen Datepicker (kein Range-Picker): Ein Range-Picker setzt
+  // beim ersten Klick immer den Start neu — bei einem laufenden Zeitraum ließe sich so nicht nur
+  // das Enddatum verlängern.
+  //
+  // Nur die Auswahl im Kalender ist auf heute-und-später begrenzt (`[min]`). Ein bereits
+  // gespeichertes Startdatum in der Vergangenheit bleibt erhalten und gültig, solange es nicht
+  // geändert wird — der Validator prüft das Startdatum bewusst nicht gegen heute.
+  readonly minDate = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
 
   readonly errors = computed<ValidationError[]>(() =>
     this.showErrors() ? validateConstraint(this.constraint(), this.index()) : [],
   );
 
-  // `equal: sameDateOrNull` hält die Objekt-Referenz stabil, solange sich das Datum inhaltlich
-  // nicht ändert. Ohne das erzeugt jede Änderung (z.B. am Enddatum) über `parseDate()` ein neues
-  // `Date`-Objekt für BEIDE Felder; Angular sieht dadurch am Start-Input eine "neue" Referenz und
-  // ruft erneut `writeValue()` auf `matStartDate` auf. Bei Range-Inputs ist das kein No-Op:
-  // `MatStartDate._assignValueToModel()` schreibt den Wert zurück ins geteilte Auswahl-Modell —
-  // dadurch wird der vom Nutzer gerade angeklickte neue Start sofort wieder überschrieben.
-  readonly startDateValue = computed<Date | null>(
-    () => this.parseDate(this.dateRange()?.startDate),
-    { equal: sameDateOrNull },
+  readonly startDateValue = computed<Date | null>(() =>
+    this.parseDate(this.dateRange()?.startDate),
   );
-  readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate), {
-    equal: sameDateOrNull,
+  readonly endDateValue = computed<Date | null>(() => this.parseDate(this.dateRange()?.endDate));
+
+  // Das Ende ist frühestens heute bzw. frühestens am (künftigen) Startdatum wählbar.
+  readonly endMinDate = computed<Date>(() => {
+    const start = this.startDateValue();
+    return start && start > this.minDate ? start : this.minDate;
   });
 
   private dateRange(): DateRangeConstraint | null {
@@ -88,7 +95,7 @@ export class ConstraintEditorCardComponent {
   }
 
   // `mat-error` wird von Material nur eingeblendet, wenn der zugehörige Control-Direktive
-  // (hier: matStartDate/matEndDate) einen NgControl mit errorState=true hat.
+  // (hier: matInput am Start- bzw. End-Feld) einen NgControl mit errorState=true hat.
   // Deshalb ein `ngModel` je Feld im Template + ein darauf gekoppelter Matcher — analog
   // `policyIdErrorStateMatcher` in policy-builder.component.ts.
   readonly startDateErrorStateMatcher: ErrorStateMatcher = {
