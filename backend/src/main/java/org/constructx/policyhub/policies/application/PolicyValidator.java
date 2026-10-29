@@ -13,10 +13,8 @@ import java.util.Set;
 @Component
 public class PolicyValidator {
 
-    /**
-     * Validates constraints of a new policy: a DATE_RANGE start date must not be in the past.
-     */
     public void validate(List<JsonNode> constraints) {
+        // New policy: no stored constraints, so a DATE_RANGE start date must not be in the past.
         validate(constraints, List.of());
     }
 
