@@ -7,6 +7,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
 import {
   Constraint,
+  DataSubsetConstraint,
   DateRangeConstraint,
   FrameworkAgreementConstraint,
   MembershipConstraint,
@@ -18,6 +19,7 @@ import {
   validateConstraint,
 } from '@features/policies/builder/validators/constraint-validators';
 import { ParticipantDidInputComponent } from '@features/policies/builder/components/participant-did-input/participant-did-input.component';
+import { DataSubsetInputComponent } from '@features/policies/builder/components/data-subset-input/data-subset-input.component';
 
 function sameDateOrNull(a: Date | null, b: Date | null): boolean {
   return a === b || (a !== null && b !== null && a.getTime() === b.getTime());
@@ -33,6 +35,7 @@ function sameDateOrNull(a: Date | null, b: Date | null): boolean {
     MatDatepickerModule,
     MatNativeDateModule,
     ParticipantDidInputComponent,
+    DataSubsetInputComponent,
   ],
   templateUrl: './constraint-editor-card.component.html',
   styleUrl: './constraint-editor-card.component.scss',
@@ -110,9 +113,16 @@ export class ConstraintEditorCardComponent {
   asParticipantDid(c: Constraint): ParticipantDidConstraint {
     return c as ParticipantDidConstraint;
   }
+  asDataSubset(c: Constraint): DataSubsetConstraint {
+    return c as DataSubsetConstraint;
+  }
 
   onDidsChange(dids: string[]): void {
     this.constraintChange.emit({ ...this.asParticipantDid(this.constraint()), dids });
+  }
+
+  onSelectorsChange(selectors: string[]): void {
+    this.constraintChange.emit({ ...this.asDataSubset(this.constraint()), selectors });
   }
 
   onStartDateChange(value: Date | null): void {

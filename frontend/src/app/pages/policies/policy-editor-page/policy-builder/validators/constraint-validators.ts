@@ -37,10 +37,62 @@ export function isValidDidWeb(value: unknown): value is string {
 }
 
 /**
- * Zerlegt eine Eingabe der Teilnehmer-Liste in einzelne Kandidaten. Getrennt wird an Komma und
- * Leerraum, damit auch mehrere eingefügte DIDs (z.B. eine Zeile pro DID) übernommen werden.
+ * Erlaubte Arten eines Teildatensatz-Selektors (`<art>:<bezeichner>`). Im Editor wählt der Nutzer
+ * die Art aus einer Liste (`DATA_SUBSET_KIND_OPTIONS`) und tippt nur den Bezeichner.
  */
-export function splitDidInput(raw: string): string[] {
+export const DATA_SUBSET_SELECTOR_KINDS = ['field', 'attribute', 'submodel', 'record'] as const;
+export type DataSubsetSelectorKind = (typeof DATA_SUBSET_SELECTOR_KINDS)[number];
+
+/**
+ * Bezeichner eines Teildatensatzes, z.B. `materialName` oder
+ * `urn:samm:com.example.material:1.0.0#Material`.
+ *
+ * Wie bei `DID_WEB_PATTERN` schließt der Zeichensatz Komma, Leerraum und `{}` aus: Kommas und
+ * Leerraum trennen Einträge bei der Eingabe, und ohne `{}` ist ein geprüfter Wert als
+ * Transloco-Parameter im Rechtstext unbedenklich (`legal-description.helper.ts`).
+ */
+const DATA_SUBSET_IDENTIFIER = '[A-Za-z0-9._~:/#-]+';
+
+/** Vollständiger Selektor `<art>:<bezeichner>`; so wird er gespeichert und ins ODRL übernommen. */
+export const DATA_SUBSET_SELECTOR_PATTERN = new RegExp(
+  `^(${DATA_SUBSET_SELECTOR_KINDS.join('|')}):(${DATA_SUBSET_IDENTIFIER})$`,
+);
+
+export function isValidDataSubsetSelector(value: unknown): value is string {
+  return typeof value === 'string' && DATA_SUBSET_SELECTOR_PATTERN.test(value);
+}
+
+/**
+ * Zerlegt die Eingabe von Teildatensatz-Namen. Anders als bei `splitListInput` wird nur an Komma
+ * und Zeilenumbruch getrennt: Ein Leerzeichen im Namen ist ein Tippfehler, der als Fehler
+ * angezeigt werden soll, statt stillschweigend zwei Einträge zu erzeugen.
+ */
+export function splitDataSubsetInput(raw: string): string[] {
+  return raw
+    .split(/[,\r\n]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+export function toDataSubsetSelector(kind: DataSubsetSelectorKind, identifier: string): string {
+  return `${kind}:${identifier}`;
+}
+
+/** Zerlegt einen gültigen Selektor in Art und Bezeichner; `null` bei ungültigem Wert. */
+export function parseDataSubsetSelector(
+  value: unknown,
+): { kind: DataSubsetSelectorKind; identifier: string } | null {
+  if (typeof value !== 'string') return null;
+  const match = DATA_SUBSET_SELECTOR_PATTERN.exec(value);
+  return match ? { kind: match[1] as DataSubsetSelectorKind, identifier: match[2] } : null;
+}
+
+/**
+ * Zerlegt die Eingabe einer Chip-Liste (Teilnehmer, Teildatensätze) in einzelne Kandidaten.
+ * Getrennt wird an Komma und Leerraum, damit auch mehrere eingefügte Werte (z.B. einer pro
+ * Zeile) übernommen werden.
+ */
+export function splitListInput(raw: string): string[] {
   return raw.split(/[\s,]+/).filter(Boolean);
 }
 
@@ -66,8 +118,21 @@ export function validateDidCandidate(
   return null;
 }
 
-export interface DidPartition {
-  /** Gültige, neue DIDs in Eingabereihenfolge. */
+/**
+ * Prüft einen einzelnen Teildatensatz-Selektor vor dem Hinzufügen zur Liste. Bezeichner sind
+ * case-sensitiv (z.B. Feldnamen), daher werden Duplikate exakt verglichen.
+ */
+export function validateSelectorCandidate(
+  candidate: string,
+  existing: readonly string[],
+): string | null {
+  if (!isValidDataSubsetSelector(candidate)) return 'validation.dataSubsetSelectorInvalid';
+  if (existing.includes(candidate)) return 'validation.dataSubsetSelectorDuplicate';
+  return null;
+}
+
+export interface ListPartition {
+  /** Gültige, neue Werte in Eingabereihenfolge. */
   accepted: string[];
   /** Abgelehnte Kandidaten; sie bleiben zur Korrektur im Eingabefeld stehen. */
   rejected: string[];
@@ -75,17 +140,21 @@ export interface DidPartition {
   errorKey: string | null;
 }
 
+/** Prüft einen Kandidaten gegen die bereits vorhandenen Werte; `null` = übernehmbar. */
+export type CandidateValidator = (candidate: string, existing: readonly string[]) => string | null;
+
 /**
  * Teilt Kandidaten (z.B. aus einer eingefügten Liste) in übernehmbare und abgelehnte auf.
  * Duplikate werden auch innerhalb derselben Eingabe erkannt.
  */
-export function partitionDidCandidates(
+export function partitionCandidates(
   candidates: readonly string[],
   existing: readonly string[],
-): DidPartition {
-  const result: DidPartition = { accepted: [], rejected: [], errorKey: null };
+  validate: CandidateValidator,
+): ListPartition {
+  const result: ListPartition = { accepted: [], rejected: [], errorKey: null };
   for (const candidate of candidates) {
-    const errorKey = validateDidCandidate(candidate, [...existing, ...result.accepted]);
+    const errorKey = validate(candidate, [...existing, ...result.accepted]);
     if (errorKey) {
       result.rejected.push(candidate);
       result.errorKey ??= errorKey;
@@ -188,6 +257,19 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
         errors.push({ field, messageKey: 'validation.participantDidInvalid' });
       } else if (new Set((dids as string[]).map(didKey)).size !== dids.length) {
         errors.push({ field, messageKey: 'validation.participantDidDuplicate' });
+      }
+      break;
+    }
+    case 'DATA_SUBSET': {
+      const field = `${prefix}.selectors`;
+      // `selectors` kann aus einem HTTP-Response stammen (siehe PARTICIPANT_DID).
+      const selectors: unknown[] = Array.isArray(constraint.selectors) ? constraint.selectors : [];
+      if (!selectors.length) {
+        errors.push({ field, messageKey: 'validation.dataSubsetSelectorRequired' });
+      } else if (!selectors.every(isValidDataSubsetSelector)) {
+        errors.push({ field, messageKey: 'validation.dataSubsetSelectorInvalid' });
+      } else if (new Set(selectors).size !== selectors.length) {
+        errors.push({ field, messageKey: 'validation.dataSubsetSelectorDuplicate' });
       }
       break;
     }

@@ -76,6 +76,18 @@
           (pendingInputChange)="pendingInputChange.emit($event)"
         />
       }
+
+      @case ('DATA_SUBSET') {
+        <app-data-subset-input
+          [selectors]="asDataSubset(constraint()).selectors"
+          [submitErrorKey]="errorKey('.selectors')"
+          (selectorsChange)="onSelectorsChange($event)"
+          (pendingInputChange)="pendingInputChange.emit($event)"
+        />
+        <p class="ce-card__static" data-cy="data-subset-always-applies">
+          {{ t('policyBuilder.constraint.DATA_SUBSET.alwaysApplies') }}
+        </p>
+      }
     }
   </div>
 </article>

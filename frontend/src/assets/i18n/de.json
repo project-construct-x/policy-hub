@@ -47,6 +47,12 @@
       "removed": "Teilnehmer entfernt",
       "added": "{{count}} Teilnehmer hinzugefügt"
     },
+    "dataSubset": {
+      "list": "Liste der Teildatensätze",
+      "remove": "Teildatensatz entfernen:",
+      "removed": "Teildatensatz entfernt",
+      "added": "Teildatensätze hinzugefügt: {{count}}"
+    },
     "severity": {
       "success": "Erfolg",
       "error": "Fehler",
@@ -229,6 +235,19 @@
         "label": "Teilnehmer (did:web)",
         "placeholder": "did:web:beispiel.de",
         "hint": "Mit Enter oder Komma bestätigen. Mehrere DIDs können auf einmal eingefügt werden."
+      },
+      "DATA_SUBSET": {
+        "kindLabel": "Art",
+        "identifierLabel": "Name",
+        "add": "Hinzufügen",
+        "empty": "Noch keine Teildatensätze ausgewählt. Art wählen, Namen eingeben und hinzufügen.",
+        "hint": {
+          "field": "Name des Feldes, z. B. materialName",
+          "attribute": "Name des Merkmals, z. B. color",
+          "submodel": "Kennung des Submodells, z. B. urn:samm:com.example.material:1.0.0#Material",
+          "record": "Kennung des Datensatzes, z. B. 2027-Q1"
+        },
+        "alwaysApplies": "Dieser Constraint gilt immer zusätzlich, auch bei ODER-Verknüpfung. Gefiltert wird im ausliefernden Dienst."
       }
     },
     "actions": {
@@ -270,6 +289,18 @@
       "description": "Nur die angegebenen Teilnehmer (did:web) erfüllen die Policy.",
       "legalText": "Nur die ausdrücklich benannten Teilnehmer dürfen auf die Daten zugreifen.",
       "summary": "{{count}} Teilnehmer (did:web)"
+    },
+    "DATA_SUBSET": {
+      "label": "Teildatensatz",
+      "description": "Nur die ausgewählten Teile eines Datensatzes (Felder, Merkmale, Submodelle, Records) werden bereitgestellt.",
+      "legalText": "Nur die ausdrücklich benannten Teile des Datensatzes werden bereitgestellt.",
+      "summary": "Teildatensätze: {{count}}",
+      "kind": {
+        "field": "Feld",
+        "attribute": "Merkmal",
+        "submodel": "Submodell",
+        "record": "Record"
+      }
     }
   },
   "legalDescription": {
@@ -278,10 +309,13 @@
     "introContract": "Die Nutzung der bereitgestellten Daten ist nur unter den folgenden Voraussetzungen gestattet:",
     "introAccessAnyOf": "Der Zugriff auf die bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
     "introContractAnyOf": "Die Nutzung der bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
+    "introAlwaysApplies": "Unabhängig von den vorstehenden Voraussetzungen gilt in jedem Fall:",
+    "dataSubsetItem": "{{kind}} „{{identifier}}“",
     "clause": {
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
       "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf.",
-      "participantDid": "Der Datenkonsument muss einer der folgenden, über ihre did:web-Identität benannten Teilnehmer sein: {{dids}}. Allen übrigen Teilnehmern ist jegliche Nutzung der Daten untersagt."
+      "participantDid": "Der Datenkonsument muss einer der folgenden, über ihre did:web-Identität benannten Teilnehmer sein: {{dids}}. Allen übrigen Teilnehmern ist jegliche Nutzung der Daten untersagt.",
+      "dataSubset": "Dem Datenkonsumenten werden ausschließlich die folgenden Teile des Datensatzes bereitgestellt: {{selectors}}. Auf alle übrigen Bestandteile des Datensatzes erstreckt sich die Berechtigung nicht; ihre Nutzung ist untersagt."
     }
   },
   "validation": {
@@ -301,6 +335,9 @@
     "participantDidRequired": "Mindestens ein Teilnehmer (did:web) ist erforderlich",
     "participantDidInvalid": "Bitte geben Sie die Teilnehmer-Kennung im korrekten Format ein, z. B. did:web:firma.de",
     "participantDidDuplicate": "Dieser Teilnehmer ist bereits in der Liste",
+    "dataSubsetSelectorRequired": "Bitte mindestens einen Teildatensatz hinzufügen",
+    "dataSubsetSelectorInvalid": "Der Name darf nur Buchstaben, Ziffern und . _ ~ : / # - enthalten (keine Leerzeichen, keine Kommas)",
+    "dataSubsetSelectorDuplicate": "Dieser Teildatensatz ist bereits in der Liste",
     "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {

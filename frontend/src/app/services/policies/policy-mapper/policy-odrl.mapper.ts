@@ -1,4 +1,4 @@
-import { Constraint } from '@shared/types/constraint.model';
+import { alwaysApplies, Constraint } from '@shared/types/constraint.model';
 import { logicalOperatorOf, Policy, PolicyCategory } from '@shared/types/policy.model';
 
 const CX_POLICY_NS = 'https://w3id.org/catenax/2025/9/policy/';
@@ -6,6 +6,12 @@ const ODRL_USE = 'odrl:use';
 const CX_ACCESS = `${CX_POLICY_NS}access`;
 /** Teilnehmer-Identität im EDC-Namespace; Format wie in der HTX Connector Management UI. */
 const EDC_CONNECTOR = 'edc:connector';
+/**
+ * PLATZHALTER: Für die Teildatensatz-Auswahl gibt es (noch) keinen abgestimmten Left-Operand im
+ * Construct-X-Vokabular. Der Policy Hub erzeugt nur das Template; Namespace und Name sind
+ * mit dem ausliefernden Dienst abzustimmen und dann hier und im Backend zu ersetzen.
+ */
+const CON_X_DATA_SUBSET = 'https://w3id.org/construct-x/policy/DataSubset';
 
 const ODRL_CONTEXT = {
   '@vocab': 'https://w3id.org/edc/v0.0.1/ns/',
@@ -107,6 +113,14 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
           'odrl:rightOperand': c.dids.join(','),
         },
       ];
+    case 'DATA_SUBSET':
+      return [
+        {
+          'odrl:leftOperand': { '@id': CON_X_DATA_SUBSET },
+          'odrl:operator': { '@id': 'odrl:isAnyOf' },
+          'odrl:rightOperand': [...c.selectors],
+        },
+      ];
   }
 }
 
@@ -117,6 +131,10 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
  * - `OR`: je fachlichem Constraint ein Element in `odrl:or`. Liefert ein Constraint mehrere
  *   atomare Constraints (`DATE_RANGE`: Start UND Ende), werden sie in ein inneres `odrl:and`
  *   gewickelt — flach im `odrl:or` hieße es sonst "Startdatum ODER Enddatum".
+ * - Immer geltende Constraints (`DATA_SUBSET`, siehe `alwaysApplies()`) stehen
+ *   bei `OR` nicht im `odrl:or`, sondern werden per äußerem `odrl:and` angehängt:
+ *   `{ odrl:and: [ { odrl:or: [...] }, <Teildatensatz> ] }`. Bleibt höchstens eine Voraussetzung
+ *   übrig, ist UND gleichbedeutend und alles steht flach in `odrl:and`.
  *
  * Ohne Constraints gibt es keine Gruppe (`undefined`).
  */
@@ -126,14 +144,26 @@ export function odrlConstraintGroup(
   if (policy.constraints.length === 0) return undefined;
 
   if (logicalOperatorOf(policy) === 'OR') {
-    const nodes = policy.constraints.map((c): OdrlConstraintNode => {
-      const atomics = constraintToOdrl(c);
-      return atomics.length === 1 ? atomics[0] : { 'odrl:and': atomics };
-    });
-    return { 'odrl:or': nodes };
+    const conditions = policy.constraints.filter((c) => !alwaysApplies(c));
+    const restrictions = policy.constraints.filter((c) => alwaysApplies(c));
+    if (!restrictions.length) return orGroup(conditions);
+    return {
+      'odrl:and': [
+        ...(conditions.length > 1 ? [orGroup(conditions)] : conditions.flatMap(constraintToOdrl)),
+        ...restrictions.flatMap(constraintToOdrl),
+      ],
+    };
   }
 
   return { 'odrl:and': policy.constraints.flatMap(constraintToOdrl) };
+}
+
+function orGroup(constraints: readonly Constraint[]): OdrlOrConstraint {
+  const nodes = constraints.map((c): OdrlConstraintNode => {
+    const atomics = constraintToOdrl(c);
+    return atomics.length === 1 ? atomics[0] : { 'odrl:and': atomics };
+  });
+  return { 'odrl:or': nodes };
 }
 
 export function policyToOdrl(policy: Policy): OdrlPolicyDefinition {

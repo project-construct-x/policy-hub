@@ -25,7 +25,11 @@ import {
   buildLegalClauses,
   hasDivergingLegalText,
 } from '@features/policies/builder/helpers/legal-description.helper';
-import { keepKnownConstraints } from '@features/policies/builder/metadata/constraint-metadata';
+import {
+  connectorKeyAfter,
+  keepKnownConstraints,
+  orderConstraints,
+} from '@features/policies/builder/metadata/constraint-metadata';
 import { httpErrorMessageKey } from '@services/http/http-error.helper';
 
 @Component({
@@ -55,13 +59,17 @@ export class PolicyDetailPageComponent implements OnInit {
 
   readonly policy = signal<Policy | null>(null);
 
-  /** Ältere Datensätze ohne `logicalOperator` gelten als UND (siehe {@link logicalOperatorOf}). */
-  readonly connectorKey = computed(() => {
+  /** Immer geltende Constraints (Teildatensatz) am Ende, wie im Editor und im Rechtstext. */
+  readonly constraints = computed(() => orderConstraints(this.policy()?.constraints ?? []));
+
+  /**
+   * Label nach dem Constraint an `index` (UND/ODER). Ältere Datensätze ohne `logicalOperator`
+   * gelten als UND (siehe {@link logicalOperatorOf}).
+   */
+  connectorKeyAfter(index: number): string {
     const p = this.policy();
-    return p && logicalOperatorOf(p) === 'OR'
-      ? 'policyBuilder.orConnector'
-      : 'policyBuilder.andConnector';
-  });
+    return connectorKeyAfter(this.constraints(), index, p ? logicalOperatorOf(p) : 'AND');
+  }
   readonly loading = signal(true);
 
   /** Aktive UI-Sprache als Signal – sorgt dafür, dass die Anzeige bei Sprachwechsel neu berechnet wird. */
@@ -83,7 +91,7 @@ export class PolicyDetailPageComponent implements OnInit {
     // Abhängigkeit auf die aktive Sprache: Anzeige folgt dem UI-Sprachwechsel (z.B. Englisch).
     this.activeLang();
     const p = this.policy();
-    if (!p) return { intro: '', clauses: [] };
+    if (!p) return { intro: '', clauses: [], additional: null };
     return buildLegalClauses(p, this.transloco);
   });
 

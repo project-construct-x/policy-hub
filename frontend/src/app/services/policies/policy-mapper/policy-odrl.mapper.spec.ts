@@ -98,6 +98,17 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
       },
     ]);
   });
+
+  it('DATA_SUBSET → Platzhalter-Operand / odrl:isAnyOf / Selektoren als Array', () => {
+    const c: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a', 'submodel:urn:x#Y'] };
+    expect(constraintToOdrl(c)).toEqual([
+      {
+        'odrl:leftOperand': { '@id': 'https://w3id.org/construct-x/policy/DataSubset' },
+        'odrl:operator': { '@id': 'odrl:isAnyOf' },
+        'odrl:rightOperand': ['field:a', 'submodel:urn:x#Y'],
+      },
+    ]);
+  });
 });
 
 describe('policyToOdrl — Envelope & Kombinationen', () => {
@@ -222,5 +233,46 @@ describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
   it('lässt odrl:constraint bei OR ohne Bedingungen komplett weg', () => {
     const policy = buildPolicy({ logicalOperator: 'OR', constraints: [] });
     expect(constraintGroup(policy)).toBeUndefined();
+  });
+
+  describe('DATA_SUBSET gilt immer (auch bei OR)', () => {
+    const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
+
+    it('AND → flach in odrl:and in gespeicherter Reihenfolge', () => {
+      const policy = buildPolicy({ logicalOperator: 'AND', constraints: [membership, subset] });
+      expect(constraintGroup(policy)).toEqual({
+        'odrl:and': [...constraintToOdrl(membership), ...constraintToOdrl(subset)],
+      });
+    });
+
+    it('OR → odrl:or der Voraussetzungen, per äußerem odrl:and mit dem Teildatensatz verknüpft', () => {
+      const policy = buildPolicy({
+        logicalOperator: 'OR',
+        constraints: [subset, membership, dateRange],
+      });
+      expect(constraintGroup(policy)).toEqual({
+        'odrl:and': [
+          {
+            'odrl:or': [
+              constraintToOdrl(membership)[0],
+              { 'odrl:and': constraintToOdrl(dateRange) },
+            ],
+          },
+          ...constraintToOdrl(subset),
+        ],
+      });
+    });
+
+    it('OR mit nur einer Voraussetzung → flach in odrl:and', () => {
+      const policy = buildPolicy({ logicalOperator: 'OR', constraints: [dateRange, subset] });
+      expect(constraintGroup(policy)).toEqual({
+        'odrl:and': [...constraintToOdrl(dateRange), ...constraintToOdrl(subset)],
+      });
+    });
+
+    it('OR ohne weitere Voraussetzung → nur der Teildatensatz in odrl:and', () => {
+      const policy = buildPolicy({ logicalOperator: 'OR', constraints: [subset] });
+      expect(constraintGroup(policy)).toEqual({ 'odrl:and': constraintToOdrl(subset) });
+    });
   });
 });
