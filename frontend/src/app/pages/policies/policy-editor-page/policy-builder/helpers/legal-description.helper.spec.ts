@@ -99,6 +99,19 @@ describe('buildLegalDescription', () => {
         'legalDescription.clause.participantDid[dids=did:web:a.example, did:web:b.example]',
       );
     });
+
+    it('DATA_SUBSET → listet je Eintrag die übersetzte Art und den Namen auf', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [{ type: 'DATA_SUBSET', selectors: ['field:a', 'submodel:urn:x#Y'] }]),
+        makeTransloco(),
+      );
+      expect(text).toContain(
+        'legalDescription.clause.dataSubset[selectors=' +
+          'legalDescription.dataSubsetItem[kind=constraint.DATA_SUBSET.kind.field;identifier=a], ' +
+          'legalDescription.dataSubsetItem[kind=constraint.DATA_SUBSET.kind.submodel;' +
+          'identifier=urn:x#Y]]',
+      );
+    });
   });
 
   describe('mehrere Bedingungen (nummerierte Liste mit Titel + Text)', () => {
@@ -241,6 +254,10 @@ describe('buildLegalDescription', () => {
       ['DATE_RANGE.startDate', { type: 'DATE_RANGE', startDate: HOSTILE, endDate: '2027-01-01' }],
       ['DATE_RANGE.endDate', { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: HOSTILE }],
       ['PARTICIPANT_DID.dids', { type: 'PARTICIPANT_DID', dids: ['did:web:a.example', HOSTILE] }],
+      [
+        'DATA_SUBSET.selectors',
+        { type: 'DATA_SUBSET', selectors: ['field:a', `field:${HOSTILE}`] },
+      ],
     ];
 
     for (const [label, constraint] of hostileConstraints) {
@@ -269,6 +286,14 @@ describe('buildLegalDescription', () => {
         makeTransloco(),
       );
       expect(text).toContain('dids=—');
+    });
+
+    it('ersetzt eine Selektor-Liste mit ungültigem Eintrag durch den Platzhalter "—"', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [{ type: 'DATA_SUBSET', selectors: ['field:a', 'kaputt'] }]),
+        makeTransloco(),
+      );
+      expect(text).toContain('selectors=—');
     });
 
     it('lässt bekannte Werte unverändert', () => {
@@ -403,5 +428,58 @@ describe('buildLegalClauses — logische Verknüpfung (UND/ODER)', () => {
         t,
       ),
     ).toBe(true);
+  });
+});
+
+describe('buildLegalClauses — immer geltender Teildatensatz', () => {
+  const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
+  const agreement: Constraint = {
+    type: 'FRAMEWORK_AGREEMENT',
+    agreement: FRAMEWORK_AGREEMENT_VALUE,
+  };
+  const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
+
+  it('steht ohne weitere Voraussetzungen als normale Klausel unter dem gewohnten Einleitungssatz', () => {
+    const result = buildLegalClauses(
+      { category: 'ACCESS', constraints: [subset], logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(result.intro).toBe('legalDescription.introAccess');
+    expect(result.clauses.map((c) => c.title)).toEqual(['constraint.DATA_SUBSET.label']);
+    expect(result.additional).toBeNull();
+  });
+
+  it('bildet bei OR einen eigenen Abschnitt und zählt nicht als ODER-Alternative', () => {
+    const result = buildLegalClauses(
+      { category: 'CONTRACT', constraints: [subset, membership, agreement], logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(result.intro).toBe('legalDescription.introContractAnyOf');
+    expect(result.clauses.map((c) => c.title)).toEqual([
+      'constraint.MEMBERSHIP.label',
+      'constraint.FRAMEWORK_AGREEMENT.label',
+    ]);
+    expect(result.additional?.intro).toBe('legalDescription.introAlwaysApplies');
+    expect(result.additional?.clauses.map((c) => c.title)).toEqual([
+      'constraint.DATA_SUBSET.label',
+    ]);
+  });
+
+  it('nutzt bei OR mit nur einer weiteren Voraussetzung den gewohnten Einleitungssatz', () => {
+    const { intro } = buildLegalClauses(
+      { category: 'CONTRACT', constraints: [membership, subset], logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    expect(intro).toBe('legalDescription.introContract');
+  });
+
+  it('nummeriert den zusätzlichen Abschnitt im gespeicherten Text fortlaufend', () => {
+    const text = buildLegalDescription(
+      { category: 'CONTRACT', constraints: [subset, membership, agreement], logicalOperator: 'OR' },
+      makeTransloco(),
+    );
+    const additionalIntro = text.indexOf('legalDescription.introAlwaysApplies');
+    expect(text.indexOf('2. constraint.FRAMEWORK_AGREEMENT.label')).toBeLessThan(additionalIntro);
+    expect(text.indexOf('3. constraint.DATA_SUBSET.label')).toBeGreaterThan(additionalIntro);
   });
 });

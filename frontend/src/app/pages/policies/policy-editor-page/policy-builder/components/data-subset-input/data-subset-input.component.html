@@ -1,0 +1,73 @@
+<div class="dsi" *transloco="let t">
+  <div class="dsi__row">
+    <mat-form-field appearance="outline" class="dsi__kind" data-cy="data-subset-kind-field">
+      <mat-label>{{ t('policyBuilder.constraint.DATA_SUBSET.kindLabel') }}</mat-label>
+      <mat-select
+        [value]="kind()"
+        (selectionChange)="onKindChange($event.value)"
+        data-cy="data-subset-kind"
+      >
+        @for (option of kindOptions; track option.kind) {
+          <mat-option [value]="option.kind" [attr.data-cy]="'data-subset-kind-' + option.kind">
+            {{ t(option.labelKey) }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="dsi__identifier" data-cy="data-subset-field">
+      <mat-label>{{ t('policyBuilder.constraint.DATA_SUBSET.identifierLabel') }}</mat-label>
+      <input
+        matInput
+        [formControl]="identifierControl"
+        [errorStateMatcher]="errorStateMatcher"
+        (input)="onInput()"
+        (keydown.enter)="onEnter($event)"
+        (blur)="onBlur($event)"
+        (paste)="onPaste($event)"
+        autocomplete="off"
+        spellcheck="false"
+        data-cy="data-subset-input"
+      />
+      @if (errorKey(); as key) {
+        <mat-error data-cy="data-subset-error">{{ t(key) }}</mat-error>
+      } @else {
+        <mat-hint>{{ t(kindOption().hintKey) }}</mat-hint>
+      }
+    </mat-form-field>
+
+    <button
+      con-x-button
+      variant="outlined"
+      type="button"
+      class="dsi__add"
+      (click)="add()"
+      data-cy="data-subset-add"
+    >
+      {{ t('policyBuilder.constraint.DATA_SUBSET.add') }}
+    </button>
+  </div>
+
+  @if (entries().length) {
+    <mat-chip-set [attr.aria-label]="t('a11y.dataSubset.list')" data-cy="data-subset-list">
+      @for (entry of entries(); track entry.selector) {
+        <mat-chip (removed)="remove(entry.selector)" data-cy="data-subset-chip">
+          @if (entry.labelKey) {
+            <span class="dsi__chip-kind">{{ t(entry.labelKey) }}:</span>
+          }
+          {{ entry.identifier }}
+          <button
+            type="button"
+            matChipRemove
+            [attr.aria-label]="t('a11y.dataSubset.remove') + ' ' + entry.identifier"
+            data-cy="data-subset-remove"
+          >
+            <mat-icon aria-hidden="true">cancel</mat-icon>
+          </button>
+        </mat-chip>
+      }
+    </mat-chip-set>
+  } @else {
+    <p class="dsi__empty">{{ t('policyBuilder.constraint.DATA_SUBSET.empty') }}</p>
+  }
+</div>

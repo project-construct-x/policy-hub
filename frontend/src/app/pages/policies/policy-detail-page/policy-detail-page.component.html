@@ -57,11 +57,11 @@
             </div>
           } @else {
             <div class="pd__constraint-list">
-              @for (c of p.constraints; track $index; let last = $last) {
+              @for (c of constraints(); track $index; let i = $index, last = $last) {
                 <app-constraint-card [constraint]="c" />
                 @if (!last) {
                   <div class="pd__logic-connector">
-                    <span data-cy="logic-connector">{{ t(connectorKey()) }}</span>
+                    <span data-cy="logic-connector">{{ t(connectorKeyAfter(i)) }}</span>
                   </div>
                 }
               }
@@ -97,6 +97,19 @@
               @if (legalDescription().clauses.length) {
                 <ol class="pd__legal-list">
                   @for (clause of legalDescription().clauses; track $index) {
+                    <li class="pd__legal-item">
+                      <span class="pd__legal-item-title">{{ clause.title }}</span>
+                      <span class="pd__legal-item-text">{{ clause.text }}</span>
+                    </li>
+                  }
+                </ol>
+              }
+              @if (legalDescription().additional; as additional) {
+                <p class="pd__legal-intro" data-cy="legal-additional-intro">
+                  {{ additional.intro }}
+                </p>
+                <ol class="pd__legal-list" [start]="legalDescription().clauses.length + 1">
+                  @for (clause of additional.clauses; track $index) {
                     <li class="pd__legal-item">
                       <span class="pd__legal-item-title">{{ clause.title }}</span>
                       <span class="pd__legal-item-text">{{ clause.text }}</span>

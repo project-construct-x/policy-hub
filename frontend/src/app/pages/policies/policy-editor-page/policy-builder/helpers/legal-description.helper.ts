@@ -1,12 +1,17 @@
 import { TranslocoService } from '@jsverse/transloco';
-import { Constraint } from '@shared/types/constraint.model';
+import { alwaysApplies, Constraint } from '@shared/types/constraint.model';
 import { logicalOperatorOf, Policy } from '@shared/types/policy.model';
 import {
   CONSTRAINT_METADATA,
   keepKnownConstraints,
+  orderConstraints,
 } from '@features/policies/builder/metadata/constraint-metadata';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
-import { isValidDidWeb } from '@features/policies/builder/validators/constraint-validators';
+import { dataSubsetKindOption } from '@features/policies/builder/metadata/data-subset.data';
+import {
+  isValidDidWeb,
+  parseDataSubsetSelector,
+} from '@features/policies/builder/validators/constraint-validators';
 
 /**
  * Anzeigewert für Constraint-Inhalte, die nicht aus der Metadaten-Registry stammen —
@@ -21,6 +26,11 @@ export interface LegalClause {
   text: string;
 }
 
+export interface LegalSection {
+  intro: string;
+  clauses: LegalClause[];
+}
+
 export interface LegalClauses {
   /**
    * Einleitungssatz (abhängig von Kategorie und Verknüpfung, bzw. der "unrestricted"-Text ohne
@@ -29,6 +39,12 @@ export interface LegalClauses {
   intro: string;
   /** Je Constraint eine eigenständige Klausel (Titel + Text); leer ohne Bedingungen. */
   clauses: LegalClause[];
+  /**
+   * Immer geltende Constraints (z.B. Teildatensatz), sofern es daneben Voraussetzungen gibt.
+   * Eigener Abschnitt, damit sie bei ODER nicht unter "mindestens eine der folgenden
+   * Voraussetzungen" fallen. Ohne weitere Voraussetzungen stehen sie in `clauses`.
+   */
+  additional: LegalSection | null;
 }
 
 /**
@@ -39,6 +55,9 @@ export interface LegalClauses {
  * Bei ODER-Verknüpfung und mehr als einer Bedingung lautet der Einleitungssatz "mindestens eine
  * der folgenden Voraussetzungen". Bei nur einer Bedingung sind UND und ODER gleichbedeutend; dann
  * bleibt es beim gewohnten Einleitungssatz.
+ *
+ * Immer geltende Constraints (`alwaysApplies()`) zählen nicht als Voraussetzung: Gibt es daneben
+ * weitere Constraints, stehen sie in `additional` mit eigenem Einleitungssatz.
  *
  * Mit `lang` kann eine feste Sprache erzwungen werden (z.B. 'de' für den zu speichernden Text,
  * unabhängig von der aktiven UI-Sprache). Ohne `lang` wird die aktuell aktive Sprache verwendet.
@@ -51,24 +70,43 @@ export function buildLegalClauses(
   // Constraints mit unbekanntem Typ übergehen: sie haben keinen Eintrag in der
   // Metadaten-Registry, und der Zugriff auf `labelKey`/`legalTextKey` würde werfen.
   // Für den Rechtstext ist Weglassen richtiger als ein Abbruch der ganzen Darstellung.
-  const constraints = keepKnownConstraints(policy.constraints);
+  const constraints = orderConstraints(keepKnownConstraints(policy.constraints));
 
   if (!constraints.length) {
     return {
       intro: transloco.translate('legalDescription.unrestricted', undefined, lang),
       clauses: [],
+      additional: null,
     };
   }
 
-  const anyOf = logicalOperatorOf(policy) === 'OR' && constraints.length > 1;
-  const intro = transloco.translate(introKey(policy.category, anyOf), undefined, lang);
-
-  const clauses = constraints.map((c) => ({
+  const toClause = (c: Constraint): LegalClause => ({
     title: transloco.translate(CONSTRAINT_METADATA[c.type].labelKey, undefined, lang),
     text: buildClause(c, transloco, lang),
-  }));
+  });
 
-  return { intro, clauses };
+  const conditions = constraints.filter((c) => !alwaysApplies(c));
+  const restrictions = constraints.filter((c) => alwaysApplies(c));
+
+  if (!conditions.length) {
+    return {
+      intro: transloco.translate(introKey(policy.category, false), undefined, lang),
+      clauses: restrictions.map(toClause),
+      additional: null,
+    };
+  }
+
+  const anyOf = logicalOperatorOf(policy) === 'OR' && conditions.length > 1;
+  return {
+    intro: transloco.translate(introKey(policy.category, anyOf), undefined, lang),
+    clauses: conditions.map(toClause),
+    additional: restrictions.length
+      ? {
+          intro: transloco.translate('legalDescription.introAlwaysApplies', undefined, lang),
+          clauses: restrictions.map(toClause),
+        }
+      : null,
+  };
 }
 
 /**
@@ -77,6 +115,8 @@ export function buildLegalClauses(
  * (`1. <Name>`) und darunter dem Beschreibungstext. Ohne Bedingungen wird nur der
  * "unrestricted"-Einleitungstext geliefert.
  *
+ * Ein Abschnitt `additional` folgt mit eigenem Einleitungssatz; die Nummerierung läuft weiter.
+ *
  * Rückgabe bleibt ein String (Backend-Vertrag `legalText`); die Nummerierung ist locale-neutral.
  */
 export function buildLegalDescription(
@@ -84,12 +124,16 @@ export function buildLegalDescription(
   transloco: TranslocoService,
   lang?: string,
 ): string {
-  const { intro, clauses } = buildLegalClauses(policy, transloco, lang);
+  const { intro, clauses, additional } = buildLegalClauses(policy, transloco, lang);
   if (!clauses.length) {
     return intro;
   }
-  const list = clauses.map((clause, i) => `${i + 1}. ${clause.title}\n${clause.text}`).join('\n\n');
-  return `${intro}\n\n${list}`;
+  const list = (items: LegalClause[], offset: number) =>
+    items.map((clause, i) => `${offset + i + 1}. ${clause.title}\n${clause.text}`).join('\n\n');
+  const text = `${intro}\n\n${list(clauses, 0)}`;
+  return additional
+    ? `${text}\n\n${additional.intro}\n\n${list(additional.clauses, clauses.length)}`
+    : text;
 }
 
 /**
@@ -163,10 +207,37 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
         { dids: formatDids(c.dids) },
         lang,
       );
+    case 'DATA_SUBSET':
+      // Namen sind Freitext wie bei PARTICIPANT_DID: nur Werte im strikten Selektor-Format
+      // (kein `{}`), die Art wird über die Registry übersetzt.
+      return transloco.translate(
+        'legalDescription.clause.dataSubset',
+        { selectors: formatSelectors(c.selectors, transloco, lang) },
+        lang,
+      );
     case 'MEMBERSHIP':
     default:
       return base;
   }
+}
+
+/** z.B. `Feld „materialName“, Submodell „urn:…#Part“`; bei einem ungültigen Eintrag `UNKNOWN_VALUE`. */
+function formatSelectors(selectors: unknown, transloco: TranslocoService, lang?: string): string {
+  if (!Array.isArray(selectors) || !selectors.length) return UNKNOWN_VALUE;
+  const items: string[] = [];
+  for (const selector of selectors) {
+    const parsed = parseDataSubsetSelector(selector);
+    if (!parsed) return UNKNOWN_VALUE;
+    const kind = transloco.translate(dataSubsetKindOption(parsed.kind).labelKey, undefined, lang);
+    items.push(
+      transloco.translate(
+        'legalDescription.dataSubsetItem',
+        { kind, identifier: parsed.identifier },
+        lang,
+      ),
+    );
+  }
+  return items.join(', ');
 }
 
 function formatDids(dids: unknown): string {

@@ -47,6 +47,12 @@
       "removed": "Participant removed",
       "added": "{{count}} participant(s) added"
     },
+    "dataSubset": {
+      "list": "List of data subsets",
+      "remove": "Remove data subset:",
+      "removed": "Data subset removed",
+      "added": "Data subsets added: {{count}}"
+    },
     "severity": {
       "success": "Success",
       "error": "Error",
@@ -229,6 +235,19 @@
         "label": "Participants (did:web)",
         "placeholder": "did:web:example.com",
         "hint": "Confirm with Enter or comma. Several DIDs can be pasted at once."
+      },
+      "DATA_SUBSET": {
+        "kindLabel": "Kind",
+        "identifierLabel": "Name",
+        "add": "Add",
+        "empty": "No data subsets selected yet. Choose a kind, enter a name and add it.",
+        "hint": {
+          "field": "Name of the field, e.g., materialName",
+          "attribute": "Name of the attribute, e.g., color",
+          "submodel": "Identifier of the submodel, e.g., urn:samm:com.example.material:1.0.0#Material",
+          "record": "Identifier of the record, e.g., 2027-Q1"
+        },
+        "alwaysApplies": "This constraint always applies in addition, even with OR combination. Filtering is done by the delivering service."
       }
     },
     "actions": {
@@ -270,6 +289,18 @@
       "description": "Only the listed participants (did:web) satisfy the policy.",
       "legalText": "Only the explicitly named participants may access the data.",
       "summary": "{{count}} participant(s) (did:web)"
+    },
+    "DATA_SUBSET": {
+      "label": "Data subset",
+      "description": "Only the selected parts of a dataset (fields, attributes, submodels, records) are provided.",
+      "legalText": "Only the explicitly named parts of the dataset are provided.",
+      "summary": "Data subsets: {{count}}",
+      "kind": {
+        "field": "Field",
+        "attribute": "Attribute",
+        "submodel": "Submodel",
+        "record": "Record"
+      }
     }
   },
   "legalDescription": {
@@ -278,10 +309,13 @@
     "introContract": "Usage of the provided data is only permitted under the following conditions:",
     "introAccessAnyOf": "Access to the provided data is permitted if at least one of the following conditions is met:",
     "introContractAnyOf": "Usage of the provided data is permitted if at least one of the following conditions is met:",
+    "introAlwaysApplies": "Irrespective of the above conditions, the following applies in all cases:",
+    "dataSubsetItem": "{{kind}} \"{{identifier}}\"",
     "clause": {
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
       "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place.",
-      "participantDid": "The data consumer must be one of the following participants, identified by their did:web identity: {{dids}}. Any usage of the data by other participants is prohibited."
+      "participantDid": "The data consumer must be one of the following participants, identified by their did:web identity: {{dids}}. Any usage of the data by other participants is prohibited.",
+      "dataSubset": "Only the following parts of the dataset are provided to the data consumer: {{selectors}}. The permission does not extend to any other part of the dataset; their usage is prohibited."
     }
   },
   "validation": {
@@ -301,6 +335,9 @@
     "participantDidRequired": "At least one participant (did:web) is required",
     "participantDidInvalid": "Please enter the participant ID in the correct format, e.g., did:web:firma.de",
     "participantDidDuplicate": "This participant is already in the list",
+    "dataSubsetSelectorRequired": "Please add at least one data subset",
+    "dataSubsetSelectorInvalid": "The name may only contain letters, digits and . _ ~ : / # - (no spaces, no commas)",
+    "dataSubsetSelectorDuplicate": "This data subset is already in the list",
     "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {

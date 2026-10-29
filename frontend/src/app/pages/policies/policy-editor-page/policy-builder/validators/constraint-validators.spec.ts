@@ -4,12 +4,17 @@ import { Constraint } from '@shared/types/constraint.model';
 import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 
 import {
+  isValidDataSubsetSelector,
   isValidDidWeb,
-  partitionDidCandidates,
-  splitDidInput,
+  parseDataSubsetSelector,
+  partitionCandidates,
+  splitDataSubsetInput,
+  splitListInput,
   validateConstraint,
   validateDidCandidate,
   validatePolicyDraft,
+  toDataSubsetSelector,
+  validateSelectorCandidate,
 } from './constraint-validators';
 
 describe('validateConstraint — Bedingungs-Prüfung', () => {
@@ -171,6 +176,41 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
     });
   });
 
+  describe('DATA_SUBSET', () => {
+    it('meldet dataSubsetSelectorRequired bei leerer Liste', () => {
+      expect(validateConstraint({ type: 'DATA_SUBSET', selectors: [] }, 1)).toEqual([
+        { field: 'constraint[1].selectors', messageKey: 'validation.dataSubsetSelectorRequired' },
+      ]);
+    });
+
+    it('meldet dataSubsetSelectorRequired, wenn selectors aus der API kein Array ist', () => {
+      const c = { type: 'DATA_SUBSET', selectors: 'field:a' } as unknown as Constraint;
+      expect(validateConstraint(c)[0].messageKey).toBe('validation.dataSubsetSelectorRequired');
+    });
+
+    it('meldet dataSubsetSelectorInvalid bei einem ungültigen Eintrag', () => {
+      expect(
+        validateConstraint({ type: 'DATA_SUBSET', selectors: ['field:a', 'unbekannt:b'] }),
+      ).toEqual([
+        { field: 'constraint[0].selectors', messageKey: 'validation.dataSubsetSelectorInvalid' },
+      ]);
+    });
+
+    it('meldet dataSubsetSelectorDuplicate bei exakt doppelten Einträgen', () => {
+      expect(
+        validateConstraint({ type: 'DATA_SUBSET', selectors: ['field:a', 'field:a'] }),
+      ).toEqual([
+        { field: 'constraint[0].selectors', messageKey: 'validation.dataSubsetSelectorDuplicate' },
+      ]);
+    });
+
+    it('akzeptiert Einträge, die sich nur in Groß-/Kleinschreibung unterscheiden', () => {
+      expect(
+        validateConstraint({ type: 'DATA_SUBSET', selectors: ['field:name', 'field:Name'] }),
+      ).toEqual([]);
+    });
+  });
+
   it('interpoliert den Index in das field-Präfix', () => {
     const errors = validateConstraint({ type: 'DATE_RANGE', startDate: '', endDate: '' }, 3);
     expect(errors[0].field).toBe('constraint[3].startDate');
@@ -215,9 +255,9 @@ describe('isValidDidWeb', () => {
   }
 });
 
-describe('splitDidInput', () => {
+describe('splitListInput', () => {
   it('trennt an Komma, Leerzeichen und Zeilenumbruch und verwirft leere Teile', () => {
-    expect(splitDidInput(' did:web:a.example,did:web:b.example\n did:web:c.example ,, ')).toEqual([
+    expect(splitListInput(' did:web:a.example,did:web:b.example\n did:web:c.example ,, ')).toEqual([
       'did:web:a.example',
       'did:web:b.example',
       'did:web:c.example',
@@ -225,7 +265,7 @@ describe('splitDidInput', () => {
   });
 
   it('liefert für leere Eingabe eine leere Liste', () => {
-    expect(splitDidInput('   ')).toEqual([]);
+    expect(splitListInput('   ')).toEqual([]);
   });
 });
 
@@ -251,9 +291,11 @@ describe('validateDidCandidate', () => {
   });
 });
 
-describe('partitionDidCandidates', () => {
+describe('partitionCandidates (mit validateDidCandidate)', () => {
   it('übernimmt alle gültigen, neuen DIDs in Eingabereihenfolge', () => {
-    expect(partitionDidCandidates(['did:web:a.example', 'did:web:b.example'], [])).toEqual({
+    expect(
+      partitionCandidates(['did:web:a.example', 'did:web:b.example'], [], validateDidCandidate),
+    ).toEqual({
       accepted: ['did:web:a.example', 'did:web:b.example'],
       rejected: [],
       errorKey: null,
@@ -262,9 +304,10 @@ describe('partitionDidCandidates', () => {
 
   it('trennt ungültige und bereits vorhandene Kandidaten ab und meldet den ersten Fehler', () => {
     expect(
-      partitionDidCandidates(
+      partitionCandidates(
         ['did:web:a.example', 'kaputt', 'did:web:B.example'],
         ['did:web:b.example'],
+        validateDidCandidate,
       ),
     ).toEqual({
       accepted: ['did:web:a.example'],
@@ -274,10 +317,97 @@ describe('partitionDidCandidates', () => {
   });
 
   it('erkennt Duplikate innerhalb derselben Eingabe', () => {
-    expect(partitionDidCandidates(['did:web:a.example', 'did:web:A.example'], [])).toEqual({
+    expect(
+      partitionCandidates(['did:web:a.example', 'did:web:A.example'], [], validateDidCandidate),
+    ).toEqual({
       accepted: ['did:web:a.example'],
       rejected: ['did:web:A.example'],
       errorKey: 'validation.participantDidDuplicate',
+    });
+  });
+});
+
+describe('isValidDataSubsetSelector', () => {
+  const valid = [
+    'field:materialName',
+    'field:materialDetails.weight',
+    'attribute:color',
+    'record:2027-Q1',
+    'submodel:urn:samm:com.example.material:1.0.0#Material',
+    'submodel:https://example.com/submodels/qa',
+  ];
+  const invalid: [string, unknown][] = [
+    ['leer', ''],
+    ['ohne Bezeichner', 'field:'],
+    ['unbekannte Art', 'column:a'],
+    ['Art in Großschreibung', 'Field:a'],
+    ['ohne Art', 'materialName'],
+    ['Komma', 'field:a,field:b'],
+    ['Leerzeichen', 'field:a b'],
+    ['Interpolations-Delimiter', 'field:{{selectors}}'],
+    ['kein String', 42],
+  ];
+
+  for (const selector of valid) {
+    it(`akzeptiert ${selector}`, () => {
+      expect(isValidDataSubsetSelector(selector)).toBe(true);
+    });
+  }
+
+  for (const [label, value] of invalid) {
+    it(`lehnt ab: ${label}`, () => {
+      expect(isValidDataSubsetSelector(value)).toBe(false);
+    });
+  }
+});
+
+describe('splitDataSubsetInput', () => {
+  it('trennt an Komma und Zeilenumbruch, nicht an Leerzeichen', () => {
+    expect(splitDataSubsetInput(' a,b\r\nmaterial name ,, ')).toEqual(['a', 'b', 'material name']);
+  });
+});
+
+describe('toDataSubsetSelector / parseDataSubsetSelector', () => {
+  it('setzt Art und Name zum gespeicherten Selektor zusammen', () => {
+    expect(toDataSubsetSelector('field', 'materialName')).toBe('field:materialName');
+  });
+
+  it('zerlegt einen Selektor; Doppelpunkte im Namen bleiben erhalten', () => {
+    expect(parseDataSubsetSelector('submodel:urn:samm:io.example:1.0.0#Part')).toEqual({
+      kind: 'submodel',
+      identifier: 'urn:samm:io.example:1.0.0#Part',
+    });
+  });
+
+  it('liefert null für ungültige Werte', () => {
+    expect(parseDataSubsetSelector('spalte:name')).toBeNull();
+    expect(parseDataSubsetSelector('field:')).toBeNull();
+    expect(parseDataSubsetSelector(42)).toBeNull();
+  });
+});
+
+describe('validateSelectorCandidate', () => {
+  it('liefert null für einen neuen, gültigen Selektor', () => {
+    expect(validateSelectorCandidate('field:a', ['field:b'])).toBeNull();
+  });
+
+  it('meldet dataSubsetSelectorInvalid für einen ungültigen Selektor', () => {
+    expect(validateSelectorCandidate('a', [])).toBe('validation.dataSubsetSelectorInvalid');
+  });
+
+  it('meldet dataSubsetSelectorDuplicate für einen bereits vorhandenen Selektor', () => {
+    expect(validateSelectorCandidate('field:a', ['field:a'])).toBe(
+      'validation.dataSubsetSelectorDuplicate',
+    );
+  });
+
+  it('erkennt Duplikate innerhalb derselben Eingabe (über partitionCandidates)', () => {
+    expect(
+      partitionCandidates(['field:a', 'kaputt', 'field:a'], [], validateSelectorCandidate),
+    ).toEqual({
+      accepted: ['field:a'],
+      rejected: ['kaputt', 'field:a'],
+      errorKey: 'validation.dataSubsetSelectorInvalid',
     });
   });
 });

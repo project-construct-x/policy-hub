@@ -26,7 +26,9 @@ import {
 } from '@shared/types/policy.model';
 import {
   buildDefaultConstraint,
+  connectorKeyAfter,
   CONSTRAINT_METADATA,
+  orderConstraints,
 } from '@features/policies/builder/metadata/constraint-metadata';
 import { validatePolicyDraft } from '@features/policies/builder/validators/constraint-validators';
 import { buildLegalDescription } from '@features/policies/builder/helpers/legal-description.helper';
@@ -99,10 +101,10 @@ export class PolicyBuilderComponent {
     }),
   );
 
-  /** Label zwischen den Constraint-Karten (UND/ODER). */
-  readonly connectorKey = computed(() =>
-    this.logicalOperator() === 'OR' ? 'policyBuilder.orConnector' : 'policyBuilder.andConnector',
-  );
+  /** Label nach der Constraint-Karte an `index` (UND/ODER; vor einem Teildatensatz immer UND). */
+  connectorKeyAfter(index: number): string {
+    return connectorKeyAfter(this.constraints(), index, this.logicalOperator());
+  }
 
   /**
    * Constraint-Typen, deren Eingabefeld noch nicht übernommenen (und damit ungültigen) Text
@@ -133,7 +135,7 @@ export class PolicyBuilderComponent {
             : initial.policyId,
         );
         this.category.set(initial.category);
-        this.constraints.set([...initial.constraints]);
+        this.constraints.set(orderConstraints(initial.constraints));
         this.logicalOperator.set(logicalOperatorOf(initial));
       });
     });
@@ -202,7 +204,8 @@ export class PolicyBuilderComponent {
       if (existingIndex !== -1) {
         return list.filter((_, i) => i !== existingIndex);
       }
-      return [...list, buildDefaultConstraint(type)];
+      // Immer geltende Constraints (Teildatensatz) bleiben hinter den Voraussetzungen.
+      return orderConstraints([...list, buildDefaultConstraint(type)]);
     });
     this.prunePendingInput();
   }

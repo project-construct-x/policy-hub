@@ -155,6 +155,10 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
               type: 'PARTICIPANT_DID',
               dids: ['did:web:vermessung-nord.example', 'did:web:stadtwerke.example%3A8443:edc'],
             },
+            {
+              type: 'DATA_SUBSET',
+              selectors: ['submodel:Flurstueck', 'field:flurstuecksnummer', 'record:2027-Q1'],
+            },
           ],
           createdAt: '2026-01-15T13:00:00Z',
           updatedAt: '2026-03-30T09:15:00Z',

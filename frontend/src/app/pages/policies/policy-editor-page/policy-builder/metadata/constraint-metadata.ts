@@ -1,5 +1,10 @@
-import { Constraint, ConstraintType, Operator } from '@shared/types/constraint.model';
-import { PolicyCategory } from '@shared/types/policy.model';
+import {
+  alwaysApplies,
+  Constraint,
+  ConstraintType,
+  Operator,
+} from '@shared/types/constraint.model';
+import { LogicalOperator, PolicyCategory } from '@shared/types/policy.model';
 
 export interface ConstraintMetadata {
   type: ConstraintType;
@@ -48,6 +53,15 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     defaultOperator: 'eq',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
+  DATA_SUBSET: {
+    type: 'DATA_SUBSET',
+    labelKey: 'constraint.DATA_SUBSET.label',
+    descriptionKey: 'constraint.DATA_SUBSET.description',
+    legalTextKey: 'constraint.DATA_SUBSET.legalText',
+    icon: 'filter_alt',
+    defaultOperator: 'isAnyOf',
+    allowedIn: ['ACCESS', 'CONTRACT'],
+  },
 };
 
 export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
@@ -55,6 +69,7 @@ export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
   'DATE_RANGE',
   'FRAMEWORK_AGREEMENT',
   'PARTICIPANT_DID',
+  'DATA_SUBSET',
 ];
 
 export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
@@ -89,5 +104,39 @@ export function buildDefaultConstraint(type: ConstraintType): Constraint {
       return { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
     case 'PARTICIPANT_DID':
       return { type: 'PARTICIPANT_DID', dids: [] };
+    case 'DATA_SUBSET':
+      return { type: 'DATA_SUBSET', selectors: [] };
   }
+}
+
+/**
+ * Stellt Constraints, die immer gelten, ans Ende (stabil, sonst unveränderte Reihenfolge). So
+ * stehen sie in Editor, Detailansicht, Rechtstext und ODRL einheitlich hinter den
+ * Voraussetzungen, die per UND/ODER verknüpft werden.
+ */
+export function orderConstraints<T extends Pick<Constraint, 'type'>>(
+  constraints: readonly T[],
+): T[] {
+  return [
+    ...constraints.filter((c) => !alwaysApplies(c)),
+    ...constraints.filter((c) => alwaysApplies(c)),
+  ];
+}
+
+/**
+ * i18n-Key des Verknüpfungslabels zwischen `constraints[index]` und dem folgenden Constraint.
+ * Grenzt einer der beiden an einen immer geltenden Constraint, ist es unabhängig vom gewählten
+ * Operator UND.
+ */
+export function connectorKeyAfter(
+  constraints: readonly Pick<Constraint, 'type'>[],
+  index: number,
+  logicalOperator: LogicalOperator,
+): string {
+  const next = constraints[index + 1];
+  const forcedAnd =
+    alwaysApplies(constraints[index]) || (next !== undefined && alwaysApplies(next));
+  return logicalOperator === 'OR' && !forcedAnd
+    ? 'policyBuilder.orConnector'
+    : 'policyBuilder.andConnector';
 }
