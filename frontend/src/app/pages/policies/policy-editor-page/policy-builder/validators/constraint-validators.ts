@@ -21,6 +21,81 @@ export interface ValidationError {
  */
 const POLICY_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
 
+/**
+ * `did:web`-Identität (W3C did:web Method): Domain, optional ein Port als `%3A<port>`, optional
+ * Pfadsegmente getrennt durch `:` (z.B. `did:web:example.com%3A8443:participants:acme`).
+ *
+ * Der Zeichensatz schließt Komma, Leerraum und `{}` aus. Das ist Absicht: Kommas trennen die
+ * DIDs im ODRL-RightOperand (`policyToOdrl()`), und ohne `{}` ist ein geprüfter Wert als
+ * Transloco-Parameter im Rechtstext unbedenklich (`legal-description.helper.ts`).
+ */
+export const DID_WEB_PATTERN =
+  /^did:web:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*(?:%3[Aa]\d{1,5})?(?::(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+)*$/;
+
+export function isValidDidWeb(value: unknown): value is string {
+  return typeof value === 'string' && DID_WEB_PATTERN.test(value);
+}
+
+/**
+ * Zerlegt eine Eingabe der Teilnehmer-Liste in einzelne Kandidaten. Getrennt wird an Komma und
+ * Leerraum, damit auch mehrere eingefügte DIDs (z.B. eine Zeile pro DID) übernommen werden.
+ */
+export function splitDidInput(raw: string): string[] {
+  return raw.split(/[\s,]+/).filter(Boolean);
+}
+
+/**
+ * Vergleichsschlüssel für Duplikate: DIDs, die sich nur in Groß-/Kleinschreibung unterscheiden,
+ * gelten als derselbe Teilnehmer. Gespeichert wird weiterhin die Schreibweise der Eingabe.
+ */
+function didKey(did: string): string {
+  return did.toLowerCase();
+}
+
+/**
+ * Prüft einen einzelnen Kandidaten vor dem Hinzufügen zur Liste. Liefert den i18n-Key des
+ * Fehlers oder `null`, wenn der Kandidat übernommen werden darf.
+ */
+export function validateDidCandidate(
+  candidate: string,
+  existing: readonly string[],
+): string | null {
+  if (!isValidDidWeb(candidate)) return 'validation.participantDidInvalid';
+  const key = didKey(candidate);
+  if (existing.some((did) => didKey(did) === key)) return 'validation.participantDidDuplicate';
+  return null;
+}
+
+export interface DidPartition {
+  /** Gültige, neue DIDs in Eingabereihenfolge. */
+  accepted: string[];
+  /** Abgelehnte Kandidaten; sie bleiben zur Korrektur im Eingabefeld stehen. */
+  rejected: string[];
+  /** i18n-Key des ersten Fehlers, `null` wenn alles übernommen wurde. */
+  errorKey: string | null;
+}
+
+/**
+ * Teilt Kandidaten (z.B. aus einer eingefügten Liste) in übernehmbare und abgelehnte auf.
+ * Duplikate werden auch innerhalb derselben Eingabe erkannt.
+ */
+export function partitionDidCandidates(
+  candidates: readonly string[],
+  existing: readonly string[],
+): DidPartition {
+  const result: DidPartition = { accepted: [], rejected: [], errorKey: null };
+  for (const candidate of candidates) {
+    const errorKey = validateDidCandidate(candidate, [...existing, ...result.accepted]);
+    if (errorKey) {
+      result.rejected.push(candidate);
+      result.errorKey ??= errorKey;
+    } else {
+      result.accepted.push(candidate);
+    }
+  }
+  return result;
+}
+
 export function validatePolicyDraft(draft: Partial<Policy>): ValidationError[] {
   const errors: ValidationError[] = [];
 
@@ -100,6 +175,19 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
           field: `${prefix}.endDate`,
           messageKey: 'validation.dateRangeStartAfterEnd',
         });
+      }
+      break;
+    }
+    case 'PARTICIPANT_DID': {
+      const field = `${prefix}.dids`;
+      // `dids` kann aus einem HTTP-Response stammen; der Typ ist nur ein Compile-Zeit-Versprechen.
+      const dids: unknown[] = Array.isArray(constraint.dids) ? constraint.dids : [];
+      if (!dids.length) {
+        errors.push({ field, messageKey: 'validation.participantDidRequired' });
+      } else if (!dids.every(isValidDidWeb)) {
+        errors.push({ field, messageKey: 'validation.participantDidInvalid' });
+      } else if (new Set((dids as string[]).map(didKey)).size !== dids.length) {
+        errors.push({ field, messageKey: 'validation.participantDidDuplicate' });
       }
       break;
     }

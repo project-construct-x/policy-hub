@@ -70,7 +70,7 @@ The backend controls `id`, `createdAt`, and `updatedAt`.
 ## Constraint contract
 
 Each constraint is a JSON object with a supported `type`. A constraint type may occur at most once
-in a policy. The current backend accepts all three types in both categories (`ACCESS` and
+in a policy. The current backend accepts all four types in both categories (`ACCESS` and
 `CONTRACT`). Constraint order is retained and determines ODRL operand order.
 
 | Type | Required fields | Current validation |
@@ -78,6 +78,7 @@ in a policy. The current backend accepts all three types in both categories (`AC
 | `MEMBERSHIP` | `value` | Must be the string `active`. |
 | `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date; `startDate` must not be after `endDate`. |
 | `FRAMEWORK_AGREEMENT` | `agreement` | Must be a non-blank string. |
+| `PARTICIPANT_DID` | `dids` | Non-empty array of strings; each entry must be a valid `did:web` identifier (host, optional port as `%3A<port>`, optional `:`-separated path segments; no surrounding whitespace, no commas) and entries must be unique, compared case-insensitively. Entries are stored as sent. Errors name the entry, e.g. `constraints[0].dids[1]`. |
 
 Unknown constraint types are rejected. Constraints are provisional domain concepts and may change
 when the Construct-X policy model is finalized; coordinate such changes across both applications.
@@ -121,6 +122,10 @@ Current constraint mappings:
 | `DATE_RANGE` start | `cx:DataUsageStartDate` | `odrl:gteq` | `startDate` |
 | `DATE_RANGE` end | `cx:DataUsageEndDate` | `odrl:lteq` | `endDate` |
 | `FRAMEWORK_AGREEMENT` | `cx:FrameworkAgreement` | `odrl:eq` | `agreement` |
+| `PARTICIPANT_DID` | `edc:connector` (EDC namespace, not `cx:`) | `odrl:eq` | `dids` joined with `,` |
+
+`PARTICIPANT_DID` is emitted as a single comma-separated string (no spaces), not as an array, which
+is the format the connector expects. A comma must therefore never occur inside a DID.
 
 The constraints are combined below `odrl:permission[0]."odrl:constraint"` according to
 `logicalOperator`:

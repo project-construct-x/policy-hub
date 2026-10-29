@@ -41,6 +41,12 @@
       "startInput": "Startdatum des Gültigkeitszeitraums",
       "endInput": "Enddatum des Gültigkeitszeitraums"
     },
+    "participantDid": {
+      "list": "Teilnehmer-Liste (did:web)",
+      "remove": "Teilnehmer entfernen:",
+      "removed": "Teilnehmer entfernt",
+      "added": "{{count}} Teilnehmer hinzugefügt"
+    },
     "severity": {
       "success": "Erfolg",
       "error": "Fehler",
@@ -218,6 +224,11 @@
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "Der Datenkonsument muss diesem Rahmenvertrag zugestimmt haben:"
+      },
+      "PARTICIPANT_DID": {
+        "label": "Teilnehmer (did:web)",
+        "placeholder": "did:web:beispiel.de",
+        "hint": "Mit Enter oder Komma bestätigen. Mehrere DIDs können auf einmal eingefügt werden."
       }
     },
     "actions": {
@@ -253,6 +264,12 @@
       "label": "Rahmenvertrag",
       "description": "Zustimmung zum Rahmenvertrag erforderlich.",
       "legalText": "Der Datenkonsument muss dem DataExchangeGovernance-Rahmenvertrag zugestimmt haben."
+    },
+    "PARTICIPANT_DID": {
+      "label": "Teilnehmer-Auswahl",
+      "description": "Nur die angegebenen Teilnehmer (did:web) erfüllen die Policy.",
+      "legalText": "Nur die ausdrücklich benannten Teilnehmer dürfen auf die Daten zugreifen.",
+      "summary": "{{count}} Teilnehmer (did:web)"
     }
   },
   "legalDescription": {
@@ -263,7 +280,8 @@
     "introContractAnyOf": "Die Nutzung der bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
     "clause": {
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
-      "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf."
+      "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf.",
+      "participantDid": "Der Datenkonsument muss einer der folgenden, über ihre did:web-Identität benannten Teilnehmer sein: {{dids}}. Allen übrigen Teilnehmern ist jegliche Nutzung der Daten untersagt."
     }
   },
   "validation": {
@@ -280,6 +298,9 @@
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",
     "dateRangeStartAfterEnd": "Das Startdatum muss vor dem Enddatum liegen",
     "constraintUnknownType": "Unbekannter Constraint-Typ — dieser Constraint wird ignoriert.",
+    "participantDidRequired": "Mindestens ein Teilnehmer (did:web) ist erforderlich",
+    "participantDidInvalid": "Bitte geben Sie die Teilnehmer-Kennung im korrekten Format ein, z. B. did:web:firma.de",
+    "participantDidDuplicate": "Dieser Teilnehmer ist bereits in der Liste",
     "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {

@@ -87,6 +87,18 @@ describe('buildLegalDescription', () => {
       );
       expect(text).toContain('legalDescription.clause.dateRange[start=01.06.2026;end=31.12.2027]');
     });
+
+    it('PARTICIPANT_DID → interpoliert die DIDs als kommagetrennte Liste', () => {
+      const text = buildLegalDescription(
+        draft('ACCESS', [
+          { type: 'PARTICIPANT_DID', dids: ['did:web:a.example', 'did:web:b.example'] },
+        ]),
+        makeTransloco(),
+      );
+      expect(text).toContain(
+        'legalDescription.clause.participantDid[dids=did:web:a.example, did:web:b.example]',
+      );
+    });
   });
 
   describe('mehrere Bedingungen (nummerierte Liste mit Titel + Text)', () => {
@@ -228,6 +240,7 @@ describe('buildLegalDescription', () => {
       ['FRAMEWORK_AGREEMENT.agreement', { type: 'FRAMEWORK_AGREEMENT', agreement: HOSTILE }],
       ['DATE_RANGE.startDate', { type: 'DATE_RANGE', startDate: HOSTILE, endDate: '2027-01-01' }],
       ['DATE_RANGE.endDate', { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: HOSTILE }],
+      ['PARTICIPANT_DID.dids', { type: 'PARTICIPANT_DID', dids: ['did:web:a.example', HOSTILE] }],
     ];
 
     for (const [label, constraint] of hostileConstraints) {
@@ -248,6 +261,14 @@ describe('buildLegalDescription', () => {
         makeTransloco(),
       );
       expect(text).toContain('agreement=—');
+    });
+
+    it('ersetzt eine Teilnehmer-Liste mit ungültigem Eintrag durch den Platzhalter "—"', () => {
+      const text = buildLegalDescription(
+        draft('CONTRACT', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example', 'kaputt'] }]),
+        makeTransloco(),
+      );
+      expect(text).toContain('dids=—');
     });
 
     it('lässt bekannte Werte unverändert', () => {

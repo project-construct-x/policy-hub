@@ -93,6 +93,62 @@ class OdrlConstraintMapperTest {
     }
 
     @Test
+    void mapParticipantDid_mapsDidsToCommaSeparatedConnectorConstraint()
+            throws Exception {
+        JsonNode constraint = createConstraint(
+                "PARTICIPANT_DID",
+                """
+                "dids": ["did:web:a.example", "did:web:b.example"]
+                """
+        );
+
+        JsonNode expected = createExpectedWithLeftOperand(
+                "edc:connector",
+                "odrl:eq",
+                "\"did:web:a.example,did:web:b.example\""
+        );
+
+        assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void mapParticipantDid_withSingleDid_hasNoTrailingComma()
+            throws Exception {
+        JsonNode constraint = createConstraint(
+                "PARTICIPANT_DID",
+                """
+                "dids": ["did:web:a.example"]
+                """
+        );
+
+        JsonNode expected = createExpectedWithLeftOperand(
+                "edc:connector",
+                "odrl:eq",
+                "\"did:web:a.example\""
+        );
+
+        assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void mapParticipantDid_withThreeDids_keepsOrder() throws Exception {
+        JsonNode constraint = createConstraint(
+                "PARTICIPANT_DID",
+                """
+                "dids": ["did:web:c.example", "did:web:a.example", "did:web:b.example"]
+                """
+        );
+
+        JsonNode expected = createExpectedWithLeftOperand(
+                "edc:connector",
+                "odrl:eq",
+                "\"did:web:c.example,did:web:a.example,did:web:b.example\""
+        );
+
+        assertSingleMapping(constraint, expected);
+    }
+
+    @Test
     void constraintToOdrl_withUnknownType_throwsUnsupportedConstraint() throws Exception {
         JsonNode constraint = createConstraint("GIBTS_NICHT", "\"value\": \"x\"");
 
@@ -136,10 +192,22 @@ class OdrlConstraintMapperTest {
             String operatorValue,
             String rightOperandJsonValue
     ) throws Exception {
+        return createExpectedWithLeftOperand(
+                CX_POLICY_NS + leftOperandValue,
+                operatorValue,
+                rightOperandJsonValue
+        );
+    }
+
+    private JsonNode createExpectedWithLeftOperand(
+            String leftOperand,
+            String operatorValue,
+            String rightOperandJsonValue
+    ) throws Exception {
         return objectMapper.readTree("""
                 {
                     "odrl:leftOperand": {
-                        "@id": "%s%s"
+                        "@id": "%s"
                     },
                     "odrl:operator": {
                         "@id": "%s"
@@ -147,8 +215,7 @@ class OdrlConstraintMapperTest {
                     "odrl:rightOperand": %s
                 }
                 """.formatted(
-                CX_POLICY_NS,
-                leftOperandValue,
+                leftOperand,
                 operatorValue,
                 rightOperandJsonValue
         ));

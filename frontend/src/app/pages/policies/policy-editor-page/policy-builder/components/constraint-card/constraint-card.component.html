@@ -4,5 +4,12 @@
   <div class="cc__body">
     <h3 class="cc__title">{{ t(metadata().labelKey) }}</h3>
     <p class="cc__summary">{{ summary() }}</p>
+    @if (dids().length) {
+      <ul class="cc__list" [attr.aria-label]="t('a11y.participantDid.list')" data-cy="cc-dids">
+        @for (did of dids(); track $index) {
+          <li class="cc__chip">{{ did }}</li>
+        }
+      </ul>
+    }
   </div>
 </article>

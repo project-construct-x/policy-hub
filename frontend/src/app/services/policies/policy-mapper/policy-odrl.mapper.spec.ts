@@ -84,6 +84,20 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
       },
     ]);
   });
+
+  it('PARTICIPANT_DID → edc:connector / odrl:eq / komma-getrennter String (wie HTX Connector UI)', () => {
+    const c: Constraint = {
+      type: 'PARTICIPANT_DID',
+      dids: ['did:web:a.example', 'did:web:b.example%3A8443:edc'],
+    };
+    expect(constraintToOdrl(c)).toEqual([
+      {
+        'odrl:leftOperand': { '@id': 'edc:connector' },
+        'odrl:operator': { '@id': 'odrl:eq' },
+        'odrl:rightOperand': 'did:web:a.example,did:web:b.example%3A8443:edc',
+      },
+    ]);
+  });
 });
 
 describe('policyToOdrl — Envelope & Kombinationen', () => {

@@ -151,6 +151,10 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           constraints: [
             { type: 'MEMBERSHIP', value: 'active' },
             { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+            {
+              type: 'PARTICIPANT_DID',
+              dids: ['did:web:vermessung-nord.example', 'did:web:stadtwerke.example%3A8443:edc'],
+            },
           ],
           createdAt: '2026-01-15T13:00:00Z',
           updatedAt: '2026-03-30T09:15:00Z',

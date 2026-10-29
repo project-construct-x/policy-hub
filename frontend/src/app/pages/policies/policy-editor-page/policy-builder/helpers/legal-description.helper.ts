@@ -6,6 +6,7 @@ import {
   keepKnownConstraints,
 } from '@features/policies/builder/metadata/constraint-metadata';
 import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
+import { isValidDidWeb } from '@features/policies/builder/validators/constraint-validators';
 
 /**
  * Anzeigewert für Constraint-Inhalte, die nicht aus der Metadaten-Registry stammen —
@@ -154,10 +155,23 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
         { agreement: c.agreement === FRAMEWORK_AGREEMENT_VALUE ? c.agreement : UNKNOWN_VALUE },
         lang,
       );
+    case 'PARTICIPANT_DID':
+      // Die DIDs sind Freitext und lassen sich nicht gegen eine Registry prüfen. Stattdessen
+      // gilt das strikte Format aus `DID_WEB_PATTERN` (kein `{}`), sonst `UNKNOWN_VALUE`.
+      return transloco.translate(
+        'legalDescription.clause.participantDid',
+        { dids: formatDids(c.dids) },
+        lang,
+      );
     case 'MEMBERSHIP':
     default:
       return base;
   }
+}
+
+function formatDids(dids: unknown): string {
+  if (!Array.isArray(dids) || !dids.length || !dids.every(isValidDidWeb)) return UNKNOWN_VALUE;
+  return dids.join(', ');
 }
 
 function formatDate(iso: string): string {

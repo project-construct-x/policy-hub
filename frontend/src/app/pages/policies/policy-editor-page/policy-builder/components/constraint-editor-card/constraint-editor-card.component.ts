@@ -10,12 +10,14 @@ import {
   DateRangeConstraint,
   FrameworkAgreementConstraint,
   MembershipConstraint,
+  ParticipantDidConstraint,
 } from '@shared/types/constraint.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
 import {
   ValidationError,
   validateConstraint,
 } from '@features/policies/builder/validators/constraint-validators';
+import { ParticipantDidInputComponent } from '@features/policies/builder/components/participant-did-input/participant-did-input.component';
 
 function sameDateOrNull(a: Date | null, b: Date | null): boolean {
   return a === b || (a !== null && b !== null && a.getTime() === b.getTime());
@@ -30,6 +32,7 @@ function sameDateOrNull(a: Date | null, b: Date | null): boolean {
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    ParticipantDidInputComponent,
   ],
   templateUrl: './constraint-editor-card.component.html',
   styleUrl: './constraint-editor-card.component.scss',
@@ -41,6 +44,8 @@ export class ConstraintEditorCardComponent {
   readonly showErrors = input(false);
 
   readonly constraintChange = output<Constraint>();
+  /** `true`, solange ein Eingabefeld Text enthält, der noch nicht übernommen wurde. */
+  readonly pendingInputChange = output<boolean>();
 
   readonly meta = computed(() => CONSTRAINT_METADATA[this.constraint().type]);
   readonly minDate = new Date();
@@ -101,6 +106,13 @@ export class ConstraintEditorCardComponent {
   }
   asFramework(c: Constraint): FrameworkAgreementConstraint {
     return c as FrameworkAgreementConstraint;
+  }
+  asParticipantDid(c: Constraint): ParticipantDidConstraint {
+    return c as ParticipantDidConstraint;
+  }
+
+  onDidsChange(dids: string[]): void {
+    this.constraintChange.emit({ ...this.asParticipantDid(this.constraint()), dids });
   }
 
   onStartDateChange(value: Date | null): void {

@@ -160,6 +160,7 @@
             [index]="i"
             [showErrors]="submitted()"
             (constraintChange)="updateConstraint(i, $event)"
+            (pendingInputChange)="setPendingInput(c.type, $event)"
           />
           @if (!last) {
             <div class="pb__logic-connector">

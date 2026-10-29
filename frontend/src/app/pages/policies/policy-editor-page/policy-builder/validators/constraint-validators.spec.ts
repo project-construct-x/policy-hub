@@ -3,7 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 
-import { validateConstraint, validatePolicyDraft } from './constraint-validators';
+import {
+  isValidDidWeb,
+  partitionDidCandidates,
+  splitDidInput,
+  validateConstraint,
+  validateDidCandidate,
+  validatePolicyDraft,
+} from './constraint-validators';
 
 describe('validateConstraint — Bedingungs-Prüfung', () => {
   describe('DATE_RANGE (datumsabhängig, fixe Systemzeit)', () => {
@@ -114,9 +121,164 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
     });
   });
 
+  describe('PARTICIPANT_DID', () => {
+    it('meldet participantDidRequired bei leerer Liste', () => {
+      expect(validateConstraint({ type: 'PARTICIPANT_DID', dids: [] }, 2)).toEqual([
+        { field: 'constraint[2].dids', messageKey: 'validation.participantDidRequired' },
+      ]);
+    });
+
+    it('meldet participantDidRequired, wenn dids aus der API kein Array ist', () => {
+      const c = { type: 'PARTICIPANT_DID', dids: 'did:web:a.example' } as unknown as Constraint;
+      expect(validateConstraint(c)[0].messageKey).toBe('validation.participantDidRequired');
+    });
+
+    it('meldet participantDidInvalid bei einem ungültigen Eintrag', () => {
+      expect(
+        validateConstraint({ type: 'PARTICIPANT_DID', dids: ['did:web:a.example', 'foo'] }),
+      ).toEqual([{ field: 'constraint[0].dids', messageKey: 'validation.participantDidInvalid' }]);
+    });
+
+    it('meldet participantDidDuplicate bei doppelten Einträgen', () => {
+      expect(
+        validateConstraint({
+          type: 'PARTICIPANT_DID',
+          dids: ['did:web:a.example', 'did:web:a.example'],
+        }),
+      ).toEqual([
+        { field: 'constraint[0].dids', messageKey: 'validation.participantDidDuplicate' },
+      ]);
+    });
+
+    it('erkennt Duplikate unabhängig von Groß-/Kleinschreibung', () => {
+      expect(
+        validateConstraint({
+          type: 'PARTICIPANT_DID',
+          dids: ['did:web:a.example', 'did:web:A.Example'],
+        }),
+      ).toEqual([
+        { field: 'constraint[0].dids', messageKey: 'validation.participantDidDuplicate' },
+      ]);
+    });
+
+    it('akzeptiert eine Liste gültiger, eindeutiger DIDs', () => {
+      expect(
+        validateConstraint({
+          type: 'PARTICIPANT_DID',
+          dids: ['did:web:a.example', 'did:web:b.example'],
+        }),
+      ).toEqual([]);
+    });
+  });
+
   it('interpoliert den Index in das field-Präfix', () => {
     const errors = validateConstraint({ type: 'DATE_RANGE', startDate: '', endDate: '' }, 3);
     expect(errors[0].field).toBe('constraint[3].startDate');
+  });
+});
+
+describe('isValidDidWeb', () => {
+  const valid = [
+    'did:web:example.com',
+    'did:web:sub.example-domain.de',
+    'did:web:localhost%3A8443',
+    'did:web:example.com%3a8443',
+    'did:web:example.com:user:alice',
+    'did:web:example.com%3A8443:participants:acme_1',
+    'did:web:example.com:path%20segment',
+  ];
+  const invalid: [string, unknown][] = [
+    ['leer', ''],
+    ['ohne Host', 'did:web:'],
+    ['andere DID-Methode', 'did:key:z6Mkabc'],
+    ['ohne Präfix', 'example.com'],
+    ['Großschreibung im Präfix', 'DID:web:example.com'],
+    ['Host beginnt mit Bindestrich', 'did:web:-example.com'],
+    ['leeres Host-Label', 'did:web:example..com'],
+    ['leeres Pfadsegment am Ende', 'did:web:example.com:'],
+    ['Komma', 'did:web:a.example,did:web:b.example'],
+    ['Leerzeichen', 'did:web:a example'],
+    ['Interpolations-Delimiter', 'did:web:{{dids}}'],
+    ['kein String', 42],
+  ];
+
+  for (const did of valid) {
+    it(`akzeptiert ${did}`, () => {
+      expect(isValidDidWeb(did)).toBe(true);
+    });
+  }
+
+  for (const [label, value] of invalid) {
+    it(`lehnt ab: ${label}`, () => {
+      expect(isValidDidWeb(value)).toBe(false);
+    });
+  }
+});
+
+describe('splitDidInput', () => {
+  it('trennt an Komma, Leerzeichen und Zeilenumbruch und verwirft leere Teile', () => {
+    expect(splitDidInput(' did:web:a.example,did:web:b.example\n did:web:c.example ,, ')).toEqual([
+      'did:web:a.example',
+      'did:web:b.example',
+      'did:web:c.example',
+    ]);
+  });
+
+  it('liefert für leere Eingabe eine leere Liste', () => {
+    expect(splitDidInput('   ')).toEqual([]);
+  });
+});
+
+describe('validateDidCandidate', () => {
+  it('liefert null für eine neue, gültige DID', () => {
+    expect(validateDidCandidate('did:web:a.example', ['did:web:b.example'])).toBeNull();
+  });
+
+  it('meldet participantDidInvalid für eine ungültige DID', () => {
+    expect(validateDidCandidate('did:web:', [])).toBe('validation.participantDidInvalid');
+  });
+
+  it('meldet participantDidDuplicate für eine bereits vorhandene DID', () => {
+    expect(validateDidCandidate('did:web:a.example', ['did:web:a.example'])).toBe(
+      'validation.participantDidDuplicate',
+    );
+  });
+
+  it('meldet participantDidDuplicate auch bei abweichender Groß-/Kleinschreibung', () => {
+    expect(validateDidCandidate('did:web:A.Example:Users', ['did:web:a.example:users'])).toBe(
+      'validation.participantDidDuplicate',
+    );
+  });
+});
+
+describe('partitionDidCandidates', () => {
+  it('übernimmt alle gültigen, neuen DIDs in Eingabereihenfolge', () => {
+    expect(partitionDidCandidates(['did:web:a.example', 'did:web:b.example'], [])).toEqual({
+      accepted: ['did:web:a.example', 'did:web:b.example'],
+      rejected: [],
+      errorKey: null,
+    });
+  });
+
+  it('trennt ungültige und bereits vorhandene Kandidaten ab und meldet den ersten Fehler', () => {
+    expect(
+      partitionDidCandidates(
+        ['did:web:a.example', 'kaputt', 'did:web:B.example'],
+        ['did:web:b.example'],
+      ),
+    ).toEqual({
+      accepted: ['did:web:a.example'],
+      rejected: ['kaputt', 'did:web:B.example'],
+      errorKey: 'validation.participantDidInvalid',
+    });
+  });
+
+  it('erkennt Duplikate innerhalb derselben Eingabe', () => {
+    expect(partitionDidCandidates(['did:web:a.example', 'did:web:A.example'], [])).toEqual({
+      accepted: ['did:web:a.example'],
+      rejected: ['did:web:A.example'],
+      errorKey: 'validation.participantDidDuplicate',
+    });
   });
 });
 
