@@ -89,8 +89,11 @@ describe('Policy – Erstellen', () => {
 
     // Über den Kalender ausgewählte Werte müssen trotzdem ankommen (je Feld ein eigener Picker).
     cy.getByCy('daterange-start-field').find('mat-datepicker-toggle button').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').first().click();
+    cy.waitForDatepickerClosed();
     cy.getByCy('daterange-end-field').find('mat-datepicker-toggle button').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').last().click();
 
     cy.getByCy('daterange-start-input').invoke('val').should('not.be.empty');
@@ -106,11 +109,13 @@ describe('Policy – Erstellen', () => {
     cy.get('.mat-calendar').should('not.exist');
     // Klick auf das Feld selbst (nicht auf das Kalender-Icon) muss den jeweiligen Picker öffnen.
     cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar').should('be.visible');
     cy.get('body').type('{esc}');
     cy.get('.mat-calendar').should('not.exist');
 
     cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar').should('be.visible');
   });
 
@@ -122,11 +127,14 @@ describe('Policy – Erstellen', () => {
 
     // Ein Monat weiter: der ganze Monat liegt in der Zukunft, der Start ist der 2. des Monats.
     cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-next-button').click();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+    cy.waitForDatepickerClosed();
 
     // Der End-Picker öffnet im Monat des Starts; der 1. (vor dem Start) ist gesperrt.
     cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell').first().should('have.class', 'mat-calendar-body-disabled');
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)')
       .first()
@@ -142,10 +150,14 @@ describe('Policy – Erstellen', () => {
     // Immer einen Monat weiterblättern, damit die Auswahl unabhängig vom heutigen Datum im selben
     // (vollständigen) Monat liegt und der Test nicht am Monatsende flaky wird.
     cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-next-button').click();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
+    cy.waitForDatepickerClosed();
     cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
     cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+    cy.waitForDatepickerClosed();
 
     cy.getByCy('daterange-start-input')
       .invoke('val')
@@ -153,6 +165,7 @@ describe('Policy – Erstellen', () => {
         // Erneut öffnen und einen anderen Start wählen — das Startdatum darf nicht an der ersten
         // Auswahl "kleben bleiben".
         cy.getByCy('daterange-start-field').click();
+        cy.waitForDatepickerOpen();
         cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(3).click();
 
         cy.getByCy('daterange-start-input').invoke('val').should('not.eq', firstStart);

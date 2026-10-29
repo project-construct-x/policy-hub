@@ -48,6 +48,7 @@ describe('Policy – Bearbeiten', () => {
       .then((originalStart) => {
         // Der End-Picker öffnet im Dezember 2027 → einen Monat weiter, 1. Januar 2028 wählen.
         cy.getByCy('daterange-end-field').click();
+        cy.waitForDatepickerOpen();
         cy.get('.mat-calendar-next-button').click();
         cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').first().click();
 
