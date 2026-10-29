@@ -113,7 +113,7 @@ public class PolicyService {
         PolicyEntity entity = policyRepository.findById(id)
                 .orElseThrow(() -> new PolicyNotFoundException(id));
 
-        policyValidator.validate(request.constraints());
+        policyValidator.validate(request.constraints(), entity.getConstraints());
 
         policyRepository.findByPolicyId(request.policyId())
                 .filter(existing -> !existing.getId().equals(id))

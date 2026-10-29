@@ -141,10 +141,58 @@ class PolicyValidatorTest {
     }
 
     @Test
+    void validate_updateKeepingStoredPastStartDate_isAccepted()
+            throws Exception {
+        LocalDate pastStart = LocalDate.now().minusMonths(3);
+        JsonNode stored = dateRange(pastStart, LocalDate.now().plusMonths(1));
+        JsonNode edited = dateRange(pastStart, LocalDate.now().plusMonths(6));
+
+        policyValidator.validate(List.of(edited), List.of(stored));
+    }
+
+    @Test
+    void validate_updateChangingStartDateToOtherPastDate_throwsException()
+            throws Exception {
+        JsonNode stored = dateRange(
+                LocalDate.now().minusMonths(3),
+                LocalDate.now().plusMonths(1)
+        );
+        JsonNode edited = dateRange(
+                LocalDate.now().minusMonths(2),
+                LocalDate.now().plusMonths(1)
+        );
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(edited), List.of(stored))
+        );
+
+        assertEquals(
+                "constraints[0].startDate must not be in the past",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_updateChangingStartDateToFutureDate_isAccepted()
+            throws Exception {
+        JsonNode stored = dateRange(
+                LocalDate.now().minusMonths(3),
+                LocalDate.now().plusMonths(1)
+        );
+        JsonNode edited = dateRange(
+                LocalDate.now().plusDays(1),
+                LocalDate.now().plusMonths(2)
+        );
+
+        policyValidator.validate(List.of(edited), List.of(stored));
+    }
+
+    @Test
     void validate_dateRangeWithEndDateInPast_throwsException()
             throws Exception {
         JsonNode constraint = dateRange(
-                LocalDate.now().minusMonths(2),
+                LocalDate.now(),
                 LocalDate.now().minusDays(1)
         );
 
@@ -154,7 +202,7 @@ class PolicyValidatorTest {
         );
 
         assertEquals(
-                "constraints[0].startDate must not be in the past",
+                "constraints[0].endDate must not be in the past",
                 exception.getMessage()
         );
     }

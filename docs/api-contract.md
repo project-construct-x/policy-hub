@@ -76,7 +76,7 @@ in a policy. The current backend accepts all three types in both categories (`AC
 | Type | Required fields | Current validation |
 |---|---|---|
 | `MEMBERSHIP` | `value` | Must be the string `active`. |
-| `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date; `startDate` must not be after `endDate`. |
+| `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date, except that on update an unchanged `startDate` already stored in the policy stays valid (a running period remains editable); `startDate` must not be after `endDate`. |
 | `FRAMEWORK_AGREEMENT` | `agreement` | Must be a non-blank string. |
 
 Unknown constraint types are rejected. Constraints are provisional domain concepts and may change

@@ -361,7 +361,8 @@ class PolicyServiceTest {
                 result.legalText()
         );
 
-        verify(policyValidator).validate(request.constraints());
+        verify(policyValidator)
+                .validate(request.constraints(), entity.getConstraints());
 
         verify(policyMapper)
                 .updateEntity(request, entity);
@@ -470,7 +471,7 @@ class PolicyServiceTest {
 
         verify(policyRepository).findById(ID);
 
-        verify(policyValidator, never()).validate(any());
+        verify(policyValidator, never()).validate(any(), any());
 
         verify(policyRepository, never())
                 .save(any());
@@ -498,7 +499,7 @@ class PolicyServiceTest {
                 () -> policyService.updatePolicy(ID, request)
         );
 
-        verify(policyValidator, never()).validate(any());
+        verify(policyValidator, never()).validate(any(), any());
     }
 
     @Test

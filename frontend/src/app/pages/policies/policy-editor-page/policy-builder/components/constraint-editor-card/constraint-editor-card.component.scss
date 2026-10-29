@@ -65,6 +65,19 @@
     }
   }
 
+  // Start und Ende nebeneinander; bei schmaler Karte (Reflow) automatisch untereinander.
+  &__date-range {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 0 1rem;
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--con-x-text-secondary, #454545);
+  }
+
   &__static {
     margin: 0;
     color: #2c3e50;

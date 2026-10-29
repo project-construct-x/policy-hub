@@ -38,6 +38,7 @@
     "requiredField": "Pflichtfeld",
     "formInvalid": "Das Formular enthält Fehler. Bitte prüfen Sie die markierten Felder.",
     "dateRange": {
+      "group": "Gültigkeitszeitraum",
       "startInput": "Startdatum des Gültigkeitszeitraums",
       "endInput": "Enddatum des Gültigkeitszeitraums"
     },
@@ -214,7 +215,7 @@
         "label": "Zeitraum",
         "startLabel": "Startdatum",
         "endLabel": "Enddatum",
-        "hint": "Wählen Sie Start- und Enddatum in der Zukunft."
+        "hint": "Startdatum ab heute wählen. Bei einem laufenden Zeitraum bleibt das Startdatum erhalten und das Enddatum kann verlängert werden."
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "Der Datenkonsument muss diesem Rahmenvertrag zugestimmt haben:"
@@ -274,7 +275,6 @@
     "constraintNotAllowedInCategory": "Dieser Constraint ist für die gewählte Kategorie nicht zulässig.",
     "dateRangeStartRequired": "Startdatum ist erforderlich",
     "dateRangeStartInvalid": "Startdatum ist ungültig",
-    "dateRangeStartInPast": "Startdatum muss in der Zukunft liegen",
     "dateRangeEndRequired": "Enddatum ist erforderlich",
     "dateRangeEndInvalid": "Enddatum ist ungültig",
     "dateRangeEndInPast": "Enddatum muss in der Zukunft liegen",

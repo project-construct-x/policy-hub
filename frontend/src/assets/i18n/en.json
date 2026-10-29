@@ -38,6 +38,7 @@
     "requiredField": "Required field",
     "formInvalid": "The form contains errors. Please review the highlighted fields.",
     "dateRange": {
+      "group": "Validity period",
       "startInput": "Start date of the validity period",
       "endInput": "End date of the validity period"
     },
@@ -214,7 +215,7 @@
         "label": "Time period",
         "startLabel": "Start date",
         "endLabel": "End date",
-        "hint": "Choose a start and end date in the future."
+        "hint": "Choose a start date from today onwards. For a period that is already running, the start date is kept and the end date can be extended."
       },
       "FRAMEWORK_AGREEMENT": {
         "hint": "The consumer must have agreed to this framework agreement:"
@@ -274,7 +275,6 @@
     "constraintNotAllowedInCategory": "This constraint is not allowed for the selected category.",
     "dateRangeStartRequired": "Start date is required",
     "dateRangeStartInvalid": "Start date is invalid",
-    "dateRangeStartInPast": "Start date must be in the future",
     "dateRangeEndRequired": "End date is required",
     "dateRangeEndInvalid": "End date is invalid",
     "dateRangeEndInPast": "End date must be in the future",
