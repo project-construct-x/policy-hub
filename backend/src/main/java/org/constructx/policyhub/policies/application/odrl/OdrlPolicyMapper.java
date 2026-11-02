@@ -1,7 +1,9 @@
 package org.constructx.policyhub.policies.application.odrl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlAndConstraintResponse;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlAtomicConstraintResponse;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlConstraintResponse;
@@ -68,7 +70,14 @@ public class OdrlPolicyMapper {
      *       maps to several atomic constraints (DATE_RANGE: start AND end) is
      *       wrapped in a nested {@code odrl:and}; flat inside {@code odrl:or} it
      *       would mean "start OR end".</li>
+     *   <li>Constraints that always apply (DATA_SUBSET, see
+     *       {@link OdrlConstraintMapper#alwaysApplies}) are not put into
+     *       {@code odrl:or} but appended via an outer {@code odrl:and}:
+     *       {@code { odrl:and: [ { odrl:or: [...] }, <data subset> ] }}. With at
+     *       most one other constraint left, AND is equivalent and everything is
+     *       flat in {@code odrl:and}, the data subset last.</li>
      * </ul>
+     * Must stay identical to {@code odrlConstraintGroup} in the frontend ODRL mapper.
      * Returns {@code null} without constraints, so {@code odrl:constraint} is omitted.
      */
     private OdrlConstraintResponse odrlConstraint(Policy policy) {
@@ -77,25 +86,49 @@ public class OdrlPolicyMapper {
         }
 
         if (LogicalOperator.orDefault(policy.logicalOperator()) == LogicalOperator.OR) {
-            final List<OdrlConstraintResponse> operands =
-                    policy.constraints().stream()
-                            .map(OdrlConstraintMapper::constraintToOdrl)
-                            .map(OdrlPolicyMapper::operand)
-                            .toList();
-            return new OdrlOrConstraintResponse(operands);
+            final List<JsonNode> conditions = policy.constraints().stream()
+                    .filter(constraint -> !OdrlConstraintMapper.alwaysApplies(constraint))
+                    .toList();
+            final List<JsonNode> restrictions = policy.constraints().stream()
+                    .filter(OdrlConstraintMapper::alwaysApplies)
+                    .toList();
+
+            if (restrictions.isEmpty()) {
+                return orConstraint(conditions);
+            }
+
+            final List<OdrlConstraintResponse> operands = new ArrayList<>();
+            if (conditions.size() > 1) {
+                operands.add(orConstraint(conditions));
+            } else {
+                operands.addAll(atomics(conditions));
+            }
+            operands.addAll(atomics(restrictions));
+            return new OdrlAndConstraintResponse(operands);
         }
 
-        final List<OdrlConstraintResponse> atomics =
-                policy.constraints().stream()
-                        .flatMap(
-                                constraint ->
-                                        OdrlConstraintMapper
-                                                .constraintToOdrl(constraint)
-                                                .stream()
-                        )
-                        .map(OdrlConstraintResponse.class::cast)
+        return new OdrlAndConstraintResponse(atomics(policy.constraints()));
+    }
+
+    private static OdrlOrConstraintResponse orConstraint(List<JsonNode> constraints) {
+        final List<OdrlConstraintResponse> operands =
+                constraints.stream()
+                        .map(OdrlConstraintMapper::constraintToOdrl)
+                        .map(OdrlPolicyMapper::operand)
                         .toList();
-        return new OdrlAndConstraintResponse(atomics);
+        return new OdrlOrConstraintResponse(operands);
+    }
+
+    private static List<OdrlConstraintResponse> atomics(List<JsonNode> constraints) {
+        return constraints.stream()
+                .flatMap(
+                        constraint ->
+                                OdrlConstraintMapper
+                                        .constraintToOdrl(constraint)
+                                        .stream()
+                )
+                .map(OdrlConstraintResponse.class::cast)
+                .toList();
     }
 
     private static OdrlConstraintResponse operand(List<OdrlAtomicConstraintResponse> atomics) {

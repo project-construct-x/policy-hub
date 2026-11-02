@@ -348,6 +348,162 @@ class PolicyValidatorTest {
         return constraint;
     }
 
+    @Test
+    void validate_dataSubset_isValid() {
+        JsonNode constraint = dataSubset(
+                "field:materialName",
+                "submodel:urn:samm:com.example.material:1.0.0#Material"
+        );
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "field:materialName",
+            "attribute:density",
+            "submodel:urn:samm:com.example.material:1.0.0#Material",
+            "record:batch-2027_01",
+            "field:path/to~item.v2"
+    })
+    void validate_dataSubsetWithValidSelector_isValid(String selector) {
+        JsonNode constraint = dataSubset(selector);
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{ \"type\": \"DATA_SUBSET\" }",
+            "{ \"type\": \"DATA_SUBSET\", \"selectors\": \"field:materialName\" }",
+            "{ \"type\": \"DATA_SUBSET\", \"selectors\": [] }"
+    })
+    void validate_dataSubsetWithoutEntries_throwsException(String json)
+            throws Exception {
+        JsonNode constraint = objectMapper.readTree(json);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].selectors must contain at least one entry",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_dataSubsetWithNonStringEntry_throwsException()
+            throws Exception {
+        JsonNode constraint = objectMapper.readTree("""
+                {
+                  "type": "DATA_SUBSET",
+                  "selectors": ["field:materialName", 42]
+                }
+                """);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].selectors[1] must be a string",
+                exception.getMessage()
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "materialName",
+            "field:",
+            ":materialName",
+            "column:materialName",
+            "Field:materialName",
+            "field:material name",
+            "field:a,field:b",
+            " field:materialName",
+            "field:materialName ",
+            "field:{{name}}",
+            ""
+    })
+    void validate_dataSubsetWithInvalidSelector_throwsException(String selector) {
+        JsonNode constraint = dataSubset("field:valid", selector);
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].selectors[1] must match "
+                        + "<field|attribute|submodel|record>:<identifier>",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_dataSubsetWithExactDuplicate_throwsException() {
+        JsonNode constraint = dataSubset(
+                "field:materialName",
+                "field:materialName"
+        );
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(
+                "constraints[0].selectors[1] is a duplicate",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void validate_dataSubsetWithDifferentCase_isValid() {
+        // Case-sensitive: materialName and MaterialName may be different fields
+        JsonNode constraint = dataSubset(
+                "field:materialName",
+                "field:MaterialName"
+        );
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @Test
+    void validate_dataSubsetTwice_throwsException() {
+        JsonNode first = dataSubset("field:materialName");
+        JsonNode second = dataSubset("record:batch-1");
+
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(first, second))
+        );
+
+        assertEquals(
+                "Constraint type may only occur once: DATA_SUBSET",
+                exception.getMessage()
+        );
+    }
+
+    private JsonNode dataSubset(String... selectors) {
+        ObjectNode constraint = objectMapper.createObjectNode();
+        constraint.put("type", "DATA_SUBSET");
+        ArrayNode selectorArray = constraint.putArray("selectors");
+        for (String selector : selectors) {
+            selectorArray.add(selector);
+        }
+        return constraint;
+    }
+
     private JsonNode dateRange(
             LocalDate startDate,
             LocalDate endDate
