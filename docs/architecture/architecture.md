@@ -88,8 +88,8 @@ Die Reihenfolge entspricht der Priorität.
 
 | Randbedingung | Erläuterung |
 |---|---|
-| **Ausgabeformat ODRL/JSON-LD** | Policies müssen als EDC-`PolicyDefinition` (ODRL-Profil des EDC/Tractus-X-Stacks) ausgegeben werden, damit Connectoren sie verarbeiten können. |
-| **Connector-Stack** | Der Construct-X-Datenraum basiert auf dem Tractus-X-EDC-Connector. Left-Operands und Aktionen orientieren sich an dessen Policy-Namespace (`https://w3id.org/catenax/2025/9/policy/`). |
+| **Ausgabeformat ODRL/JSON-LD** | Policies müssen als EDC-`PolicyDefinition` (ODRL-Profil des Construct-X EDC) ausgegeben werden, damit die Connectoren sie importieren und auswerten können. |
+| **Connector-Stack** | Die Teilnehmer betreiben den **Construct-X EDC**, einen Fork des Tractus-X EDC (EDC 0.17, Tractus-X EDC 0.13) mit eigenen Extensions für Policy-Validierung, Policy-Auswertung und den Abruf aus dem Policy Hub. Construct-X verwendet einen eigenen Namespace. Ausgegebene Policies müssen die Validierungsregeln des Connectors erfüllen (siehe [8.3](#83-validierung)). |
 | **Frontend** | Angular 21 (standalone), Angular Material, Transloco (i18n), TypeScript strict. |
 | **Backend** | Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security, springdoc-openapi. |
 | **Datenbank** | PostgreSQL 16 mit `jsonb`, Schemamigrationen ausschließlich über Flyway (siehe [ADR-01](#adr-01-persistenz-postgresql-mit-jsonb)). |
@@ -117,18 +117,18 @@ Die Reihenfolge entspricht der Priorität.
 flowchart LR
     admin["👤 Tenant-Admin / Policy-Designer<br/>(Use-Case-Partner)"]
     hub["Construct-X<br/>Policy Hub"]
-    conn["Tractus-X Connector<br/>des Tenants"]
+    conn["Construct-X Connector<br/>des Tenants"]
     partner["Anderer<br/>Datenraum-Teilnehmer"]
 
     admin -- "Policies erstellen,<br/>prüfen, verwalten" --> hub
-    conn -- "ODRL-Policies abrufen<br/>(REST, JSON-LD) [Zielbild]" --> hub
+    conn -- "ODRL-Policies abrufen<br/>(REST, JSON-LD)" --> hub
     partner -. "Katalog / Vertragsverhandlung<br/>(Policy wird geprüft)" .-> conn
 ```
 
 | Kommunikationspartner | Eingabe an den Policy Hub | Ausgabe des Policy Hubs |
 |---|---|---|
 | **Tenant-Admin / Policy-Designer** | Policy-ID, Kategorie, Constraints, logische Verknüpfung | Policy-Übersicht, Detailansicht, Erläuterung der Constraints, ODRL-Vorschau |
-| **Tractus-X Connector** des Tenants **[Zielbild]** | Abruf einer Policy | ODRL-`PolicyDefinition` |
+| **Construct-X Connector** des Tenants | Abruf einer Policy | ODRL-`PolicyDefinition` |
 
 Jeder Tenant betreibt seinen eigenen Connector (Control Plane und Data Plane). Der Connector holt
 die Policies über die REST·ODRL-API beim Policy Hub ab; der Hub greift nicht auf die Connectoren zu
@@ -144,12 +144,12 @@ flowchart LR
         be["Backend<br/>(Spring Boot REST)"]
         db[("PostgreSQL")]
     end
-    conn["Tractus-X Connector<br/>des Tenants"]
+    conn["Construct-X Connector<br/>des Tenants"]
 
     browser -- "HTTPS" --> fe
     browser -- "HTTPS /api/v1<br/>JSON" --> be
     be -- "JDBC" --> db
-    conn -- "HTTPS GET /api/v1/policies/{id}/odrl<br/>ODRL JSON-LD [Zielbild]" --> be
+    conn -- "HTTPS GET /api/v1/policies/{id}/odrl<br/>HTTP Basic, ODRL JSON-LD" --> be
 ```
 
 | Schnittstelle | Protokoll / Format | Status |
@@ -158,7 +158,7 @@ flowchart LR
 | REST-API `/api/v1/policies` | HTTPS, JSON; OpenAPI unter `/v3/api-docs` | umgesetzt |
 | ODRL-Export `/api/v1/policies/{id}/odrl` | HTTPS, JSON-LD (EDC-`PolicyDefinition`) | umgesetzt |
 | Authentifizierung | HTTP Basic (Provisorium) → Tenant Auth | **[Zielbild]**, Verfahren nicht entschieden |
-| Connector → Policy Hub (Abruf) | HTTPS, ODRL JSON-LD; Authentifizierung noch offen | **[Zielbild]** |
+| Connector → Policy Hub (Abruf) | HTTPS, ODRL JSON-LD; HTTP Basic (Provisorium), Zugangsdaten im Vault des Connectors | Endpunkt umgesetzt; Connector-Extension `policy-hub-client` in Umsetzung |
 
 Der verbindliche Schnittstellenvertrag ist in [`docs/api-contract.md`](../api-contract.md)
 dokumentiert.
@@ -200,7 +200,7 @@ Abgleich des Zielbilds mit dem umgesetzten Stand:
 | Tenant Auth | **[Zielbild]** — aktuell HTTP Basic als Provisorium |
 | Template Catalog (Katalog der Constraint-Typen) | **umgesetzt** — Constraint-Palette und Metadaten-Registry im Frontend, `ConstraintType` im Backend; wird schrittweise um die Constraints des finalen Policy-Modells erweitert |
 | Versioning + Audit | **teilweise** — Versionierung der Anwendung über Image-Tags (siehe [7.2](#72-build--und-deployment-pipeline-gitops)); Audit **[Zielbild]** |
-| Kopplung an die Tractus-X Connectoren der Tenants | **[Zielbild]** — der Abruf-Endpunkt (`/odrl`) ist vorhanden, der Abruf durch den Connector nicht |
+| Kopplung an die Connectoren der Tenants | **in Umsetzung** — Abruf-Endpunkt (`/odrl`) vorhanden; Abruf über die Connector-Extension `policy-hub-client` des Construct-X EDC in Entwicklung |
 
 ### 5.2 Ebene 1 — Policy Hub (Whitebox)
 
@@ -455,38 +455,48 @@ Korrektur der Abbildungsregeln sofort auf alle Policies.
 
 ### 6.4 Bereitstellung an den Connector und Policy-Evaluation
 
-Dieser Ablauf zeigt den Weg einer Policy bis zu ihrer Auswertung. Der Connector holt die Policy
-beim Hub ab. **Die Verantwortung des Policy Hubs endet mit der Auslieferung der ODRL-Policy**
-(Schritte 1–2). Die Auswertung in den folgenden Schritten erfolgt ausschließlich im Connector und
-ist zur Einordnung dargestellt.
+Der Connector holt die Policy beim Hub ab. Das übernimmt die Extension `policy-hub-client` des
+Construct-X EDC (in Umsetzung). **Die Verantwortung des Policy Hubs endet mit der Auslieferung der
+ODRL-Policy** (Schritte 2–3). Alle weiteren Schritte erfolgen im Connector und sind zur Einordnung
+dargestellt.
 
 ```mermaid
 sequenceDiagram
+    actor OP as Betreiber des<br/>Provider-Connectors
+    participant PC as Provider-Connector<br/>(policy-hub-client)
     participant HUB as Policy Hub
-    participant PC as Provider-Connector<br/>(Tenant)
     participant CC as Consumer-Connector
 
+    OP->>PC: 1. POST /v1alpha/policyhub/policies/{id}/import
     rect rgb(253, 236, 226)
-    note over HUB,PC: Verantwortung Policy Hub [Zielbild]
-    PC->>HUB: 1. GET /api/v1/policies/{id}/odrl
-    HUB-->>PC: 2. ODRL PolicyDefinition (JSON-LD)
+    note over PC,HUB: Verantwortung Policy Hub
+    PC->>HUB: 2. GET /api/v1/policies/{id}/odrl (HTTP Basic)
+    HUB-->>PC: 3. ODRL PolicyDefinition (JSON-LD)
     end
-    PC->>PC: 3. PolicyDefinition und ContractDefinition anlegen
-    CC->>PC: 4. Katalog-Anfrage (DSP)
-    PC->>PC: 5. Access-Policy auswerten → Angebot sichtbar?
-    CC->>PC: 6. Vertragsverhandlung (DSP)
-    PC->>PC: 7. Contract-Policy auswerten (Constraints gegen Claims/Credentials)
-    PC-->>CC: 8. Contract Agreement oder Ablehnung
+    PC->>PC: 4. Validieren und als PolicyDefinition speichern (ID = Hub-UUID)
+    OP->>PC: 5. ContractDefinition mit accessPolicyId / contractPolicyId
+    loop periodisch (Standard: stündlich)
+        PC->>HUB: GET /api/v1/policies/{id}/odrl, bei geänderter Prüfsumme aktualisieren
+    end
+    CC->>PC: 6. Katalog-Anfrage (DSP)
+    PC->>PC: 7. Access-Policy auswerten → Angebot sichtbar?
+    CC->>PC: 8. Vertragsverhandlung (DSP)
+    PC->>PC: 9. Contract-Policy auswerten
+    PC-->>CC: 10. Contract Agreement oder Ablehnung
 ```
 
 Konsequenzen für den Policy Hub:
 
 - Die **Kategorie** bestimmt, wo der Connector die Policy einsetzt: `ACCESS` als Access-Policy
   (Katalog-Sichtbarkeit), `CONTRACT` als Contract-Policy (Nutzungsbedingungen).
-- Der Connector muss die ausgegebenen Left-Operands und — bei `OR`-Policies — `odrl:or` mit
-  verschachteltem `odrl:and` auswerten können (siehe [Risiken](#11-risiken-und-technische-schulden)).
-- Der Endpunkt für Schritt 1 ist umgesetzt; der Abruf auf Connector-Seite und dessen
-  Authentifizierung noch nicht.
+- Der Connector speichert die Policy unter der **UUID des Hubs** (`id`); die fachliche `policyId`
+  übernimmt er nur als Anzeigename. Die UUID einer Policy muss daher dauerhaft stabil bleiben.
+- **Änderungen** im Hub übernimmt der Connector beim nächsten Abgleich (Standard: stündlich). Sie
+  gelten für neue Katalog-Anfragen und Verhandlungen; bestehende Contract Agreements bleiben
+  unverändert.
+- **Löschen** im Hub wird nicht übertragen: Der Connector behält die zuletzt importierte Fassung.
+- Der Connector **validiert** die Policy beim Import nach eigenen Regeln; eine Policy, die er
+  ablehnt, kann nicht verwendet werden (siehe [8.3](#83-validierung)).
 
 ### 6.5 Fehlerfälle
 
@@ -558,7 +568,7 @@ zugeordnet. Release-Versionen sind noch nicht eingeführt.
 ### 7.4 Produktivbetrieb als Multi-Tenant-SaaS **[Zielbild]**
 
 Laut Zielbild wird eine zentrale Instanz des Policy Hubs als Multi-Tenant-SaaS betrieben. Die
-Tenants betreiben ihre Tractus-X Connectoren in ihrer eigenen Infrastruktur; die Connectoren holen
+Tenants betreiben ihre Construct-X Connectoren in ihrer eigenen Infrastruktur; die Connectoren holen
 ihre Policies per REST/ODRL beim Policy Hub ab. Gegenüber der Staging-Umgebung kommen Tenant Auth
 und die Mandantentrennung in PostgreSQL (Schema pro Tenant) hinzu. Betreiber und Hosting-Ort sind
 noch offen.
@@ -665,6 +675,18 @@ Der vollständige, verbindliche Abbildungsvertrag steht in [`docs/api-contract.m
 Die Backend-Validierung ist maßgeblich; die Frontend-Regeln spiegeln sie. Fehlermeldungen nennen
 den exakten Pfad (z.B. `constraints[0].dids[1]`).
 
+**Validierung im Connector:** Beim Import prüft der Construct-X EDC jede Policy erneut (Extension
+`con-x-policy`, in Umsetzung). Seine Regeln gehen teilweise über die des Hubs hinaus:
+
+| Regel im Connector | Bedeutung für den Policy Hub |
+|---|---|
+| Nur bekannte Left-Operands je Policy-Typ (Allowlist) | Ein neuer Constraint-Typ im Hub muss auch im Connector ergänzt werden, sonst wird die Policy abgelehnt. |
+| `edc:connector` (Teilnehmerauswahl) nur in `ACCESS`-Policies | Der Hub erlaubt `PARTICIPANT_DID` derzeit auch in `CONTRACT`. |
+| Eine `CONTRACT`-Policy mit Constraints braucht `FrameworkAgreement` oder `UsagePurpose` | Der Hub erlaubt derzeit z.B. eine `CONTRACT`-Policy nur mit Mitgliedschaft. |
+| Datums-Constraints werden nur beim Transfer und im Policy-Monitoring ausgewertet | In `ACCESS`-Policies wirkt ein Zeitraum nicht; ein `OR`-Zweig nur aus einem Zeitraum gewährt dort nie Zugriff. |
+| `odrl:and` und `odrl:or` (auch verschachtelt) erlaubt, `odrl:xone`/`odrl:andSequence` abgelehnt | Passt zur Ausgabe des Hubs. |
+| `FrameworkAgreement` mit oder ohne Versionsangabe | Passt zur Ausgabe des Hubs. |
+
 ### 8.4 Persistenz
 
 - Eine Tabelle `policies`; die fachlichen Constraints liegen als **`jsonb`** in der Spalte
@@ -758,7 +780,7 @@ Alle Prüfungen laufen in der CI (`test.yml`) bei jedem Pull Request gegen `main
 |---|---|---|
 | [ADR-01](#adr-01-persistenz-postgresql-mit-jsonb) | Persistenz: PostgreSQL mit `jsonb` | entschieden |
 | [ADR-02](#adr-02-multi-tenancy) | Multi-Tenancy: Schema pro Tenant | Zielbild |
-| [ADR-03](#adr-03-connector-kopplung) | Connector-Kopplung: Abruf durch den Connector | Zielbild |
+| [ADR-03](#adr-03-connector-kopplung) | Connector-Kopplung: Abruf durch den Connector | in Umsetzung |
 | [ADR-04](#adr-04-modularer-monolith) | Modularer Monolith mit Spring Boot | entschieden |
 | [ADR-05](#adr-05-domänenmodell-getrennt-von-odrl) | Domänenmodell getrennt von ODRL | entschieden |
 | [ADR-06](#adr-06-gemeinsamer-api-vertrag-und-mock-first-frontend) | Gemeinsamer API-Vertrag und Mock-first-Frontend | entschieden |
@@ -814,23 +836,28 @@ Tenant**.
 
 ### ADR-03: Connector-Kopplung
 
-**Status:** Zielbild, noch nicht umgesetzt
+**Status:** in Umsetzung
 
-**Kontext:** Eine im Hub erstellte Policy muss in den Tractus-X Connector des jeweiligen Tenants
+**Kontext:** Eine im Hub erstellte Policy muss in den Construct-X Connector des jeweiligen Tenants
 gelangen, damit der Connector sie bei Katalog-Anfragen und Vertragsverhandlungen auswerten kann.
 
-**Entscheidung (Zielbild):** Der Connector des Tenants **holt die Policies** über die REST·ODRL-API
-des Policy Hubs ab (Pull). Der Hub greift nicht auf die Connectoren zu.
+**Entscheidung:** Der Connector des Tenants **holt die Policies** über die REST·ODRL-API des Policy
+Hubs ab (Pull). Der Hub greift nicht auf die Connectoren zu.
+
+**Umsetzung im Connector:** Die Extension `policy-hub-client` des Construct-X EDC importiert eine
+Policy auf Anforderung über einen eigenen Management-API-Endpunkt und gleicht alle importierten
+Policies periodisch mit dem Hub ab (siehe [6.4](#64-bereitstellung-an-den-connector-und-policy-evaluation)).
 
 **Konsequenzen:**
 
 - Das Austauschformat ist die bereits umgesetzte ODRL-`PolicyDefinition`
   (`GET /api/v1/policies/{id}/odrl`).
 - Der Hub benötigt weder Endpunkte noch Zugangsdaten der Connectoren.
-- Auf Connector-Seite ruft eine eigene Komponente die Policies ab und legt sie als
-  `PolicyDefinition` an; sie befindet sich in Umsetzung.
-- Der Connector muss sich gegenüber dem Hub authentifizieren; das Verfahren ist noch offen
-  (siehe [ADR-08](#adr-08-authentifizierung)).
+- Der Hub ist die einzige Quelle für Policies; im Connector werden sie nicht von Hand angelegt.
+- Der Connector authentifiziert sich aktuell per HTTP Basic; die Zugangsdaten liegen im Vault des
+  Connectors. Das endgültige Verfahren ist offen (siehe [ADR-08](#adr-08-authentifizierung)). Mit
+  der Mandantentrennung müssen die Zugangsdaten eines Connectors einem Tenant zugeordnet sein,
+  damit er nur dessen Policies abrufen kann.
 - Die Policy-Auswertung bleibt vollständig im Connector; der Hub kennt keine Laufzeitentscheidungen.
 
 ### ADR-04: Modularer Monolith
@@ -949,8 +976,10 @@ flowchart LR
 | **Policy-Modell im Umbau** | Das finale Construct-X-Modell wird schrittweise eingeführt; bestehende Constraint-Typen können sich ändern oder entfallen. | Constraint-Wissen gebündelt halten; für jede Änderung einen Migrationspfad für gespeicherte Policies einplanen. |
 | **Authentifizierung offen** | HTTP Basic mit gemeinsamem Benutzer; kein Rollen- oder Tenant-Konzept. | Entscheidung [ADR-08](#adr-08-authentifizierung) herbeiführen; Provisorium entfernen. |
 | **Keine Mandantentrennung** | Alle Nutzer sehen alle Policies. | [ADR-02](#adr-02-multi-tenancy) entscheiden und umsetzen, bevor ein zweiter Tenant produktiv arbeitet. |
-| **Connector-Kompatibilität** | Der Connector muss die ausgegebenen Left-Operands und verschachtelte `odrl:or`/`odrl:and`-Constraints auswerten können. | End-to-End-Test gegen den im Datenraum eingesetzten Connector. |
-| **Abhängigkeit vom Tractus-X-Policy-Namespace** | Left-Operands stammen aus einem fremden Namespace, den Construct-X nicht steuert. | Mit dem finalen Policy-Modell eigenen Namespace/Profil prüfen; ADR-05 erlaubt den Wechsel ohne Datenmigration. |
+| **Abweichende Validierungsregeln Hub ↔ Connector** | Der Hub lässt Policies zu, die der Connector beim Import ablehnt (z.B. `PARTICIPANT_DID` in `CONTRACT`, `CONTRACT` ohne Rahmenvertrag); neue Constraint-Typen müssen in beiden Systemen ergänzt werden. | Hub-Validierung an die Regeln des Connectors angleichen (siehe [8.3](#83-validierung)); End-to-End-Test des Imports. |
+| **Zeitraum in `ACCESS`-Policies wirkungslos** | Der Connector wertet Datums-Constraints nicht bei Katalog-Anfrage und Verhandlung aus. Ein Nutzer, der die Sichtbarkeit zeitlich begrenzt, erhält eine weniger strenge Policy als erwartet. | Zeitraum in `ACCESS` im Hub nicht anbieten oder die Auswertung im Connector ergänzen. |
+| **Löschen wird nicht übertragen** | Eine im Hub gelöschte Policy bleibt im Connector bestehen und kann weiter verwendet werden. | Verhalten in der Oberfläche beim Löschen erklären; Rückkanal oder Abgleich im Connector prüfen. |
+| **Namespace** | Die Left-Operands stammen überwiegend aus dem Tractus-X-Namespace; Construct-X hat einen eigenen Namespace. | Umstellung in Hub und Connector abstimmen; ADR-05 erlaubt den Wechsel im Hub ohne Datenmigration. |
 | **Doppelte ODRL-Abbildung** | Abbildung in Backend und Frontend-Mock kann auseinanderlaufen. | Paritätstests; Frontend zeigt gegen das echte Backend immer dessen Ausgabe. |
 | **Erläuterung der Constraints ungeprüft** | Das Backend prüft nicht, ob Erläuterung und Constraints zusammenpassen; ein anderer API-Client könnte abweichende Texte speichern. | Bei weiteren API-Clients Erzeugung oder Prüfung serverseitig erwägen. |
 | **Kein Audit-Log** | Änderungen an Policies sind nicht nachvollziehbar. | Audit gemäß Zielbild. |
@@ -965,7 +994,7 @@ flowchart LR
 | Begriff | Definition |
 |---|---|
 | **Access-Policy** | Policy der Kategorie `ACCESS`; steuert im Connector, welche Teilnehmer ein Datenangebot im Katalog sehen. |
-| **Connector** | Software-Komponente eines Datenraum-Teilnehmers für den souveränen Datenaustausch (hier: Tractus-X EDC). Wertet Policies aus. |
+| **Connector** | Software-Komponente eines Datenraum-Teilnehmers für den souveränen Datenaustausch. Wertet Policies aus. Im Construct-X-Datenraum der Construct-X EDC, ein Fork des Tractus-X EDC. |
 | **Constraint** | Einzelne Bedingung einer Policy (z.B. Mitgliedschaft, Zeitraum). Im Hub fachlich modelliert, in ODRL als atomarer Constraint abgebildet. |
 | **Contract-Policy** | Policy der Kategorie `CONTRACT`; legt die Nutzungsbedingungen fest, die bei der Vertragsverhandlung geprüft werden. |
 | **did:web** | Methode für Decentralized Identifiers, die über eine Web-Domain aufgelöst werden; identifiziert Teilnehmer im Constraint `PARTICIPANT_DID`. |
