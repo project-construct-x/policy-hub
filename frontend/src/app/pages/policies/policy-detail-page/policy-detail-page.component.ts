@@ -87,7 +87,7 @@ export class PolicyDetailPageComponent implements OnInit {
     return buildLegalClauses(p, this.transloco);
   });
 
-  /** Der gespeicherte, rechtlich maßgebliche Text — nicht die abgeleitete Anzeigefassung. */
+  /** Der gespeicherte Text — nicht die abgeleitete Anzeigefassung. */
   readonly storedLegalText = computed(() => this.policy()?.legalText ?? null);
 
   /** Siehe {@link hasDivergingLegalText}: warnt, wenn gespeichert ≠ abgeleitet. */

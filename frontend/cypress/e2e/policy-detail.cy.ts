@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-// Kernablauf: Policy ansehen (Detailseite) inkl. Constraints, Rechtstext und ODRL-Ausgabe.
+// Kernablauf: Policy ansehen (Detailseite) inkl. Constraints, Erläuterung der Constraints und ODRL-Ausgabe.
 
 // geodaten-bis-2027: CONTRACT mit 2 Bedingungen (MEMBERSHIP + DATE_RANGE).
 const POLICY_ID = '00000000-0000-0000-0000-000000000004';
@@ -29,7 +29,7 @@ describe('Policy – Detailansicht', () => {
       .and('contain', 'Membership');
   });
 
-  it('zeigt einen generierten Rechtstext als Liste (ein Unterpunkt je Bedingung) an', () => {
+  it('zeigt eine generierte Erläuterung der Constraints als Liste (ein Unterpunkt je Bedingung) an', () => {
     cy.getByCy('legal-text').invoke('text').should('have.length.greaterThan', 0);
     // MEMBERSHIP + DATE_RANGE → zwei nummerierte Unterpunkte, kein Block-Text.
     cy.getByCy('legal-text').find('ol li').should('have.length', 2);

@@ -252,7 +252,7 @@ export class PolicyBuilderComponent {
       category,
       constraints,
       logicalOperator,
-      // Gespeichert wird der Text immer auf Deutsch (rechtlich maßgeblich),
+      // Gespeichert wird der Text immer auf Deutsch,
       // unabhängig von der aktiven UI-Sprache.
       legalText: buildLegalDescription(
         { category, constraints, logicalOperator },

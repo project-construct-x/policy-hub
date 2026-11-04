@@ -27,7 +27,7 @@ const POLICY_ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
  *
  * Der Zeichensatz schließt Komma, Leerraum und `{}` aus. Das ist Absicht: Kommas trennen die
  * DIDs im ODRL-RightOperand (`policyToOdrl()`), und ohne `{}` ist ein geprüfter Wert als
- * Transloco-Parameter im Rechtstext unbedenklich (`legal-description.helper.ts`).
+ * Transloco-Parameter in der Erläuterung unbedenklich (`legal-description.helper.ts`).
  */
 export const DID_WEB_PATTERN =
   /^did:web:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*(?:%3[Aa]\d{1,5})?(?::(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+)*$/;

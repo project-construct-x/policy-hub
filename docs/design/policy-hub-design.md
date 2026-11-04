@@ -84,7 +84,7 @@ Enthält:
   - Zweck der Richtlinie
   - Erlaubte Nutzung
   - Einschränkungen
-  - Rechtlicher Hinweis
+  - Erläuterung der Constraints
 
 Keine Status-Badges.
 Keine unnötigen technischen Verwaltungsangaben.
@@ -146,7 +146,7 @@ Kein Entwurf speichern.
 - Buttons
 - Form Fields
 - horizontaler Stepper
-- Legal Text Panel
+- Panel „Erläuterung der Constraints“
 - Empty State
 - Loading State
 - Error State

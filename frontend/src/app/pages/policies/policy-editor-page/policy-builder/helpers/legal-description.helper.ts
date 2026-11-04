@@ -50,7 +50,7 @@ export function buildLegalClauses(
 ): LegalClauses {
   // Constraints mit unbekanntem Typ übergehen: sie haben keinen Eintrag in der
   // Metadaten-Registry, und der Zugriff auf `labelKey`/`legalTextKey` würde werfen.
-  // Für den Rechtstext ist Weglassen richtiger als ein Abbruch der ganzen Darstellung.
+  // Für die Erläuterung ist Weglassen richtiger als ein Abbruch der ganzen Darstellung.
   const constraints = keepKnownConstraints(policy.constraints);
 
   if (!constraints.length) {
@@ -93,10 +93,10 @@ export function buildLegalDescription(
 }
 
 /**
- * Prüft, ob der **gespeicherte** Rechtstext einer Policy noch zu ihren gespeicherten
+ * Prüft, ob die **gespeicherte** Erläuterung einer Policy noch zu ihren gespeicherten
  * Constraints passt.
  *
- * Rechtlich maßgeblich ist der Text, der beim Speichern übermittelt und persistiert wurde
+ * Angezeigt werden soll der Text, der beim Speichern übermittelt und persistiert wurde
  * (`CreatePolicyRequest.legalText`) — angezeigt wird auf der Detailseite dagegen eine bei
  * jedem Aufruf neu aus den Constraints abgeleitete Fassung. Solange beides über diese UI
  * entsteht, ist es identisch; bei einem anderen Client, nachträglich geänderten Daten oder
@@ -130,7 +130,7 @@ function introKey(category: Policy['category'], anyOf: boolean): string {
  * (`DefaultTranspiler.transpile()` iteriert über den bereits ersetzten String, und
  * `interpolationMatcher` liefert bei jedem Zugriff ein frisches RegExp mit `lastIndex = 0`).
  * Ein Parameterwert, der selbst `{{…}}` enthält, wird dadurch ein zweites Mal aufgelöst:
- * `{{legalDescription.unrestricted}}` schiebt einen fremden Satz in den Rechtstext, und
+ * `{{legalDescription.unrestricted}}` schiebt einen fremden Satz in die Erläuterung, und
  * `{{agreement}}` ersetzt sich endlos selbst — die Schleife terminiert nie und der Tab friert ein.
  *
  * Constraint-Werte stammen nicht nur aus der UI (dort sind sie durch Dropdown bzw. Konstante
@@ -178,7 +178,7 @@ function formatDate(iso: string): string {
   if (!iso) return UNKNOWN_VALUE;
   // Reine Datumsangaben (YYYY-MM-DD, das Format der DATE_RANGE-Eingabe) direkt formatieren,
   // ohne sie durch `new Date()` in UTC-Mitternacht zu wandeln. Sonst kippt der lokale Tag
-  // in Zeitzonen westlich von UTC um einen Tag — beim rechtlich maßgeblichen Text unzulässig.
+  // in Zeitzonen westlich von UTC um einen Tag — beim gespeicherten Text unzulässig.
   const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
   if (dateOnly) {
     const [, year, month, day] = dateOnly;
@@ -186,7 +186,7 @@ function formatDate(iso: string): string {
   }
   const d = new Date(iso);
   // Kein Rohwert-Fallback: ein unparsebarer Wert würde sonst ungeprüft als
-  // Transloco-Parameter in den Rechtstext gelangen (siehe Hinweis an `buildClause`).
+  // Transloco-Parameter in die Erläuterung gelangen (siehe Hinweis an `buildClause`).
   if (isNaN(d.getTime())) return UNKNOWN_VALUE;
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');

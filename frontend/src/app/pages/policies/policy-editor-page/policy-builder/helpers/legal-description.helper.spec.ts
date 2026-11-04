@@ -175,7 +175,7 @@ describe('buildLegalDescription', () => {
     });
   });
 
-  describe('formatDate — Randfälle des rechtlich maßgeblichen Datums', () => {
+  describe('formatDate — Randfälle des gespeicherten Datums', () => {
     it('formatiert YYYY-MM-DD zeitzonenunabhängig zu dd.mm.yyyy', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: '2027-01-05', endDate: '2027-02-10' }]),
@@ -203,7 +203,7 @@ describe('buildLegalDescription', () => {
   });
 
   describe('erzwungene Sprache', () => {
-    it('reicht den lang-Parameter an Transloco durch (für den rechtlich maßgeblichen de-Text)', () => {
+    it('reicht den lang-Parameter an Transloco durch (für den gespeicherten de-Text)', () => {
       const t = makeTransloco();
       buildLegalDescription(draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]), t, 'de');
       expect(t.translate).toHaveBeenCalledWith('legalDescription.introAccess', undefined, 'de');

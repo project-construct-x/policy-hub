@@ -244,7 +244,7 @@ export function createMockedPolicy(data: {
     logicalOperator: data.logicalOperator ?? 'AND',
     createdAt: now,
     updatedAt: now,
-    // Der Rechtstext wird vom Client erzeugt und laut Backend-Vertrag unverändert
+    // Die Erläuterung der Constraints wird vom Client erzeugt und laut Backend-Vertrag unverändert
     // persistiert und wieder ausgeliefert — der Mock bildet genau das ab.
     legalText: data.legalText,
   };
