@@ -36,5 +36,7 @@ export const DATA_SUBSET_KIND_OPTIONS: readonly DataSubsetKindOption[] = [
 ];
 
 export function dataSubsetKindOption(kind: DataSubsetSelectorKind): DataSubsetKindOption {
-  return DATA_SUBSET_KIND_OPTIONS.find((option) => option.kind === kind) ?? DATA_SUBSET_KIND_OPTIONS[0];
+  return (
+    DATA_SUBSET_KIND_OPTIONS.find((option) => option.kind === kind) ?? DATA_SUBSET_KIND_OPTIONS[0]
+  );
 }

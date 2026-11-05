@@ -169,7 +169,9 @@ export class DataSubsetInputComponent {
 
     // Abgelehnte Namen (ohne Art-Präfix) bleiben zur Korrektur im Feld stehen.
     const prefix = toDataSubsetSelector(kind, '');
-    this.identifierControl.setValue(rejected.map((selector) => selector.slice(prefix.length)).join(', '));
+    this.identifierControl.setValue(
+      rejected.map((selector) => selector.slice(prefix.length)).join(', '),
+    );
     this.setPendingInput(this.identifierControl.value);
     this.inputErrorKey.set(errorKey);
 
