@@ -1,0 +1,48 @@
+.dsi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  &__kind {
+    flex: 0 0 11rem;
+  }
+
+  &__identifier {
+    flex: 1 1 16rem;
+    min-width: 0;
+
+    input {
+      font-family: 'Source Code Pro', monospace;
+    }
+  }
+
+  // Auf Höhe des Eingabefelds (outline-Formfeld: 56px), nicht des Hinweistexts darunter.
+  &__add {
+    min-height: 56px;
+  }
+
+  // Wie bei den DIDs: Namen sind technische Kennungen, daher monospace; die Art in Fließtext.
+  mat-chip {
+    max-width: 100%;
+    font-family: 'Source Code Pro', monospace;
+  }
+
+  &__chip-kind {
+    margin-right: 0.25rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+
+  &__empty {
+    margin: 0;
+    color: var(--con-x-text-secondary, #5b6b78);
+    font-size: 0.875rem;
+  }
+}

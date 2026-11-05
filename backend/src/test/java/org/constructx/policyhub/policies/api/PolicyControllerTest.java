@@ -577,6 +577,85 @@ class PolicyControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withDataSubset_returnsCreatedPolicy() throws Exception {
+        JsonNode dataSubset = objectMapper.readTree("""
+                {
+                  "type": "DATA_SUBSET",
+                  "selectors": [
+                    "field:materialName",
+                    "submodel:urn:samm:com.example.material:1.0.0#Material"
+                  ]
+                }
+                """);
+
+        CreatePolicyRequest request = new CreatePolicyRequest(
+                "con-x-ph-teildatensatz",
+                PolicyCategory.CONTRACT,
+                List.of(dataSubset),
+                LogicalOperator.AND,
+                "Die Nutzung ist auf den angegebenen Teildatensatz beschränkt."
+        );
+
+        PolicyResponse response = new PolicyResponse(
+                POLICY_ID,
+                request.policyId(),
+                request.category(),
+                request.constraints(),
+                LogicalOperator.AND,
+                request.legalText(),
+                CREATED_AT,
+                UPDATED_AT
+        );
+
+        when(policyService.createPolicy(eq(request)))
+                .thenReturn(response);
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.constraints[0].type")
+                        .value("DATA_SUBSET"))
+                .andExpect(jsonPath("$.constraints[0].selectors[0]")
+                        .value("field:materialName"))
+                .andExpect(jsonPath("$.constraints[0].selectors[1]")
+                        .value("submodel:urn:samm:com.example.material:1.0.0#Material"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "USER")
+    void createPolicy_withInvalidDataSubsetSelector_returnsBadRequest() throws Exception {
+        String requestBody = """
+                {
+                  "policyId": "con-x-ph-teildatensatz",
+                  "category": "CONTRACT",
+                  "constraints": [
+                    { "type": "DATA_SUBSET", "selectors": ["column:material name"] }
+                  ],
+                  "legalText": "Die Nutzung ist auf den angegebenen Teildatensatz beschränkt."
+                }
+                """;
+
+        when(policyService.createPolicy(any(CreatePolicyRequest.class)))
+                .thenThrow(new InvalidPolicyException(
+                        "constraints[0].selectors[0] must match "
+                                + "<field|attribute|submodel|record>:<identifier>"
+                ));
+
+        mockMvc.perform(post("/api/v1/policies")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value(
+                        "constraints[0].selectors[0] must match "
+                                + "<field|attribute|submodel|record>:<identifier>"));
+    }
+
+    @Test
     void getAllPolicies_withoutAuth_returnsUnauthorized() throws Exception {
         mockMvc.perform(get("/api/v1/policies"))
                 .andExpect(status().isUnauthorized());

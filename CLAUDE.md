@@ -48,6 +48,9 @@ ausgeführten Checks dann beheben. Die CI (`.github/workflows/test.yml`) prüft 
 ### Qualität (was ESLint nicht abdeckt)
 - Fehlerpfade vorhanden (HTTP-Fehler, Nutzer-Feedback)?
 - **Neue Dependencies nur nach Rücksprache** mit Begründung.
+- **Keine einbuchstabigen Namen.** Konstanten, Variablen, Parameter, Lambda-Parameter und
+  Schleifenvariablen bekommen immer aussagekräftige Begriffe (`constraint` statt `c`, `index`
+  statt `i`, `policy` statt `p`) — in Frontend und Backend, auch in Tests.
 
 ### CLAUDE.md pflegen
 Nur bei Architektur- oder Konventionsänderungen anpassen — nicht bei jeder neuen Datei oder

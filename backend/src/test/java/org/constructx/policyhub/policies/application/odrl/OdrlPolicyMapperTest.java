@@ -615,4 +615,122 @@ public class OdrlPolicyMapperTest {
 
         assertFalse(permission.has("odrl:constraint"));
     }
+
+    @Test
+    void policyToOdrl_keepsDataSubsetFlatForAnd() throws Exception {
+        Policy policy = createPolicy(
+                List.of(dataSubset(), membership(), frameworkAgreement()),
+                LogicalOperator.AND
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+        JsonNode and = constraint.path("odrl:and");
+
+        assertFalse(constraint.has("odrl:or"));
+        assertEquals(3, and.size());
+        assertDataSubsetConstraint(and.get(0));
+        assertAtomicConstraint(and.get(1), "Membership", "odrl:eq", "active");
+        assertAtomicConstraint(
+                and.get(2),
+                "FrameworkAgreement",
+                "odrl:eq",
+                "DataExchangeGovernance"
+        );
+    }
+
+    @Test
+    void policyToOdrl_appendsDataSubsetViaOuterAndForOrWithTwoConditions() throws Exception {
+        Policy policy = createPolicy(
+                List.of(dataSubset(), membership(), dateRange()),
+                LogicalOperator.OR
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+        JsonNode and = constraint.path("odrl:and");
+
+        // The data subset must not be bypassable by satisfying another operand of odrl:or
+        assertFalse(constraint.has("odrl:or"));
+        assertEquals(2, and.size());
+
+        JsonNode or = and.get(0).path("odrl:or");
+        assertEquals(2, or.size());
+        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
+        assertEquals(2, or.get(1).path("odrl:and").size());
+
+        assertDataSubsetConstraint(and.get(1));
+    }
+
+    @Test
+    void policyToOdrl_keepsDataSubsetFlatAndLastForOrWithOneCondition() throws Exception {
+        Policy policy = createPolicy(
+                List.of(dataSubset(), membership()),
+                LogicalOperator.OR
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+        JsonNode and = constraint.path("odrl:and");
+
+        assertFalse(constraint.has("odrl:or"));
+        assertEquals(2, and.size());
+        assertAtomicConstraint(and.get(0), "Membership", "odrl:eq", "active");
+        assertDataSubsetConstraint(and.get(1));
+    }
+
+    @Test
+    void policyToOdrl_keepsDateRangeFlatBeforeDataSubsetForOrWithOneCondition() throws Exception {
+        Policy policy = createPolicy(
+                List.of(dataSubset(), dateRange()),
+                LogicalOperator.OR
+        );
+
+        JsonNode and = constraintGroup(policy).path("odrl:and");
+
+        assertEquals(3, and.size());
+        assertAtomicConstraint(and.get(0), "DataUsageStartDate", "odrl:gteq", "2027-01-01");
+        assertAtomicConstraint(and.get(1), "DataUsageEndDate", "odrl:lteq", "2027-06-30");
+        assertDataSubsetConstraint(and.get(2));
+    }
+
+    @Test
+    void policyToOdrl_mapsOnlyDataSubsetToFlatAndForOr() throws Exception {
+        Policy policy = createPolicy(
+                List.of(dataSubset()),
+                LogicalOperator.OR
+        );
+
+        JsonNode constraint = constraintGroup(policy);
+        JsonNode and = constraint.path("odrl:and");
+
+        assertFalse(constraint.has("odrl:or"));
+        assertEquals(1, and.size());
+        assertDataSubsetConstraint(and.get(0));
+    }
+
+    private JsonNode dataSubset() throws Exception {
+        return objectMapper.readTree("""
+            {
+              "type": "DATA_SUBSET",
+              "selectors": ["field:materialName", "submodel:urn:samm:com.example.material:1.0.0#Material"]
+            }
+            """);
+    }
+
+    private void assertDataSubsetConstraint(JsonNode actual) {
+        assertEquals(
+                "https://w3id.org/construct-x/policy/DataSubset",
+                actual.path("odrl:leftOperand").path("@id").asText()
+        );
+        assertEquals(
+                "odrl:isAnyOf",
+                actual.path("odrl:operator").path("@id").asText()
+        );
+        JsonNode selectors = actual.path("odrl:rightOperand");
+        assertTrue(selectors.isArray());
+        assertEquals(2, selectors.size());
+        assertEquals("field:materialName", selectors.get(0).asText());
+        assertEquals(
+                "submodel:urn:samm:com.example.material:1.0.0#Material",
+                selectors.get(1).asText()
+        );
+    }
 }

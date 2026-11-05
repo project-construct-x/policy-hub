@@ -28,6 +28,16 @@ public class PolicyValidator {
                     + "(?::(?:[A-Za-z0-9._~-]|%[0-9A-Fa-f]{2})+)*"
     );
 
+    /**
+     * Data subset selector {@code <kind>:<identifier>}. Must stay identical to
+     * {@code DATA_SUBSET_SELECTOR_PATTERN} in the frontend constraint
+     * validators. Colons are allowed in the identifier because submodel URNs
+     * contain them; whitespace and commas are not.
+     */
+    private static final Pattern DATA_SUBSET_SELECTOR = Pattern.compile(
+            "(field|attribute|submodel|record):[A-Za-z0-9._~:/#-]+"
+    );
+
     public void validate(List<JsonNode> constraints) {
         // New policy: no stored constraints, so a DATE_RANGE start date must not be in the past.
         validate(constraints, List.of());
@@ -193,6 +203,8 @@ public class PolicyValidator {
                     validateFrameworkAgreement(constraint, index);
             case PARTICIPANT_DID ->
                     validateParticipantDid(constraint, index);
+            case DATA_SUBSET ->
+                    validateDataSubset(constraint, index);
         }
     }
 
@@ -259,6 +271,48 @@ public class PolicyValidator {
             }
 
             if (!seen.add(did.asText().toLowerCase(Locale.ROOT))) {
+                throw new InvalidPolicyException(
+                        path + " is a duplicate"
+                );
+            }
+        }
+    }
+
+    private void validateDataSubset(
+            JsonNode constraint,
+            int index
+    ) {
+        JsonNode selectors = constraint.get("selectors");
+
+        if (selectors == null || !selectors.isArray() || selectors.isEmpty()) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].selectors must contain at least one entry"
+            );
+        }
+
+        Set<String> seen = new HashSet<>();
+
+        for (int selectorIndex = 0; selectorIndex < selectors.size(); selectorIndex++) {
+            JsonNode selector = selectors.get(selectorIndex);
+            String path = "constraints[" + index + "].selectors["
+                    + selectorIndex + "]";
+
+            if (!selector.isTextual()) {
+                throw new InvalidPolicyException(
+                        path + " must be a string"
+                );
+            }
+
+            if (!DATA_SUBSET_SELECTOR.matcher(selector.asText()).matches()) {
+                throw new InvalidPolicyException(
+                        path + " must match <field|attribute|submodel|record>:<identifier>"
+                );
+            }
+
+            // Case-sensitive on purpose: materialName and MaterialName may be
+            // two different fields.
+            if (!seen.add(selector.asText())) {
                 throw new InvalidPolicyException(
                         path + " is a duplicate"
                 );

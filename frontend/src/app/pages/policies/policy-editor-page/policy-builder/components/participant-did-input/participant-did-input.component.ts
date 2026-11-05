@@ -17,8 +17,9 @@ import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import {
-  partitionDidCandidates,
-  splitDidInput,
+  partitionCandidates,
+  splitListInput,
+  validateDidCandidate,
 } from '@features/policies/builder/validators/constraint-validators';
 
 /**
@@ -83,16 +84,16 @@ export class ParticipantDidInputComponent {
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
-    this.addCandidates(event.input, splitDidInput(event.value));
+    this.addCandidates(event.input, splitListInput(event.value));
   }
 
   onPaste(event: ClipboardEvent): void {
-    const parts = splitDidInput(event.clipboardData?.getData('text') ?? '');
+    const parts = splitListInput(event.clipboardData?.getData('text') ?? '');
     // Ein einzelner Wert wird normal eingefügt und erst mit Enter/Komma/Blur übernommen.
     if (parts.length < 2) return;
     event.preventDefault();
     const input = event.target as HTMLInputElement;
-    this.addCandidates(input, [...splitDidInput(input.value), ...parts]);
+    this.addCandidates(input, [...splitListInput(input.value), ...parts]);
   }
 
   onInput(event: Event): void {
@@ -113,7 +114,11 @@ export class ParticipantDidInputComponent {
       return;
     }
 
-    const { accepted, rejected, errorKey } = partitionDidCandidates(candidates, this.dids());
+    const { accepted, rejected, errorKey } = partitionCandidates(
+      candidates,
+      this.dids(),
+      validateDidCandidate,
+    );
 
     // Abgelehnte Einträge bleiben zur Korrektur im Feld stehen.
     input.value = rejected.join(', ');

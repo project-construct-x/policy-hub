@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -146,6 +147,34 @@ class OdrlConstraintMapperTest {
         );
 
         assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void mapDataSubset_mapsSelectorsToIsAnyOfWithJsonArray() throws Exception {
+        JsonNode constraint = createConstraint(
+                "DATA_SUBSET",
+                """
+                "selectors": ["field:materialName", "submodel:urn:samm:com.example.material:1.0.0#Material"]
+                """
+        );
+
+        JsonNode expected = createExpectedWithLeftOperand(
+                "https://w3id.org/construct-x/policy/DataSubset",
+                "odrl:isAnyOf",
+                "[\"field:materialName\", \"submodel:urn:samm:com.example.material:1.0.0#Material\"]"
+        );
+
+        assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void alwaysApplies_isTrueOnlyForDataSubset() throws Exception {
+        assertTrue(OdrlConstraintMapper.alwaysApplies(
+                createConstraint("DATA_SUBSET", "\"selectors\": [\"field:materialName\"]")
+        ));
+        assertFalse(OdrlConstraintMapper.alwaysApplies(
+                createConstraint("MEMBERSHIP", "\"value\": \"active\"")
+        ));
     }
 
     @Test

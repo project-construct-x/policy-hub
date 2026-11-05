@@ -69,4 +69,11 @@
     font-size: 0.8125rem;
     overflow-wrap: anywhere;
   }
+
+  // Art eines Teildatensatzes ("Feld:") in der Fließtextschrift, der Name bleibt monospace.
+  &__chip-kind {
+    margin-right: 0.25rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
 }

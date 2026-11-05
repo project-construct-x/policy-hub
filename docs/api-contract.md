@@ -70,7 +70,7 @@ The backend controls `id`, `createdAt`, and `updatedAt`.
 ## Constraint contract
 
 Each constraint is a JSON object with a supported `type`. A constraint type may occur at most once
-in a policy. The current backend accepts all four types in both categories (`ACCESS` and
+in a policy. The current backend accepts all five types in both categories (`ACCESS` and
 `CONTRACT`). Constraint order is retained and determines ODRL operand order.
 
 | Type | Required fields | Current validation |
@@ -79,6 +79,7 @@ in a policy. The current backend accepts all four types in both categories (`ACC
 | `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date, except that on update an unchanged `startDate` already stored in the policy stays valid (a running period remains editable); `startDate` must not be after `endDate`. |
 | `FRAMEWORK_AGREEMENT` | `agreement` | Must be a non-blank string. |
 | `PARTICIPANT_DID` | `dids` | Non-empty array of strings; each entry must be a valid `did:web` identifier (host, optional port as `%3A<port>`, optional `:`-separated path segments; no surrounding whitespace, no commas) and entries must be unique, compared case-insensitively. Entries are stored as sent. Errors name the entry, e.g. `constraints[0].dids[1]`. |
+| `DATA_SUBSET` | `selectors` | Non-empty array of strings; each entry must match `^(field\|attribute\|submodel\|record):[A-Za-z0-9._~:/#-]+$` (no whitespace, no commas; colons are allowed for submodel URNs) and entries must be unique, compared exactly (case-sensitive: `materialName` and `MaterialName` may be different fields). Errors name the entry, e.g. `constraints[0].selectors[1]`. |
 
 Unknown constraint types are rejected. Constraints are provisional domain concepts and may change
 when the Construct-X policy model is finalized; coordinate such changes across both applications.
@@ -123,9 +124,14 @@ Current constraint mappings:
 | `DATE_RANGE` end | `cx:DataUsageEndDate` | `odrl:lteq` | `endDate` |
 | `FRAMEWORK_AGREEMENT` | `cx:FrameworkAgreement` | `odrl:eq` | `agreement` |
 | `PARTICIPANT_DID` | `edc:connector` (EDC namespace, not `cx:`) | `odrl:eq` | `dids` joined with `,` |
+| `DATA_SUBSET` | `https://w3id.org/construct-x/policy/DataSubset` | `odrl:isAnyOf` | `selectors` as JSON array |
 
 `PARTICIPANT_DID` is emitted as a single comma-separated string (no spaces), not as an array, which
 is the format the connector expects. A comma must therefore never occur inside a DID.
+
+`DATA_SUBSET` is emitted with the selectors as a JSON array. The left operand is a provisional
+placeholder until the Construct-X vocabulary defines it. The Policy Hub only expresses the filter
+criteria; evaluating them is the job of the connector or the service delivering the data.
 
 The constraints are combined below `odrl:permission[0]."odrl:constraint"` according to
 `logicalOperator`:
@@ -135,6 +141,14 @@ The constraints are combined below `odrl:permission[0]."odrl:constraint"` accord
 - `OR`: one operand per constraint in an `odrl:or` array. A constraint that maps to several atomic
   constraints (`DATE_RANGE`) is wrapped in a nested `odrl:and`, so the period keeps meaning
   "start AND end" instead of "start OR end".
+- `DATA_SUBSET` is not a condition on the consumer but always applies. Inside `odrl:or` it could be
+  bypassed by satisfying another operand, so with `OR` it is never put into `odrl:or`:
+  - two or more other constraints: they go into `odrl:or`, and the data subset is appended via an
+    outer `odrl:and`: `{ "odrl:and": [ { "odrl:or": [ ... ] }, <data subset> ] }`;
+  - at most one other constraint: `AND` is equivalent, so everything is flat in `odrl:and` with the
+    data subset last (only a data subset yields an `odrl:and` with that single operand).
+
+  With `AND` nothing changes.
 - Without constraints, `odrl:constraint` is omitted entirely.
 - A stored constraint with a missing or unknown `type` (e.g. from seed data, manual database
   changes or a type removed from the provisional model) is never skipped: dropping an `AND` operand
