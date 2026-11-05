@@ -16,6 +16,10 @@ public class OdrlConstraintMapper {
     /** Participant identity in the EDC namespace, not the Catena-X one. */
     private static final String EDC_CONNECTOR = "edc:connector";
 
+    /** Provisional left operand for the data subset; placeholder until defined. */
+    private static final String CON_X_DATA_SUBSET =
+            "https://w3id.org/construct-x/policy/DataSubset";
+
     private OdrlConstraintMapper() {
     }
 
@@ -36,7 +40,20 @@ public class OdrlConstraintMapper {
 
             case PARTICIPANT_DID ->
                     List.of(mapParticipantDid(constraint));
+
+            case DATA_SUBSET ->
+                    List.of(mapDataSubset(constraint));
         };
+    }
+
+    /**
+     * Whether the constraint always applies, independent of the logical
+     * operator. Such constraints restrict the shared data instead of the
+     * consumer; inside {@code odrl:or} they could be bypassed by satisfying
+     * another operand.
+     */
+    public static boolean alwaysApplies(JsonNode constraint) {
+        return constraintType(constraint) == ConstraintType.DATA_SUBSET;
     }
 
     private static ConstraintType constraintType(JsonNode constraint) {
@@ -119,8 +136,20 @@ public class OdrlConstraintMapper {
         );
     }
 
+    /** Selectors stay a JSON array, unlike the comma-joined DIDs. */
+    private static OdrlAtomicConstraintResponse mapDataSubset(
+            JsonNode constraint
+    ) {
+        return new OdrlAtomicConstraintResponse(
+                new OdrlIdResponse(CON_X_DATA_SUBSET),
+                new OdrlIdResponse(OdrlOperator.IS_ANY_OF.value()),
+                constraint.get("selectors")
+        );
+    }
+
     private enum OdrlOperator {
         EQ("odrl:eq"),
+        IS_ANY_OF("odrl:isAnyOf"),
         GTEQ("odrl:gteq"),
         LTEQ("odrl:lteq");
 

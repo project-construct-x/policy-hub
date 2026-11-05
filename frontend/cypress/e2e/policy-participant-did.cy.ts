@@ -2,7 +2,8 @@
 
 // Constraint zur Teilnehmer-Auswahl (did:web): Chip-Eingabe im Builder und Darstellung im Detail.
 
-// geodaten-rahmenvertrag-mitglied ("many"): MEMBERSHIP + FRAMEWORK_AGREEMENT + 2 DIDs.
+// geodaten-rahmenvertrag-mitglied ("many"): MEMBERSHIP + FRAMEWORK_AGREEMENT + 2 DIDs
+// (+ DATA_SUBSET, siehe policy-data-subset.cy.ts).
 const POLICY_WITH_DIDS = '00000000-0000-0000-0000-000000000009';
 
 /**

@@ -30,5 +30,12 @@ public enum ConstraintType {
      * Restricts access or usage to the listed participants, identified by
      * their did:web identifiers.
      */
-    PARTICIPANT_DID
+    PARTICIPANT_DID,
+
+    /**
+     * Restricts the shared data to the listed parts of a dataset (fields,
+     * attributes, submodels or records). Unlike the other types it is not a
+     * condition on the consumer and therefore always applies, also with OR.
+     */
+    DATA_SUBSET
 }

@@ -8,6 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
 import {
   Constraint,
+  DataSubsetConstraint,
   DateRangeConstraint,
   FrameworkAgreementConstraint,
   MembershipConstraint,
@@ -19,6 +20,7 @@ import {
   validateConstraint,
 } from '@features/policies/builder/validators/constraint-validators';
 import { ParticipantDidInputComponent } from '@features/policies/builder/components/participant-did-input/participant-did-input.component';
+import { DataSubsetInputComponent } from '@features/policies/builder/components/data-subset-input/data-subset-input.component';
 
 @Component({
   selector: 'app-constraint-editor-card',
@@ -31,6 +33,7 @@ import { ParticipantDidInputComponent } from '@features/policies/builder/compone
     MatDatepickerModule,
     MatNativeDateModule,
     ParticipantDidInputComponent,
+    DataSubsetInputComponent,
   ],
   templateUrl: './constraint-editor-card.component.html',
   styleUrl: './constraint-editor-card.component.scss',
@@ -105,21 +108,28 @@ export class ConstraintEditorCardComponent {
     isErrorState: () => this.hasError('.endDate'),
   };
 
-  asMembership(c: Constraint): MembershipConstraint {
-    return c as MembershipConstraint;
+  asMembership(constraint: Constraint): MembershipConstraint {
+    return constraint as MembershipConstraint;
   }
-  asDateRange(c: Constraint): DateRangeConstraint {
-    return c as DateRangeConstraint;
+  asDateRange(constraint: Constraint): DateRangeConstraint {
+    return constraint as DateRangeConstraint;
   }
-  asFramework(c: Constraint): FrameworkAgreementConstraint {
-    return c as FrameworkAgreementConstraint;
+  asFramework(constraint: Constraint): FrameworkAgreementConstraint {
+    return constraint as FrameworkAgreementConstraint;
   }
-  asParticipantDid(c: Constraint): ParticipantDidConstraint {
-    return c as ParticipantDidConstraint;
+  asParticipantDid(constraint: Constraint): ParticipantDidConstraint {
+    return constraint as ParticipantDidConstraint;
+  }
+  asDataSubset(constraint: Constraint): DataSubsetConstraint {
+    return constraint as DataSubsetConstraint;
   }
 
   onDidsChange(dids: string[]): void {
     this.constraintChange.emit({ ...this.asParticipantDid(this.constraint()), dids });
+  }
+
+  onSelectorsChange(selectors: string[]): void {
+    this.constraintChange.emit({ ...this.asDataSubset(this.constraint()), selectors });
   }
 
   onStartDateChange(value: Date | null): void {

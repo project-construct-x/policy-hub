@@ -5,9 +5,11 @@ import { Constraint } from '@shared/types/constraint.model';
 import {
   ALL_CONSTRAINT_TYPES,
   buildDefaultConstraint,
+  connectorKeyAfter,
   getAllowedConstraintTypes,
   isKnownConstraintType,
   keepKnownConstraints,
+  orderConstraints,
 } from './constraint-metadata';
 
 describe('getAllowedConstraintTypes', () => {
@@ -17,6 +19,7 @@ describe('getAllowedConstraintTypes', () => {
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
       'PARTICIPANT_DID',
+      'DATA_SUBSET',
     ]);
   });
 
@@ -26,6 +29,7 @@ describe('getAllowedConstraintTypes', () => {
       'DATE_RANGE',
       'FRAMEWORK_AGREEMENT',
       'PARTICIPANT_DID',
+      'DATA_SUBSET',
     ]);
   });
 });
@@ -55,6 +59,51 @@ describe('buildDefaultConstraint', () => {
       type: 'PARTICIPANT_DID',
       dids: [],
     });
+  });
+
+  it('DATA_SUBSET → leere Liste (per Validator ungültig, bis Nutzer Selektoren ergänzt)', () => {
+    expect(buildDefaultConstraint('DATA_SUBSET')).toEqual({ type: 'DATA_SUBSET', selectors: [] });
+  });
+});
+
+describe('orderConstraints', () => {
+  it('stellt immer geltende Constraints (DATA_SUBSET) stabil ans Ende', () => {
+    const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
+    const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
+    const did: Constraint = { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] };
+
+    expect(orderConstraints([subset, membership, did])).toEqual([membership, did, subset]);
+  });
+
+  it('lässt die Reihenfolge ohne immer geltende Constraints unverändert', () => {
+    const list: Constraint[] = [
+      { type: 'PARTICIPANT_DID', dids: [] },
+      { type: 'MEMBERSHIP', value: 'active' },
+    ];
+    expect(orderConstraints(list)).toEqual(list);
+  });
+});
+
+describe('connectorKeyAfter', () => {
+  const list: Constraint[] = [
+    { type: 'MEMBERSHIP', value: 'active' },
+    { type: 'PARTICIPANT_DID', dids: [] },
+    { type: 'DATA_SUBSET', selectors: [] },
+  ];
+
+  it('AND → überall UND', () => {
+    expect(connectorKeyAfter(list, 0, 'AND')).toBe('policyBuilder.andConnector');
+    expect(connectorKeyAfter(list, 1, 'AND')).toBe('policyBuilder.andConnector');
+  });
+
+  it('OR → ODER zwischen Voraussetzungen, UND vor dem Teildatensatz', () => {
+    expect(connectorKeyAfter(list, 0, 'OR')).toBe('policyBuilder.orConnector');
+    expect(connectorKeyAfter(list, 1, 'OR')).toBe('policyBuilder.andConnector');
+  });
+
+  it('OR → UND auch nach einem Teildatensatz', () => {
+    const subsetFirst: Constraint[] = [list[2], list[0]];
+    expect(connectorKeyAfter(subsetFirst, 0, 'OR')).toBe('policyBuilder.andConnector');
   });
 });
 
