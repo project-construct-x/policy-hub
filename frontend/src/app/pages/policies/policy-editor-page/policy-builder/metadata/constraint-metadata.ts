@@ -118,8 +118,8 @@ export function orderConstraints<T extends Pick<Constraint, 'type'>>(
   constraints: readonly T[],
 ): T[] {
   return [
-    ...constraints.filter((c) => !alwaysApplies(c)),
-    ...constraints.filter((c) => alwaysApplies(c)),
+    ...constraints.filter((constraint) => !alwaysApplies(constraint)),
+    ...constraints.filter((constraint) => alwaysApplies(constraint)),
   ];
 }
 

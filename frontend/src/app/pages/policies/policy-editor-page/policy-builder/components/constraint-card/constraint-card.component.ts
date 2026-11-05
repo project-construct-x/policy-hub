@@ -30,13 +30,21 @@ export class ConstraintCardComponent {
 
   /** Listenwerte (DIDs bzw. Teildatensätze), die als Chips unter der Zusammenfassung erscheinen. */
   readonly list = computed<ChipList | null>(() => {
-    const c = this.constraint();
-    if (c.type === 'PARTICIPANT_DID' && Array.isArray(c.dids) && c.dids.length) {
-      const items = c.dids.map((did) => ({ kindKey: null, text: did }));
+    const constraint = this.constraint();
+    if (
+      constraint.type === 'PARTICIPANT_DID' &&
+      Array.isArray(constraint.dids) &&
+      constraint.dids.length
+    ) {
+      const items = constraint.dids.map((did) => ({ kindKey: null, text: did }));
       return { items, labelKey: 'a11y.participantDid.list', cy: 'cc-dids' };
     }
-    if (c.type === 'DATA_SUBSET' && Array.isArray(c.selectors) && c.selectors.length) {
-      const items = c.selectors.map((selector) => {
+    if (
+      constraint.type === 'DATA_SUBSET' &&
+      Array.isArray(constraint.selectors) &&
+      constraint.selectors.length
+    ) {
+      const items = constraint.selectors.map((selector) => {
         const parsed = parseDataSubsetSelector(selector);
         return parsed
           ? { kindKey: dataSubsetKindOption(parsed.kind).labelKey, text: parsed.identifier }
@@ -48,26 +56,26 @@ export class ConstraintCardComponent {
   });
 }
 
-function formatSummary(c: Constraint, transloco: TranslocoService): string {
-  switch (c.type) {
+function formatSummary(constraint: Constraint, transloco: TranslocoService): string {
+  switch (constraint.type) {
     case 'MEMBERSHIP':
       return transloco.translate('constraint.MEMBERSHIP.summary');
     case 'DATE_RANGE': {
-      if (!c.startDate && !c.endDate) return '—';
-      const start = formatDisplayDate(c.startDate);
-      const end = formatDisplayDate(c.endDate);
+      if (!constraint.startDate && !constraint.endDate) return '—';
+      const start = formatDisplayDate(constraint.startDate);
+      const end = formatDisplayDate(constraint.endDate);
       return `${start} – ${end}`;
     }
     case 'FRAMEWORK_AGREEMENT':
-      return c.agreement;
+      return constraint.agreement;
     case 'PARTICIPANT_DID':
       // Nur die Anzahl als Parameter; die DIDs selbst rendert das Template per Interpolation.
       return transloco.translate('constraint.PARTICIPANT_DID.summary', {
-        count: Array.isArray(c.dids) ? c.dids.length : 0,
+        count: Array.isArray(constraint.dids) ? constraint.dids.length : 0,
       });
     case 'DATA_SUBSET':
       return transloco.translate('constraint.DATA_SUBSET.summary', {
-        count: Array.isArray(c.selectors) ? c.selectors.length : 0,
+        count: Array.isArray(constraint.selectors) ? constraint.selectors.length : 0,
       });
   }
 }

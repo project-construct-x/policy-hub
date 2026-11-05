@@ -184,8 +184,10 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
     });
 
     it('meldet dataSubsetSelectorRequired, wenn selectors aus der API kein Array ist', () => {
-      const c = { type: 'DATA_SUBSET', selectors: 'field:a' } as unknown as Constraint;
-      expect(validateConstraint(c)[0].messageKey).toBe('validation.dataSubsetSelectorRequired');
+      const constraint = { type: 'DATA_SUBSET', selectors: 'field:a' } as unknown as Constraint;
+      expect(validateConstraint(constraint)[0].messageKey).toBe(
+        'validation.dataSubsetSelectorRequired',
+      );
     });
 
     it('meldet dataSubsetSelectorInvalid bei einem ungültigen Eintrag', () => {

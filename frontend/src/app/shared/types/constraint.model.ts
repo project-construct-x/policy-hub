@@ -54,6 +54,6 @@ export type Constraint =
 const ALWAYS_APPLYING_TYPES: readonly string[] = ['DATA_SUBSET'] satisfies ConstraintType[];
 
 /** Siehe {@link ALWAYS_APPLYING_TYPES}; unbekannte Typen gelten als Voraussetzung. */
-export function alwaysApplies(c: Pick<Constraint, 'type'>): boolean {
-  return ALWAYS_APPLYING_TYPES.includes(c.type);
+export function alwaysApplies(constraint: Pick<Constraint, 'type'>): boolean {
+  return ALWAYS_APPLYING_TYPES.includes(constraint.type);
 }

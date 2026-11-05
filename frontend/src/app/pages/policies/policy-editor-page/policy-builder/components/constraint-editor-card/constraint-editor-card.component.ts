@@ -101,20 +101,20 @@ export class ConstraintEditorCardComponent {
     isErrorState: () => this.hasError('.endDate'),
   };
 
-  asMembership(c: Constraint): MembershipConstraint {
-    return c as MembershipConstraint;
+  asMembership(constraint: Constraint): MembershipConstraint {
+    return constraint as MembershipConstraint;
   }
-  asDateRange(c: Constraint): DateRangeConstraint {
-    return c as DateRangeConstraint;
+  asDateRange(constraint: Constraint): DateRangeConstraint {
+    return constraint as DateRangeConstraint;
   }
-  asFramework(c: Constraint): FrameworkAgreementConstraint {
-    return c as FrameworkAgreementConstraint;
+  asFramework(constraint: Constraint): FrameworkAgreementConstraint {
+    return constraint as FrameworkAgreementConstraint;
   }
-  asParticipantDid(c: Constraint): ParticipantDidConstraint {
-    return c as ParticipantDidConstraint;
+  asParticipantDid(constraint: Constraint): ParticipantDidConstraint {
+    return constraint as ParticipantDidConstraint;
   }
-  asDataSubset(c: Constraint): DataSubsetConstraint {
-    return c as DataSubsetConstraint;
+  asDataSubset(constraint: Constraint): DataSubsetConstraint {
+    return constraint as DataSubsetConstraint;
   }
 
   onDidsChange(dids: string[]): void {

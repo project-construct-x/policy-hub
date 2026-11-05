@@ -100,8 +100,11 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
   });
 
   it('DATA_SUBSET → Platzhalter-Operand / odrl:isAnyOf / Selektoren als Array', () => {
-    const c: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a', 'submodel:urn:x#Y'] };
-    expect(constraintToOdrl(c)).toEqual([
+    const constraint: Constraint = {
+      type: 'DATA_SUBSET',
+      selectors: ['field:a', 'submodel:urn:x#Y'],
+    };
+    expect(constraintToOdrl(constraint)).toEqual([
       {
         'odrl:leftOperand': { '@id': 'https://w3id.org/construct-x/policy/DataSubset' },
         'odrl:operator': { '@id': 'odrl:isAnyOf' },

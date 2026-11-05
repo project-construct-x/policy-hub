@@ -80,13 +80,13 @@ export function buildLegalClauses(
     };
   }
 
-  const toClause = (c: Constraint): LegalClause => ({
-    title: transloco.translate(CONSTRAINT_METADATA[c.type].labelKey, undefined, lang),
-    text: buildClause(c, transloco, lang),
+  const toClause = (constraint: Constraint): LegalClause => ({
+    title: transloco.translate(CONSTRAINT_METADATA[constraint.type].labelKey, undefined, lang),
+    text: buildClause(constraint, transloco, lang),
   });
 
-  const conditions = constraints.filter((c) => !alwaysApplies(c));
-  const restrictions = constraints.filter((c) => alwaysApplies(c));
+  const conditions = constraints.filter((constraint) => !alwaysApplies(constraint));
+  const restrictions = constraints.filter((constraint) => alwaysApplies(constraint));
 
   if (!conditions.length) {
     return {
@@ -129,7 +129,9 @@ export function buildLegalDescription(
     return intro;
   }
   const list = (items: LegalClause[], offset: number) =>
-    items.map((clause, i) => `${offset + i + 1}. ${clause.title}\n${clause.text}`).join('\n\n');
+    items
+      .map((clause, position) => `${offset + position + 1}. ${clause.title}\n${clause.text}`)
+      .join('\n\n');
   const text = `${intro}\n\n${list(clauses, 0)}`;
   return additional
     ? `${text}\n\n${additional.intro}\n\n${list(additional.clauses, clauses.length)}`
@@ -182,21 +184,26 @@ function introKey(category: Policy['category'], anyOf: boolean): string {
  * `Constraint`-Typ ist nur ein Compile-Zeit-Versprechen. Deshalb: nur Werte weiterreichen,
  * die nachweislich aus der Metadaten-Registry stammen.
  */
-function buildClause(c: Constraint, transloco: TranslocoService, lang?: string): string {
-  const meta = CONSTRAINT_METADATA[c.type];
+function buildClause(constraint: Constraint, transloco: TranslocoService, lang?: string): string {
+  const meta = CONSTRAINT_METADATA[constraint.type];
   const base = transloco.translate(meta.legalTextKey, undefined, lang);
 
-  switch (c.type) {
+  switch (constraint.type) {
     case 'DATE_RANGE':
       return transloco.translate(
         'legalDescription.clause.dateRange',
-        { start: formatDate(c.startDate), end: formatDate(c.endDate) },
+        { start: formatDate(constraint.startDate), end: formatDate(constraint.endDate) },
         lang,
       );
     case 'FRAMEWORK_AGREEMENT':
       return transloco.translate(
         'legalDescription.clause.frameworkAgreement',
-        { agreement: c.agreement === FRAMEWORK_AGREEMENT_VALUE ? c.agreement : UNKNOWN_VALUE },
+        {
+          agreement:
+            constraint.agreement === FRAMEWORK_AGREEMENT_VALUE
+              ? constraint.agreement
+              : UNKNOWN_VALUE,
+        },
         lang,
       );
     case 'PARTICIPANT_DID':
@@ -204,7 +211,7 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
       // gilt das strikte Format aus `DID_WEB_PATTERN` (kein `{}`), sonst `UNKNOWN_VALUE`.
       return transloco.translate(
         'legalDescription.clause.participantDid',
-        { dids: formatDids(c.dids) },
+        { dids: formatDids(constraint.dids) },
         lang,
       );
     case 'DATA_SUBSET':
@@ -212,7 +219,7 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
       // (kein `{}`), die Art wird über die Registry übersetzt.
       return transloco.translate(
         'legalDescription.clause.dataSubset',
-        { selectors: formatSelectors(c.selectors, transloco, lang) },
+        { selectors: formatSelectors(constraint.selectors, transloco, lang) },
         lang,
       );
     case 'MEMBERSHIP':
@@ -221,7 +228,7 @@ function buildClause(c: Constraint, transloco: TranslocoService, lang?: string):
   }
 }
 
-/** z.B. `Feld „materialName“, Submodell „urn:…#Part“`; bei einem ungültigen Eintrag `UNKNOWN_VALUE`. */
+/** z.B. `Feld „materialName“`; bei einem ungültigen Eintrag `UNKNOWN_VALUE`. */
 function formatSelectors(selectors: unknown, transloco: TranslocoService, lang?: string): string {
   if (!Array.isArray(selectors) || !selectors.length) return UNKNOWN_VALUE;
   const items: string[] = [];

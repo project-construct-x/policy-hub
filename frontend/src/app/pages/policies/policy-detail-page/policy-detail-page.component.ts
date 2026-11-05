@@ -67,8 +67,8 @@ export class PolicyDetailPageComponent implements OnInit {
    * gelten als UND (siehe {@link logicalOperatorOf}).
    */
   connectorKeyAfter(index: number): string {
-    const p = this.policy();
-    return connectorKeyAfter(this.constraints(), index, p ? logicalOperatorOf(p) : 'AND');
+    const policy = this.policy();
+    return connectorKeyAfter(this.constraints(), index, policy ? logicalOperatorOf(policy) : 'AND');
   }
   readonly loading = signal(true);
 

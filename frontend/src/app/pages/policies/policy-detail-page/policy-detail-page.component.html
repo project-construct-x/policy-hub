@@ -57,11 +57,11 @@
             </div>
           } @else {
             <div class="pd__constraint-list">
-              @for (c of constraints(); track $index; let i = $index, last = $last) {
-                <app-constraint-card [constraint]="c" />
+              @for (constraint of constraints(); track $index; let index = $index, last = $last) {
+                <app-constraint-card [constraint]="constraint" />
                 @if (!last) {
                   <div class="pd__logic-connector">
-                    <span data-cy="logic-connector">{{ t(connectorKeyAfter(i)) }}</span>
+                    <span data-cy="logic-connector">{{ t(connectorKeyAfter(index)) }}</span>
                   </div>
                 }
               }

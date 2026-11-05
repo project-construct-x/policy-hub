@@ -445,7 +445,7 @@ describe('buildLegalClauses — immer geltender Teildatensatz', () => {
       makeTransloco(),
     );
     expect(result.intro).toBe('legalDescription.introAccess');
-    expect(result.clauses.map((c) => c.title)).toEqual(['constraint.DATA_SUBSET.label']);
+    expect(result.clauses.map((clause) => clause.title)).toEqual(['constraint.DATA_SUBSET.label']);
     expect(result.additional).toBeNull();
   });
 
@@ -455,12 +455,12 @@ describe('buildLegalClauses — immer geltender Teildatensatz', () => {
       makeTransloco(),
     );
     expect(result.intro).toBe('legalDescription.introContractAnyOf');
-    expect(result.clauses.map((c) => c.title)).toEqual([
+    expect(result.clauses.map((clause) => clause.title)).toEqual([
       'constraint.MEMBERSHIP.label',
       'constraint.FRAMEWORK_AGREEMENT.label',
     ]);
     expect(result.additional?.intro).toBe('legalDescription.introAlwaysApplies');
-    expect(result.additional?.clauses.map((c) => c.title)).toEqual([
+    expect(result.additional?.clauses.map((clause) => clause.title)).toEqual([
       'constraint.DATA_SUBSET.label',
     ]);
   });

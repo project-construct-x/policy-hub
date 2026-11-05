@@ -72,14 +72,14 @@ export function actionForCategory(category: PolicyCategory): string {
  * Die meisten Typen liefern genau eines; ein `DATE_RANGE` liefert zwei (Start via `gteq`,
  * Ende via `lteq`), die in `odrlConstraintGroup` gruppiert werden.
  */
-export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
-  switch (c.type) {
+export function constraintToOdrl(constraint: Constraint): OdrlAtomicConstraint[] {
+  switch (constraint.type) {
     case 'MEMBERSHIP':
       return [
         {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}Membership` },
           'odrl:operator': { '@id': 'odrl:eq' },
-          'odrl:rightOperand': c.value,
+          'odrl:rightOperand': constraint.value,
         },
       ];
     case 'DATE_RANGE':
@@ -87,12 +87,12 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
         {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageStartDate` },
           'odrl:operator': { '@id': 'odrl:gteq' },
-          'odrl:rightOperand': c.startDate,
+          'odrl:rightOperand': constraint.startDate,
         },
         {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageEndDate` },
           'odrl:operator': { '@id': 'odrl:lteq' },
-          'odrl:rightOperand': c.endDate,
+          'odrl:rightOperand': constraint.endDate,
         },
       ];
     case 'FRAMEWORK_AGREEMENT':
@@ -100,7 +100,7 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
         {
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}FrameworkAgreement` },
           'odrl:operator': { '@id': 'odrl:eq' },
-          'odrl:rightOperand': c.agreement,
+          'odrl:rightOperand': constraint.agreement,
         },
       ];
     case 'PARTICIPANT_DID':
@@ -110,7 +110,7 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
         {
           'odrl:leftOperand': { '@id': EDC_CONNECTOR },
           'odrl:operator': { '@id': 'odrl:eq' },
-          'odrl:rightOperand': c.dids.join(','),
+          'odrl:rightOperand': constraint.dids.join(','),
         },
       ];
     case 'DATA_SUBSET':
@@ -118,7 +118,7 @@ export function constraintToOdrl(c: Constraint): OdrlAtomicConstraint[] {
         {
           'odrl:leftOperand': { '@id': CON_X_DATA_SUBSET },
           'odrl:operator': { '@id': 'odrl:isAnyOf' },
-          'odrl:rightOperand': [...c.selectors],
+          'odrl:rightOperand': [...constraint.selectors],
         },
       ];
   }
@@ -144,8 +144,8 @@ export function odrlConstraintGroup(
   if (policy.constraints.length === 0) return undefined;
 
   if (logicalOperatorOf(policy) === 'OR') {
-    const conditions = policy.constraints.filter((c) => !alwaysApplies(c));
-    const restrictions = policy.constraints.filter((c) => alwaysApplies(c));
+    const conditions = policy.constraints.filter((constraint) => !alwaysApplies(constraint));
+    const restrictions = policy.constraints.filter((constraint) => alwaysApplies(constraint));
     if (!restrictions.length) return orGroup(conditions);
     return {
       'odrl:and': [
@@ -159,8 +159,8 @@ export function odrlConstraintGroup(
 }
 
 function orGroup(constraints: readonly Constraint[]): OdrlOrConstraint {
-  const nodes = constraints.map((c): OdrlConstraintNode => {
-    const atomics = constraintToOdrl(c);
+  const nodes = constraints.map((constraint): OdrlConstraintNode => {
+    const atomics = constraintToOdrl(constraint);
     return atomics.length === 1 ? atomics[0] : { 'odrl:and': atomics };
   });
   return { 'odrl:or': nodes };
