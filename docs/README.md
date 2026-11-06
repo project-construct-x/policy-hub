@@ -8,6 +8,7 @@ Repository conventions are in [CLAUDE.md](../CLAUDE.md).
 
 | Path | Purpose |
 |------|---------|
+| [architecture/architecture.md](./architecture/architecture.md) | Architecture documentation (arc42, German) |
 | [api-contract.md](./api-contract.md) | Shared REST API and policy-domain contract |
 | [accessibility.md](./accessibility.md) | WCAG 2.2 AA target and known residual risks |
 | [design/policy-hub-design.md](./design/policy-hub-design.md) | UI/UX brief (layout, header, tone, page structure) |

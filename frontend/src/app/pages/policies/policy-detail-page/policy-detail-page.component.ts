@@ -59,7 +59,7 @@ export class PolicyDetailPageComponent implements OnInit {
 
   readonly policy = signal<Policy | null>(null);
 
-  /** Immer geltende Constraints (Teildatensatz) am Ende, wie im Editor und im Rechtstext. */
+  /** Immer geltende Constraints (Teildatensatz) am Ende, wie im Editor und in der Erläuterung. */
   readonly constraints = computed(() => orderConstraints(this.policy()?.constraints ?? []));
 
   /**
@@ -95,7 +95,7 @@ export class PolicyDetailPageComponent implements OnInit {
     return buildLegalClauses(p, this.transloco);
   });
 
-  /** Der gespeicherte, rechtlich maßgebliche Text — nicht die abgeleitete Anzeigefassung. */
+  /** Der gespeicherte Text — nicht die abgeleitete Anzeigefassung. */
   readonly storedLegalText = computed(() => this.policy()?.legalText ?? null);
 
   /** Siehe {@link hasDivergingLegalText}: warnt, wenn gespeichert ≠ abgeleitet. */

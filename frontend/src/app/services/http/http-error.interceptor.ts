@@ -9,7 +9,7 @@ import { tap } from 'rxjs';
  * fehlschlagende Zugriffe hinterließen clientseitig keinerlei Spur.
  *
  * Geloggt werden ausschließlich Metadaten — nie der Response-Body und nie der Request-Body.
- * Beide können fachliche Inhalte enthalten (Policy-IDs, Rechtstexte) und haben in der
+ * Beide können fachliche Inhalte enthalten (Policy-IDs, Erläuterungen der Constraints) und haben in der
  * Browser-Konsole nichts zu suchen.
  *
  * Der Fehler wird unverändert weitergereicht; die Nutzer-Meldung bleibt in der Verantwortung

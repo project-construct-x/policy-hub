@@ -93,7 +93,7 @@ Environments: `environment.ts` (`useMocks:false`), `environment.mocks.ts` (`useM
   Der Mock-Data-Switcher bietet `empty`/`few`/`many`.
 - Pagination ist serverseitig (`getPolicyPage()`); das Backend kennt keine Such-/Filterparameter,
   daher wirken Suche/Filter nur auf die geladene Seite (Hinweis `policies.pagination.filteredInfo`).
-- **Deutsch ist rechtlich maßgeblich:** generierter `legalText` ist immer deutsch, unabhängig von der
+- **Erläuterung der Constraints:** generierter `legalText` ist immer deutsch, unabhängig von der
   UI-Sprache.
 
 ## Tests

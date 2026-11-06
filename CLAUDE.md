@@ -26,8 +26,8 @@ Construct-X-Dataspace (Bauwesen, Catena-X/EDC-Stack). Policies werden als **ODRL
 - **⚠️ Policy-Modell & Constraints sind PROVISORISCH.** Kategorien (`ACCESS`/`CONTRACT`) und
   Constraint-Typen sind nur für die Entwicklung und werden im finalen Construct-X sehr
   wahrscheinlich ersetzt. Code auf Änderbarkeit auslegen.
-- **Sprache:** Deutsch ist rechtlich maßgeblich (z.B. generierter `legalText`), unabhängig von der
-  UI-Sprache.
+- **Sprache:** Die generierte Erläuterung der Constraints (`legalText`) ist immer deutsch, unabhängig
+  von der UI-Sprache.
 
 ## 3. Git & Beitrag
 
