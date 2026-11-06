@@ -70,7 +70,7 @@ export function buildLegalClauses(
   // Constraints mit unbekanntem Typ übergehen: sie haben keinen Eintrag in der
   // Metadaten-Registry, und der Zugriff auf `labelKey`/`legalTextKey` würde werfen.
   // Für die Erläuterung ist Weglassen richtiger als ein Abbruch der ganzen Darstellung.
-  const constraints = keepKnownConstraints(policy.constraints);
+  const constraints = orderConstraints(keepKnownConstraints(policy.constraints));
 
   if (!constraints.length) {
     return {

@@ -2,7 +2,7 @@ import { DataSubsetSelectorKind } from '@features/policies/builder/validators/co
 
 export interface DataSubsetKindOption {
   kind: DataSubsetSelectorKind;
-  /** Anzeigename der Art (Auswahlliste, Chips, Rechtstext). */
+  /** Anzeigename der Art (Auswahlliste, Chips, Erläuterung). */
   labelKey: string;
   /** Erklärung mit Beispiel, erscheint unter dem Eingabefeld für den Namen. */
   hintKey: string;

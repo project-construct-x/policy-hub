@@ -111,7 +111,7 @@ export function buildDefaultConstraint(type: ConstraintType): Constraint {
 
 /**
  * Stellt Constraints, die immer gelten, ans Ende (stabil, sonst unveränderte Reihenfolge). So
- * stehen sie in Editor, Detailansicht, Rechtstext und ODRL einheitlich hinter den
+ * stehen sie in Editor, Detailansicht, Erläuterung und ODRL einheitlich hinter den
  * Voraussetzungen, die per UND/ODER verknüpft werden.
  */
 export function orderConstraints<T extends Pick<Constraint, 'type'>>(

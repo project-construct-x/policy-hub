@@ -49,7 +49,7 @@ export type DataSubsetSelectorKind = (typeof DATA_SUBSET_SELECTOR_KINDS)[number]
  *
  * Wie bei `DID_WEB_PATTERN` schließt der Zeichensatz Komma, Leerraum und `{}` aus: Kommas und
  * Leerraum trennen Einträge bei der Eingabe, und ohne `{}` ist ein geprüfter Wert als
- * Transloco-Parameter im Rechtstext unbedenklich (`legal-description.helper.ts`).
+ * Transloco-Parameter in der Erläuterung unbedenklich (`legal-description.helper.ts`).
  */
 const DATA_SUBSET_IDENTIFIER = '[A-Za-z0-9._~:/#-]+';
 
