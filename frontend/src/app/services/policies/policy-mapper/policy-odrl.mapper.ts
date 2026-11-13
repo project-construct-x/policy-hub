@@ -74,14 +74,6 @@ export function actionForCategory(category: PolicyCategory): string {
  */
 export function constraintToOdrl(constraint: Constraint): OdrlAtomicConstraint[] {
   switch (constraint.type) {
-    case 'MEMBERSHIP':
-      return [
-        {
-          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}Membership` },
-          'odrl:operator': { '@id': 'odrl:eq' },
-          'odrl:rightOperand': constraint.value,
-        },
-      ];
     case 'DATE_RANGE':
       return [
         {
@@ -93,14 +85,6 @@ export function constraintToOdrl(constraint: Constraint): OdrlAtomicConstraint[]
           'odrl:leftOperand': { '@id': `${CX_POLICY_NS}DataUsageEndDate` },
           'odrl:operator': { '@id': 'odrl:lteq' },
           'odrl:rightOperand': constraint.endDate,
-        },
-      ];
-    case 'FRAMEWORK_AGREEMENT':
-      return [
-        {
-          'odrl:leftOperand': { '@id': `${CX_POLICY_NS}FrameworkAgreement` },
-          'odrl:operator': { '@id': 'odrl:eq' },
-          'odrl:rightOperand': constraint.agreement,
         },
       ];
     case 'PARTICIPANT_DID':

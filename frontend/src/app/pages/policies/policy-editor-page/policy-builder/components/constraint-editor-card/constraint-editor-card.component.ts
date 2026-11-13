@@ -10,8 +10,6 @@ import {
   Constraint,
   DataSubsetConstraint,
   DateRangeConstraint,
-  FrameworkAgreementConstraint,
-  MembershipConstraint,
   ParticipantDidConstraint,
 } from '@shared/types/constraint.model';
 import { CONSTRAINT_METADATA } from '@features/policies/builder/metadata/constraint-metadata';
@@ -108,14 +106,8 @@ export class ConstraintEditorCardComponent {
     isErrorState: () => this.hasError('.endDate'),
   };
 
-  asMembership(constraint: Constraint): MembershipConstraint {
-    return constraint as MembershipConstraint;
-  }
   asDateRange(constraint: Constraint): DateRangeConstraint {
     return constraint as DateRangeConstraint;
-  }
-  asFramework(constraint: Constraint): FrameworkAgreementConstraint {
-    return constraint as FrameworkAgreementConstraint;
   }
   asParticipantDid(constraint: Constraint): ParticipantDidConstraint {
     return constraint as ParticipantDidConstraint;

@@ -15,9 +15,7 @@ import {
 describe('getAllowedConstraintTypes', () => {
   it('erlaubt alle Typen (inkl. DATE_RANGE) für ACCESS', () => {
     expect(getAllowedConstraintTypes('ACCESS')).toEqual([
-      'MEMBERSHIP',
       'DATE_RANGE',
-      'FRAMEWORK_AGREEMENT',
       'PARTICIPANT_DID',
       'DATA_SUBSET',
     ]);
@@ -25,9 +23,7 @@ describe('getAllowedConstraintTypes', () => {
 
   it('erlaubt alle Typen für CONTRACT', () => {
     expect(getAllowedConstraintTypes('CONTRACT')).toEqual([
-      'MEMBERSHIP',
       'DATE_RANGE',
-      'FRAMEWORK_AGREEMENT',
       'PARTICIPANT_DID',
       'DATA_SUBSET',
     ]);
@@ -35,22 +31,11 @@ describe('getAllowedConstraintTypes', () => {
 });
 
 describe('buildDefaultConstraint', () => {
-  it('MEMBERSHIP → value "active"', () => {
-    expect(buildDefaultConstraint('MEMBERSHIP')).toEqual({ type: 'MEMBERSHIP', value: 'active' });
-  });
-
   it('DATE_RANGE → leere Datumsangaben (per Validator ungültig, bis Nutzer welche wählt)', () => {
     expect(buildDefaultConstraint('DATE_RANGE')).toEqual({
       type: 'DATE_RANGE',
       startDate: '',
       endDate: '',
-    });
-  });
-
-  it('FRAMEWORK_AGREEMENT → Default-Agreement DataExchangeGovernance', () => {
-    expect(buildDefaultConstraint('FRAMEWORK_AGREEMENT')).toEqual({
-      type: 'FRAMEWORK_AGREEMENT',
-      agreement: 'DataExchangeGovernance',
     });
   });
 
@@ -69,16 +54,16 @@ describe('buildDefaultConstraint', () => {
 describe('orderConstraints', () => {
   it('stellt immer geltende Constraints (DATA_SUBSET) stabil ans Ende', () => {
     const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
-    const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
+    const dateRange: Constraint = { type: 'DATE_RANGE', startDate: '', endDate: '' };
     const did: Constraint = { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] };
 
-    expect(orderConstraints([subset, membership, did])).toEqual([membership, did, subset]);
+    expect(orderConstraints([subset, dateRange, did])).toEqual([dateRange, did, subset]);
   });
 
   it('lässt die Reihenfolge ohne immer geltende Constraints unverändert', () => {
     const list: Constraint[] = [
       { type: 'PARTICIPANT_DID', dids: [] },
-      { type: 'MEMBERSHIP', value: 'active' },
+      { type: 'DATE_RANGE', startDate: '', endDate: '' },
     ];
     expect(orderConstraints(list)).toEqual(list);
   });
@@ -86,7 +71,7 @@ describe('orderConstraints', () => {
 
 describe('connectorKeyAfter', () => {
   const list: Constraint[] = [
-    { type: 'MEMBERSHIP', value: 'active' },
+    { type: 'DATE_RANGE', startDate: '', endDate: '' },
     { type: 'PARTICIPANT_DID', dids: [] },
     { type: 'DATA_SUBSET', selectors: [] },
   ];
@@ -132,13 +117,13 @@ describe('isKnownConstraintType / keepKnownConstraints', () => {
 
   it('filtert unbekannte Constraints heraus und erhält die bekannten', () => {
     const constraints = [
-      { type: 'MEMBERSHIP', value: 'active' },
+      { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
       { type: 'FOO' },
       { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: '2027-12-31' },
     ] as unknown as Constraint[];
 
     expect(keepKnownConstraints(constraints)).toEqual([
-      { type: 'MEMBERSHIP', value: 'active' },
+      { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
       { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: '2027-12-31' },
     ]);
   });

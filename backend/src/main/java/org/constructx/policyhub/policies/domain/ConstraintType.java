@@ -12,19 +12,9 @@ package org.constructx.policyhub.policies.domain;
 public enum ConstraintType {
 
     /**
-     * Restricts access or usage to active Construct-X members.
-     */
-    MEMBERSHIP,
-
-    /**
      * Restricts access or usage to a defined start and end date.
      */
     DATE_RANGE,
-
-    /**
-     * Requires acceptance of a defined framework agreement.
-     */
-    FRAMEWORK_AGREEMENT,
 
     /**
      * Restricts access or usage to the listed participants, identified by

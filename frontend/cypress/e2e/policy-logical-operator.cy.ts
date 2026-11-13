@@ -4,8 +4,8 @@
 // ODRL-Ausgabe (`odrl:and` / `odrl:or`) und korrektes Laden beim Bearbeiten.
 // Mirage-State lebt nur innerhalb einer Seiten-Session → Verifikation per In-App-Navigation.
 
-// bim-koordination-q2-2027: CONTRACT, MEMBERSHIP + FRAMEWORK_AGREEMENT + DATE_RANGE (2027),
-// ODER-verknüpft. Zeitraum in der Zukunft, damit das Speichern im Editor nicht blockiert ist.
+// bim-koordination-q2-2027: CONTRACT, PARTICIPANT_DID + DATE_RANGE (2027), ODER-verknüpft.
+// Zeitraum in der Zukunft, damit das Speichern im Editor nicht blockiert ist.
 const OR_POLICY_ID = '00000000-0000-0000-0000-000000000006';
 
 describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
@@ -13,10 +13,10 @@ describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
     cy.visitWithMode('/policies/new', 'few');
     cy.getByCy('category-access').click();
 
-    cy.getByCy('palette-MEMBERSHIP').click();
+    cy.getByCy('palette-PARTICIPANT_DID').click();
     cy.getByCy('logical-operator-AND').should('not.exist');
 
-    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
+    cy.getByCy('palette-DATE_RANGE').click();
     cy.getByCy('logical-operator-AND').should('have.attr', 'aria-checked', 'true');
     cy.getByCy('logical-operator-OR').should('have.attr', 'aria-checked', 'false');
     cy.getByCy('logic-connector').should('have.text', 'UND');
@@ -25,8 +25,8 @@ describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
   it('wechselt per Pfeiltaste zwischen UND und ODER (Radiogroup-Muster)', () => {
     cy.visitWithMode('/policies/new', 'few');
     cy.getByCy('category-access').click();
-    cy.getByCy('palette-MEMBERSHIP').click();
-    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
+    cy.getByCy('palette-PARTICIPANT_DID').click();
+    cy.getByCy('palette-DATE_RANGE').click();
 
     cy.getByCy('logical-operator-AND').focus().trigger('keydown', { key: 'ArrowRight' });
     cy.getByCy('logical-operator-OR')
@@ -42,8 +42,19 @@ describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
     cy.visitWithMode('/policies/new', 'few');
     cy.getByCy('policyId-input').type(newId);
     cy.getByCy('category-access').click();
-    cy.getByCy('palette-MEMBERSHIP').click();
-    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
+    cy.getByCy('palette-PARTICIPANT_DID').click();
+    cy.getByCy('participant-did-input').type('did:web:e2e.example{enter}');
+    cy.getByCy('palette-DATE_RANGE').click();
+    // Einen Monat weiterblättern, damit beide Tage sicher in der Zukunft liegen.
+    cy.getByCy('daterange-start-field').click();
+    cy.waitForDatepickerOpen();
+    cy.get('.mat-calendar-next-button').click();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(0).click();
+    cy.waitForDatepickerClosed();
+    cy.getByCy('daterange-end-field').click();
+    cy.waitForDatepickerOpen();
+    cy.get('.mat-calendar-body-cell:not(.mat-calendar-body-disabled)').eq(1).click();
+    cy.waitForDatepickerClosed();
     cy.getByCy('logical-operator-OR').click();
     cy.getByCy('logic-connector').should('have.text', 'ODER');
 
@@ -54,13 +65,14 @@ describe('Policy – Verknüpfung der Bedingungen (UND/ODER)', () => {
     cy.getByCy('legal-text').should('contain', 'mindestens eine der folgenden Voraussetzungen');
 
     cy.getByCy('odrl-panel-header').click();
-    cy.getByCy('odrl-json').should('contain', '"odrl:or"').and('not.contain', '"odrl:and"');
+    // Der Zeitraum steht als inneres odrl:and im odrl:or (siehe nächsten Test).
+    cy.getByCy('odrl-json').should('contain', '"odrl:or"').and('contain', 'edc:connector');
   });
 
   it('gibt bei ODER einen Zeitraum als verschachteltes odrl:and aus', () => {
     cy.visitWithMode(`/policies/${OR_POLICY_ID}`, 'few');
 
-    cy.getByCy('logic-connector').should('have.length', 2).and('contain.text', 'ODER');
+    cy.getByCy('logic-connector').should('have.length', 1).and('have.text', 'ODER');
     cy.getByCy('odrl-panel-header').click();
     cy.getByCy('odrl-json')
       .should('contain', '"odrl:or"')

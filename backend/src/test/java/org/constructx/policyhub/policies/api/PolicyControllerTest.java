@@ -93,7 +93,7 @@ class PolicyControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = "USER")
     void getAllPolicies_returnsOkWithPolicies() throws Exception {
-        JsonNode constraint = membershipConstraint();
+        JsonNode constraint = participantDidConstraint();
 
         PolicyResponse response = policyResponse(
             "con-x-ph-zugriff-konsortium-mitglieder",
@@ -122,9 +122,9 @@ class PolicyControllerTest {
                     .value("ACCESS"))
             .andExpect(jsonPath("$.content[0].constraints").isArray())
             .andExpect(jsonPath("$.content[0].constraints[0].type")
-                    .value("MEMBERSHIP"))
-            .andExpect(jsonPath("$.content[0].constraints[0].value")
-                    .value("active"))
+                    .value("PARTICIPANT_DID"))
+            .andExpect(jsonPath("$.content[0].constraints[0].dids[0]")
+                    .value("did:web:a.example"))
             .andExpect(jsonPath("$.content[0].legalText")
                     .value("Der Zugriff ist aktiven Mitgliedern gestattet."))
             .andExpect(jsonPath("$.content[0].createdAt")
@@ -177,7 +177,7 @@ class PolicyControllerTest {
                 policyResponse(
                         "con-x-ph-zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint())
+                        List.of(participantDidConstraint())
                 )
         );
 
@@ -188,9 +188,9 @@ class PolicyControllerTest {
                         .value("con-x-ph-zugriff-konsortium-mitglieder"))
                 .andExpect(jsonPath("$.category").value("ACCESS"))
                 .andExpect(jsonPath("$.constraints[0].type")
-                        .value("MEMBERSHIP"))
-                .andExpect(jsonPath("$.constraints[0].value")
-                        .value("active"))
+                        .value("PARTICIPANT_DID"))
+                .andExpect(jsonPath("$.constraints[0].dids[0]")
+                        .value("did:web:a.example"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Der Zugriff ist aktiven Mitgliedern gestattet."));
     }
@@ -215,7 +215,7 @@ class PolicyControllerTest {
         CreatePolicyRequest request = new CreatePolicyRequest(
                 "con-x-ph-zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Der Zugriff ist aktiven Mitgliedern gestattet."
         );
@@ -238,9 +238,9 @@ class PolicyControllerTest {
                         .value("con-x-ph-zugriff-konsortium-mitglieder"))
                 .andExpect(jsonPath("$.category").value("ACCESS"))
                 .andExpect(jsonPath("$.constraints[0].type")
-                        .value("MEMBERSHIP"))
-                .andExpect(jsonPath("$.constraints[0].value")
-                        .value("active"))
+                        .value("PARTICIPANT_DID"))
+                .andExpect(jsonPath("$.constraints[0].dids[0]")
+                        .value("did:web:a.example"))
                 .andExpect(jsonPath("$.logicalOperator").value("AND"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Der Zugriff ist aktiven Mitgliedern gestattet."));
@@ -295,7 +295,7 @@ class PolicyControllerTest {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
                 "con-x-ph-zugriff-konsortium-mitglieder-updated",
                 PolicyCategory.CONTRACT,
-                List.of(frameworkAgreementConstraint()),
+                List.of(dataSubsetConstraint()),
                 LogicalOperator.AND,
                 "Aktualisierter juristischer Text."
         );
@@ -324,9 +324,9 @@ class PolicyControllerTest {
                         .value("con-x-ph-zugriff-konsortium-mitglieder-updated"))
                 .andExpect(jsonPath("$.category").value("CONTRACT"))
                 .andExpect(jsonPath("$.constraints[0].type")
-                        .value("FRAMEWORK_AGREEMENT"))
-                .andExpect(jsonPath("$.constraints[0].agreement")
-                        .value("DataExchangeGovernance"))
+                        .value("DATA_SUBSET"))
+                .andExpect(jsonPath("$.constraints[0].selectors[0]")
+                        .value("field:materialName"))
                 .andExpect(jsonPath("$.legalText")
                         .value("Aktualisierter juristischer Text."));
     }
@@ -353,13 +353,7 @@ class PolicyControllerTest {
                 "nutzung-konsortium-2027",
                 PolicyCategory.CONTRACT,
                 List.of(
-                        membershipConstraint(),
-                        objectMapper.readTree("""
-                            {
-                              "type": "FRAMEWORK_AGREEMENT",
-                              "agreement": "DataExchangeGovernance"
-                            }
-                            """),
+                        participantDidConstraint(),
                         dateRangeConstraint()
                 ),
                 LogicalOperator.AND,
@@ -397,14 +391,9 @@ class PolicyControllerTest {
                     "odrl:constraint": {
                       "odrl:and": [
                         {
-                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
+                          "odrl:leftOperand": { "@id": "edc:connector" },
                           "odrl:operator": { "@id": "odrl:eq" },
-                          "odrl:rightOperand": "active"
-                        },
-                        {
-                          "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/FrameworkAgreement" },
-                          "odrl:operator": { "@id": "odrl:eq" },
-                          "odrl:rightOperand": "DataExchangeGovernance"
+                          "odrl:rightOperand": "did:web:a.example"
                         },
                         {
                           "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageStartDate" },
@@ -438,7 +427,7 @@ class PolicyControllerTest {
                 "con-x-ph-altbestand",
                 PolicyCategory.ACCESS,
                 List.of(
-                        membershipConstraint(),
+                        participantDidConstraint(),
                         objectMapper.readTree("""
                                 { "type": "GIBTS_NICHT", "value": "x" }
                                 """)
@@ -688,20 +677,20 @@ class PolicyControllerTest {
             """);
     }
 
-    private JsonNode membershipConstraint() throws Exception {
+    private JsonNode participantDidConstraint() throws Exception {
         return objectMapper.readTree("""
                 {
-                  "type": "MEMBERSHIP",
-                  "value": "active"
+                  "type": "PARTICIPANT_DID",
+                  "dids": ["did:web:a.example"]
                 }
                 """);
     }
 
-    private JsonNode frameworkAgreementConstraint() throws Exception {
+    private JsonNode dataSubsetConstraint() throws Exception {
         return objectMapper.readTree("""
                 {
-                  "type": "FRAMEWORK_AGREEMENT",
-                  "agreement": "DataExchangeGovernance"
+                  "type": "DATA_SUBSET",
+                  "selectors": ["field:materialName"]
                 }
                 """);
     }
@@ -711,11 +700,11 @@ class PolicyControllerTest {
     void createPolicy_withOrLogicalOperator_passesItThroughAndReturnsIt() throws Exception {
         String requestBody = """
                 {
-                  "policyId": "con-x-ph-mitglied-oder-rahmenvertrag",
+                  "policyId": "con-x-ph-teilnehmer-oder-zeitraum",
                   "category": "ACCESS",
                   "constraints": [
-                    { "type": "MEMBERSHIP", "value": "active" },
-                    { "type": "FRAMEWORK_AGREEMENT", "agreement": "DataExchangeGovernance" }
+                    { "type": "PARTICIPANT_DID", "dids": ["did:web:a.example"] },
+                    { "type": "DATE_RANGE", "startDate": "2026-08-01", "endDate": "2027-12-31" }
                   ],
                   "logicalOperator": "OR",
                   "legalText": "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist."
@@ -725,9 +714,9 @@ class PolicyControllerTest {
         when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
                 new PolicyResponse(
                         POLICY_ID,
-                        "con-x-ph-mitglied-oder-rahmenvertrag",
+                        "con-x-ph-teilnehmer-oder-zeitraum",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint(), frameworkAgreementConstraint()),
+                        List.of(participantDidConstraint(), dateRangeConstraint()),
                         LogicalOperator.OR,
                         "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist.",
                         CREATED_AT,
@@ -754,7 +743,7 @@ class PolicyControllerTest {
                 {
                   "policyId": "con-x-ph-zugriff-konsortium-mitglieder",
                   "category": "ACCESS",
-                  "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
+                  "constraints": [{ "type": "PARTICIPANT_DID", "dids": ["did:web:a.example"] }],
                   "legalText": "Der Zugriff ist aktiven Mitgliedern gestattet."
                 }
                 """;
@@ -763,7 +752,7 @@ class PolicyControllerTest {
                 policyResponse(
                         "con-x-ph-zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint())
+                        List.of(participantDidConstraint())
                 )
         );
 
@@ -787,7 +776,7 @@ class PolicyControllerTest {
                 {
                   "policyId": "con-x-ph-zugriff-konsortium-mitglieder",
                   "category": "ACCESS",
-                  "constraints": [{ "type": "MEMBERSHIP", "value": "active" }],
+                  "constraints": [{ "type": "PARTICIPANT_DID", "dids": ["did:web:a.example"] }],
                   "logicalOperator": "XOR",
                   "legalText": "Der Zugriff ist aktiven Mitgliedern gestattet."
                 }
@@ -823,7 +812,7 @@ class PolicyControllerTest {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
                 "con-x-ph-zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint(), frameworkAgreementConstraint()),
+                List.of(participantDidConstraint(), dateRangeConstraint()),
                 LogicalOperator.OR,
                 "Der Zugriff ist gestattet, sofern mindestens eine Voraussetzung erfüllt ist."
         );
@@ -945,7 +934,7 @@ class PolicyControllerTest {
         return objectMapper.writeValueAsString(new CreatePolicyRequest(
                 "con-x-ph-concurrent-duplicate",
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Rechtstext"
         ));
@@ -962,7 +951,7 @@ class PolicyControllerTest {
     @WithMockUser(username = "admin", roles = "USER")
     void createPolicy_withValidPolicyId_isAccepted(String policyId) throws Exception {
         when(policyService.createPolicy(any(CreatePolicyRequest.class))).thenReturn(
-                policyResponse(policyId, PolicyCategory.ACCESS, List.of(membershipConstraint()))
+                policyResponse(policyId, PolicyCategory.ACCESS, List.of(participantDidConstraint()))
         );
 
         mockMvc.perform(post("/api/v1/policies")
@@ -1001,7 +990,7 @@ class PolicyControllerTest {
     @WithMockUser(username = "admin", roles = "USER")
     void updatePolicy_withValidPolicyId_isAccepted(String policyId) throws Exception {
         when(policyService.updatePolicy(eq(POLICY_ID), any(UpdatePolicyRequest.class))).thenReturn(
-                policyResponse(policyId, PolicyCategory.ACCESS, List.of(membershipConstraint()))
+                policyResponse(policyId, PolicyCategory.ACCESS, List.of(participantDidConstraint()))
         );
 
         mockMvc.perform(put("/api/v1/policies/{id}", POLICY_ID)
@@ -1029,7 +1018,7 @@ class PolicyControllerTest {
         return objectMapper.writeValueAsString(new CreatePolicyRequest(
                 policyId,
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Rechtstext"
         ));
@@ -1039,7 +1028,7 @@ class PolicyControllerTest {
         return objectMapper.writeValueAsString(new UpdatePolicyRequest(
                 policyId,
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Rechtstext"
         ));
@@ -1051,7 +1040,7 @@ class PolicyControllerTest {
         UpdatePolicyRequest request = new UpdatePolicyRequest(
                 "zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Der Zugriff ist aktiven Mitgliedern gestattet."
         );

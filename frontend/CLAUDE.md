@@ -69,8 +69,8 @@ Environments: `environment.ts` (`useMocks:false`), `environment.mocks.ts` (`useM
 - **Ein HTTP-Response ist Eingabe.** `http.get<T>()` prüft zur Laufzeit nichts: unbekannte
   Constraint-Typen mit `keepKnownConstraints()` / `isKnownConstraintType()` aussortieren.
 - **Nie ungeprüfte Werte als Transloco-Parameter** (Transloco ersetzt rekursiv; `{{…}}` im Wert kann
-  die Schleife nicht terminieren lassen). Gegen die Registry prüfen (`USE_CASE_OPTIONS`,
-  `FRAMEWORK_AGREEMENT_VALUE`), sonst `'—'`. **i18n-Keys nie aus Daten zusammensetzen.**
+  die Schleife nicht terminieren lassen). Gegen Registry oder striktes Format prüfen
+  (`isValidDidWeb`, `parseDataSubsetSelector`), sonst `'—'`. **i18n-Keys nie aus Daten zusammensetzen.**
 - **`encodeURIComponent` für jeden Wert in einer URL**, auch Route-Parameter.
 - **`policyId` wird zum JSON-LD-`@id`** — Zeichensatz-Validierung in `constraint-validators.ts`
   beibehalten.

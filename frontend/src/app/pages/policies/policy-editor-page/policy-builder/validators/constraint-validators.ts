@@ -273,9 +273,6 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
       }
       break;
     }
-    case 'MEMBERSHIP':
-    case 'FRAMEWORK_AGREEMENT':
-      break;
   }
 
   return errors;

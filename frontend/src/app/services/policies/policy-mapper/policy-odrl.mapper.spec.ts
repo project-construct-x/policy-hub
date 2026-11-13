@@ -47,17 +47,6 @@ describe('actionForCategory', () => {
 });
 
 describe('constraintToOdrl — alle Bedingungstypen', () => {
-  it('MEMBERSHIP → Membership / odrl:eq / String-rightOperand', () => {
-    const c: Constraint = { type: 'MEMBERSHIP', value: 'active' };
-    expect(constraintToOdrl(c)).toEqual([
-      {
-        'odrl:leftOperand': { '@id': `${CX_NS}Membership` },
-        'odrl:operator': { '@id': 'odrl:eq' },
-        'odrl:rightOperand': 'active',
-      },
-    ]);
-  });
-
   it('DATE_RANGE → zwei Atomics: Start (gteq) und Ende (lteq)', () => {
     const c: Constraint = { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' };
     expect(constraintToOdrl(c)).toEqual([
@@ -70,17 +59,6 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
         'odrl:leftOperand': { '@id': `${CX_NS}DataUsageEndDate` },
         'odrl:operator': { '@id': 'odrl:lteq' },
         'odrl:rightOperand': '2027-12-31',
-      },
-    ]);
-  });
-
-  it('FRAMEWORK_AGREEMENT → FrameworkAgreement / odrl:eq / String-rightOperand', () => {
-    const c: Constraint = { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
-    expect(constraintToOdrl(c)).toEqual([
-      {
-        'odrl:leftOperand': { '@id': `${CX_NS}FrameworkAgreement` },
-        'odrl:operator': { '@id': 'odrl:eq' },
-        'odrl:rightOperand': 'DataExchangeGovernance',
       },
     ]);
   });
@@ -153,19 +131,19 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
   });
 
   it('verpackt eine einzelne Bedingung dennoch in ein odrl:and-Array', () => {
-    const policy = buildPolicy({ constraints: [{ type: 'MEMBERSHIP', value: 'active' }] });
+    const policy = buildPolicy({
+      constraints: [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }],
+    });
     expect(constraintGroup(policy)).toBeDefined();
     expect(andGroup(policy)).toHaveLength(1);
-    expect(andGroup(policy)[0]['odrl:leftOperand']).toEqual({
-      '@id': `${CX_NS}Membership`,
-    });
+    expect(andGroup(policy)[0]['odrl:leftOperand']).toEqual({ '@id': 'edc:connector' });
   });
 
   it('kombiniert mehrere Bedingungen (alle Typen) unter odrl:and und erhält die Reihenfolge', () => {
     const constraints: Constraint[] = [
-      { type: 'MEMBERSHIP', value: 'active' },
-      { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' },
+      { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
       { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
+      { type: 'DATA_SUBSET', selectors: ['field:a'] },
     ];
     const policy = buildPolicy({ category: 'CONTRACT', constraints });
     const atomics = andGroup(policy);
@@ -173,26 +151,22 @@ describe('policyToOdrl — Envelope & Kombinationen', () => {
     // DATE_RANGE wird zu zwei Atomics (Start + Ende) aufgefächert → 4 gesamt.
     expect(atomics).toHaveLength(4);
     expect(atomics.map((a) => a['odrl:leftOperand']['@id'])).toEqual([
-      `${CX_NS}Membership`,
-      `${CX_NS}FrameworkAgreement`,
+      'edc:connector',
       `${CX_NS}DataUsageStartDate`,
       `${CX_NS}DataUsageEndDate`,
+      'https://w3id.org/construct-x/policy/DataSubset',
     ]);
     expect(atomics.map((a) => a['odrl:operator']['@id'])).toEqual([
       'odrl:eq',
-      'odrl:eq',
       'odrl:gteq',
       'odrl:lteq',
+      'odrl:isAnyOf',
     ]);
   });
 });
 
 describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
-  const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
-  const agreement: Constraint = {
-    type: 'FRAMEWORK_AGREEMENT',
-    agreement: 'DataExchangeGovernance',
-  };
+  const participant: Constraint = { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] };
   const dateRange: Constraint = {
     type: 'DATE_RANGE',
     startDate: '2026-06-01',
@@ -200,37 +174,30 @@ describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
   };
 
   it('nutzt ohne logicalOperator (Altdaten) odrl:and', () => {
-    const policy = buildPolicy({ constraints: [membership, agreement] });
+    const policy = buildPolicy({ constraints: [participant, dateRange] });
     expect(constraintGroup(policy)).toHaveProperty('odrl:and');
     expect(constraintGroup(policy)).not.toHaveProperty('odrl:or');
   });
 
   it('nutzt bei AND odrl:and und lässt DATE_RANGE flach (unverändert zur bisherigen Ausgabe)', () => {
-    const policy = buildPolicy({ logicalOperator: 'AND', constraints: [membership, dateRange] });
+    const policy = buildPolicy({ logicalOperator: 'AND', constraints: [participant, dateRange] });
     expect(constraintGroup(policy)).toEqual({
-      'odrl:and': [...constraintToOdrl(membership), ...constraintToOdrl(dateRange)],
-    });
-  });
-
-  it('nutzt bei OR odrl:or mit je einem atomaren Constraint pro Bedingung', () => {
-    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [membership, agreement] });
-    expect(constraintGroup(policy)).toEqual({
-      'odrl:or': [...constraintToOdrl(membership), ...constraintToOdrl(agreement)],
+      'odrl:and': [...constraintToOdrl(participant), ...constraintToOdrl(dateRange)],
     });
   });
 
   it('verschachtelt DATE_RANGE bei OR als inneres odrl:and (Start UND Ende)', () => {
-    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [membership, dateRange] });
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [participant, dateRange] });
     const nodes = (constraintGroup(policy) as OdrlOrConstraint)['odrl:or'];
 
     expect(nodes).toHaveLength(2);
-    expect(nodes[0]).toEqual(constraintToOdrl(membership)[0]);
+    expect(nodes[0]).toEqual(constraintToOdrl(participant)[0]);
     expect(nodes[1]).toEqual({ 'odrl:and': constraintToOdrl(dateRange) });
   });
 
   it('verpackt bei OR auch eine einzelne Bedingung in odrl:or', () => {
-    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [agreement] });
-    expect(constraintGroup(policy)).toEqual({ 'odrl:or': constraintToOdrl(agreement) });
+    const policy = buildPolicy({ logicalOperator: 'OR', constraints: [participant] });
+    expect(constraintGroup(policy)).toEqual({ 'odrl:or': constraintToOdrl(participant) });
   });
 
   it('lässt odrl:constraint bei OR ohne Bedingungen komplett weg', () => {
@@ -242,22 +209,22 @@ describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
     const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
 
     it('AND → flach in odrl:and in gespeicherter Reihenfolge', () => {
-      const policy = buildPolicy({ logicalOperator: 'AND', constraints: [membership, subset] });
+      const policy = buildPolicy({ logicalOperator: 'AND', constraints: [participant, subset] });
       expect(constraintGroup(policy)).toEqual({
-        'odrl:and': [...constraintToOdrl(membership), ...constraintToOdrl(subset)],
+        'odrl:and': [...constraintToOdrl(participant), ...constraintToOdrl(subset)],
       });
     });
 
     it('OR → odrl:or der Voraussetzungen, per äußerem odrl:and mit dem Teildatensatz verknüpft', () => {
       const policy = buildPolicy({
         logicalOperator: 'OR',
-        constraints: [subset, membership, dateRange],
+        constraints: [subset, participant, dateRange],
       });
       expect(constraintGroup(policy)).toEqual({
         'odrl:and': [
           {
             'odrl:or': [
-              constraintToOdrl(membership)[0],
+              constraintToOdrl(participant)[0],
               { 'odrl:and': constraintToOdrl(dateRange) },
             ],
           },

@@ -195,47 +195,12 @@ public class PolicyValidator {
             List<JsonNode> storedConstraints
     ) {
         switch (type) {
-            case MEMBERSHIP ->
-                    validateMembership(constraint, index);
             case DATE_RANGE ->
                     validateDateRange(constraint, index, storedConstraints);
-            case FRAMEWORK_AGREEMENT ->
-                    validateFrameworkAgreement(constraint, index);
             case PARTICIPANT_DID ->
                     validateParticipantDid(constraint, index);
             case DATA_SUBSET ->
                     validateDataSubset(constraint, index);
-        }
-    }
-
-    private void validateMembership(JsonNode constraint, int index) {
-        JsonNode value = constraint.get("value");
-
-        if (value == null || !value.isTextual()
-                || value.asText().isBlank()) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].value is required"
-            );
-        }
-
-        if (!"active".equals(value.asText())) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].value must be 'active'"
-            );
-        }
-    }
-
-    private void validateFrameworkAgreement(
-            JsonNode constraint,
-            int index
-    ) {
-        JsonNode agreement = constraint.get("agreement");
-
-        if (agreement == null || !agreement.isTextual()
-                || agreement.asText().isBlank()) {
-            throw new InvalidPolicyException(
-                    "constraints[" + index + "].agreement is required"
-            );
         }
     }
 

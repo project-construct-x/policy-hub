@@ -6,7 +6,6 @@ import {
   keepKnownConstraints,
   orderConstraints,
 } from '@features/policies/builder/metadata/constraint-metadata';
-import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 import { dataSubsetKindOption } from '@features/policies/builder/metadata/data-subset.data';
 import {
   isValidDidWeb,
@@ -15,7 +14,7 @@ import {
 
 /**
  * Anzeigewert für Constraint-Inhalte, die nicht aus der Metadaten-Registry stammen —
- * etwa weil das Backend einen unbekannten Rahmenvertrag geliefert hat.
+ * etwa weil das Backend einen ungültigen Wert geliefert hat.
  */
 const UNKNOWN_VALUE = '—';
 
@@ -177,9 +176,9 @@ function introKey(category: Policy['category'], anyOf: boolean): string {
  * `interpolationMatcher` liefert bei jedem Zugriff ein frisches RegExp mit `lastIndex = 0`).
  * Ein Parameterwert, der selbst `{{…}}` enthält, wird dadurch ein zweites Mal aufgelöst:
  * `{{legalDescription.unrestricted}}` schiebt einen fremden Satz in die Erläuterung, und
- * `{{agreement}}` ersetzt sich endlos selbst — die Schleife terminiert nie und der Tab friert ein.
+ * `{{start}}` ersetzt sich endlos selbst — die Schleife terminiert nie und der Tab friert ein.
  *
- * Constraint-Werte stammen nicht nur aus der UI (dort sind sie durch Dropdown bzw. Konstante
+ * Constraint-Werte stammen nicht nur aus der UI (dort sind sie durch die Eingabe-Validierung
  * gedeckelt), sondern auch aus `GET /v1/policies/:id`. Ein HTTP-Response ist Eingabe; der
  * `Constraint`-Typ ist nur ein Compile-Zeit-Versprechen. Deshalb: nur Werte weiterreichen,
  * die nachweislich aus der Metadaten-Registry stammen.
@@ -193,17 +192,6 @@ function buildClause(constraint: Constraint, transloco: TranslocoService, lang?:
       return transloco.translate(
         'legalDescription.clause.dateRange',
         { start: formatDate(constraint.startDate), end: formatDate(constraint.endDate) },
-        lang,
-      );
-    case 'FRAMEWORK_AGREEMENT':
-      return transloco.translate(
-        'legalDescription.clause.frameworkAgreement',
-        {
-          agreement:
-            constraint.agreement === FRAMEWORK_AGREEMENT_VALUE
-              ? constraint.agreement
-              : UNKNOWN_VALUE,
-        },
         lang,
       );
     case 'PARTICIPANT_DID':
@@ -222,7 +210,6 @@ function buildClause(constraint: Constraint, transloco: TranslocoService, lang?:
         { selectors: formatSelectors(constraint.selectors, transloco, lang) },
         lang,
       );
-    case 'MEMBERSHIP':
     default:
       return base;
   }

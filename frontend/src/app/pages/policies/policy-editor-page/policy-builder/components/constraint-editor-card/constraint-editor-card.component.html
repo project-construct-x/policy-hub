@@ -11,12 +11,6 @@
 
   <div class="ce-card__body">
     @switch (constraint().type) {
-      @case ('MEMBERSHIP') {
-        <p class="ce-card__static">
-          {{ t('policyBuilder.constraint.MEMBERSHIP.hint') }}
-        </p>
-      }
-
       @case ('DATE_RANGE') {
         <div
           class="ce-card__date-range"
@@ -80,13 +74,6 @@
         </div>
         <p class="ce-card__hint" [id]="'daterange-hint-' + index()">
           {{ t('policyBuilder.constraint.DATE_RANGE.hint') }}
-        </p>
-      }
-
-      @case ('FRAMEWORK_AGREEMENT') {
-        <p class="ce-card__static">
-          {{ t('policyBuilder.constraint.FRAMEWORK_AGREEMENT.hint') }}
-          <code>{{ asFramework(constraint()).agreement }}</code>
         </p>
       }
 

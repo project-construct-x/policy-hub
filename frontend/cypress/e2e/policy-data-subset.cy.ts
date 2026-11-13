@@ -3,7 +3,7 @@
 // Constraint zur Teildatensatz-Auswahl: Art aus der Liste wählen, Namen eingeben, Verknüpfung bei
 // ODER und Darstellung im Detail.
 
-// geodaten-rahmenvertrag-mitglied ("many"): MEMBERSHIP + FRAMEWORK_AGREEMENT + DIDs + 3 Einträge.
+// geodaten-flurstuecke-partner ("many"): DIDs + 3 Einträge.
 const POLICY_WITH_SUBSET = '00000000-0000-0000-0000-000000000009';
 
 function openNewPolicyWithSubsetConstraint(id: string): void {
@@ -87,8 +87,8 @@ describe('Policy – Teildatensatz', () => {
 
   it('bleibt hinter später ergänzten Constraints und ist bei ODER per UND verknüpft', () => {
     openNewPolicyWithSubsetConstraint('e2e-teildatensatz-oder');
-    cy.getByCy('palette-MEMBERSHIP').click();
-    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
+    cy.getByCy('palette-PARTICIPANT_DID').click();
+    cy.getByCy('palette-DATE_RANGE').click();
     cy.getByCy('logical-operator-OR').click();
 
     cy.get('[data-cy^="constraint-card-"]')

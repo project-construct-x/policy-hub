@@ -70,14 +70,12 @@ The backend controls `id`, `createdAt`, and `updatedAt`.
 ## Constraint contract
 
 Each constraint is a JSON object with a supported `type`. A constraint type may occur at most once
-in a policy. The current backend accepts all five types in both categories (`ACCESS` and
+in a policy. The current backend accepts all three types in both categories (`ACCESS` and
 `CONTRACT`). Constraint order is retained and determines ODRL operand order.
 
 | Type | Required fields | Current validation |
 |---|---|---|
-| `MEMBERSHIP` | `value` | Must be the string `active`. |
 | `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date, except that on update an unchanged `startDate` already stored in the policy stays valid (a running period remains editable); `startDate` must not be after `endDate`. |
-| `FRAMEWORK_AGREEMENT` | `agreement` | Must be a non-blank string. |
 | `PARTICIPANT_DID` | `dids` | Non-empty array of strings; each entry must be a valid `did:web` identifier (host, optional port as `%3A<port>`, optional `:`-separated path segments; no surrounding whitespace, no commas) and entries must be unique, compared case-insensitively. Entries are stored as sent. Errors name the entry, e.g. `constraints[0].dids[1]`. |
 | `DATA_SUBSET` | `selectors` | Non-empty array of strings; each entry must match `^(field\|attribute\|submodel\|record):[A-Za-z0-9._~:/#-]+$` (no whitespace, no commas; colons are allowed for submodel URNs) and entries must be unique, compared exactly (case-sensitive: `materialName` and `MaterialName` may be different fields). Errors name the entry, e.g. `constraints[0].selectors[1]`. |
 
@@ -119,10 +117,8 @@ Current constraint mappings:
 
 | Constraint | ODRL left operand | Operator | Right operand |
 |---|---|---|---|
-| `MEMBERSHIP` | `cx:Membership` | `odrl:eq` | `value` |
 | `DATE_RANGE` start | `cx:DataUsageStartDate` | `odrl:gteq` | `startDate` |
 | `DATE_RANGE` end | `cx:DataUsageEndDate` | `odrl:lteq` | `endDate` |
-| `FRAMEWORK_AGREEMENT` | `cx:FrameworkAgreement` | `odrl:eq` | `agreement` |
 | `PARTICIPANT_DID` | `edc:connector` (EDC namespace, not `cx:`) | `odrl:eq` | `dids` joined with `,` |
 | `DATA_SUBSET` | `https://w3id.org/construct-x/policy/DataSubset` | `odrl:isAnyOf` | `selectors` as JSON array |
 
@@ -156,16 +152,16 @@ The constraints are combined below `odrl:permission[0]."odrl:constraint"` accord
   type. `GET /api/v1/policies/{id}` and the list still return the policy unchanged; a `PUT` without
   the unknown constraint repairs it.
 
-Example (`OR`, `MEMBERSHIP` + `DATE_RANGE`):
+Example (`OR`, `PARTICIPANT_DID` + `DATE_RANGE`):
 
 ```json
 {
   "odrl:constraint": {
     "odrl:or": [
       {
-        "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
+        "odrl:leftOperand": { "@id": "edc:connector" },
         "odrl:operator": { "@id": "odrl:eq" },
-        "odrl:rightOperand": "active"
+        "odrl:rightOperand": "did:web:a.example,did:web:b.example"
       },
       {
         "odrl:and": [

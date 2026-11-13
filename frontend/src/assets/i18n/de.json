@@ -220,17 +220,11 @@
     "constraint": {
       "empty": "Noch keine Constraints hinzugefügt. Ohne Constraints erlaubt diese Policy alles.",
       "remove": "Constraint entfernen",
-      "MEMBERSHIP": {
-        "hint": "Der Datenkonsument muss ein aktives Mitglied des Datenraums sein. Keine weiteren Angaben nötig."
-      },
       "DATE_RANGE": {
         "label": "Zeitraum",
         "startLabel": "Startdatum",
         "endLabel": "Enddatum",
         "hint": "Startdatum ab heute wählen. Bei einem laufenden Zeitraum bleibt das Startdatum erhalten und das Enddatum kann verlängert werden."
-      },
-      "FRAMEWORK_AGREEMENT": {
-        "hint": "Der Datenkonsument muss diesem Rahmenvertrag zugestimmt haben:"
       },
       "PARTICIPANT_DID": {
         "label": "Teilnehmer (did:web)",
@@ -269,21 +263,10 @@
     }
   },
   "constraint": {
-    "MEMBERSHIP": {
-      "label": "Mitgliedschaft",
-      "description": "Aktive Dataspace-Mitgliedschaft erforderlich.",
-      "legalText": "Der Datenkonsument muss zum Zeitpunkt des Datenzugriffs ein aktives, verifiziertes Mitglied des Construct-X Datenraums sein. Ein Zugriff durch Nicht-Mitglieder oder Organisationen mit ruhender Mitgliedschaft ist ausgeschlossen.",
-      "summary": "aktive Dataspace-Mitgliedschaft erforderlich"
-    },
     "DATE_RANGE": {
       "label": "Zeitraum",
       "description": "Gültigkeit auf einen Zeitraum von Start- bis Enddatum begrenzt.",
       "legalText": "Die Nutzungsberechtigung gilt nur innerhalb des angegebenen Zeitraums."
-    },
-    "FRAMEWORK_AGREEMENT": {
-      "label": "Rahmenvertrag",
-      "description": "Zustimmung zum Rahmenvertrag erforderlich.",
-      "legalText": "Der Datenkonsument muss dem DataExchangeGovernance-Rahmenvertrag zugestimmt haben."
     },
     "PARTICIPANT_DID": {
       "label": "Teilnehmer-Auswahl",
@@ -314,7 +297,6 @@
     "dataSubsetItem": "{{kind}} „{{identifier}}“",
     "clause": {
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
-      "frameworkAgreement": "Der Datenkonsument muss dem Rahmenvertrag „{{agreement}}“ ausdrücklich zugestimmt haben, bevor eine Datenübertragung erfolgen darf.",
       "participantDid": "Der Datenkonsument muss einer der folgenden, über ihre did:web-Identität benannten Teilnehmer sein: {{dids}}. Allen übrigen Teilnehmern ist jegliche Nutzung der Daten untersagt.",
       "dataSubset": "Dem Datenkonsumenten werden ausschließlich die folgenden Teile des Datensatzes bereitgestellt: {{selectors}}. Auf alle übrigen Bestandteile des Datensatzes erstreckt sich die Berechtigung nicht; ihre Nutzung ist untersagt."
     }

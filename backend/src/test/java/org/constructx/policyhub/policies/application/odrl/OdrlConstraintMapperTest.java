@@ -20,24 +20,6 @@ class OdrlConstraintMapperTest {
             "https://w3id.org/catenax/2025/9/policy/";
 
     @Test
-    void mapMembership_mapsMembershipConstraint() throws Exception {
-        JsonNode constraint = createConstraint(
-                "MEMBERSHIP",
-                """
-                "value": "active"
-                """
-        );
-
-        JsonNode expected = createExpected(
-                "Membership",
-                "odrl:eq",
-                "\"active\""
-        );
-
-        assertSingleMapping(constraint, expected);
-    }
-
-    @Test
     void mapDateRange_mapsStartAndEndDateConstraints() throws Exception {
         JsonNode constraint = createConstraint(
                 "DATE_RANGE",
@@ -72,25 +54,6 @@ class OdrlConstraintMapperTest {
 
         assertEquals(expectedStartDate, actualStartDate);
         assertEquals(expectedEndDate, actualEndDate);
-    }
-
-    @Test
-    void mapFrameworkAgreement_mapsFrameworkAgreementConstraint()
-            throws Exception {
-        JsonNode constraint = createConstraint(
-                "FRAMEWORK_AGREEMENT",
-                """
-                "agreement": "DataExchangeGovernance"
-                """
-        );
-
-        JsonNode expected = createExpected(
-                "FrameworkAgreement",
-                "odrl:eq",
-                "\"DataExchangeGovernance\""
-        );
-
-        assertSingleMapping(constraint, expected);
     }
 
     @Test
@@ -173,7 +136,7 @@ class OdrlConstraintMapperTest {
                 createConstraint("DATA_SUBSET", "\"selectors\": [\"field:materialName\"]")
         ));
         assertFalse(OdrlConstraintMapper.alwaysApplies(
-                createConstraint("MEMBERSHIP", "\"value\": \"active\"")
+                createConstraint("PARTICIPANT_DID", "\"dids\": [\"did:web:a.example\"]")
         ));
     }
 

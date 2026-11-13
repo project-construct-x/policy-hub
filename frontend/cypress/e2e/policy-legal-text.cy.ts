@@ -13,7 +13,7 @@
 // cy.intercept sieht die Requests deshalb nie. Er ist stattdessen als Unit-Test auf
 // `hasDivergingLegalText` in legal-description.helper.spec.ts abgedeckt.
 
-// zugriff-konsortium-mitglieder: ACCESS mit einer MEMBERSHIP-Bedingung.
+// zugriff-konsortium-mitglieder: ACCESS mit einer PARTICIPANT_DID-Bedingung.
 const POLICY_ID = '00000000-0000-0000-0000-000000000002';
 
 describe('Policy – Erläuterung der Constraints', () => {

@@ -29,14 +29,8 @@ public class OdrlConstraintMapper {
         ConstraintType type = constraintType(constraint);
 
         return switch (type) {
-            case MEMBERSHIP ->
-                    List.of(mapMembership(constraint));
-
             case DATE_RANGE ->
                     mapDateRange(constraint);
-
-            case FRAMEWORK_AGREEMENT ->
-                    List.of(mapFrameworkAgreement(constraint));
 
             case PARTICIPANT_DID ->
                     List.of(mapParticipantDid(constraint));
@@ -70,16 +64,6 @@ public class OdrlConstraintMapper {
         }
     }
 
-    private static OdrlAtomicConstraintResponse mapMembership(
-            JsonNode constraint
-    ) {
-        return new OdrlAtomicConstraintResponse(
-                new OdrlIdResponse(CX_POLICY_NS + "Membership"),
-                new OdrlIdResponse(OdrlOperator.EQ.value()),
-                constraint.get("value")
-        );
-    }
-
     private static List<OdrlAtomicConstraintResponse> mapDateRange(
             JsonNode constraint
     ) {
@@ -108,18 +92,6 @@ public class OdrlConstraintMapper {
         return List.of(
                 startDateConstraint,
                 endDateConstraint
-        );
-    }
-
-    private static OdrlAtomicConstraintResponse mapFrameworkAgreement(
-            JsonNode constraint
-    ) {
-        return new OdrlAtomicConstraintResponse(
-                new OdrlIdResponse(
-                        CX_POLICY_NS + "FrameworkAgreement"
-                ),
-                new OdrlIdResponse(OdrlOperator.EQ.value()),
-                constraint.get("agreement")
         );
     }
 

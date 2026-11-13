@@ -197,8 +197,8 @@ public class OdrlPolicyMapperTest {
     public void policyToOdrl_addsConstraintGroupForNonEmptyConstraintList() throws Exception {
         JsonNode policyConstraint = objectMapper.readTree("""
             {
-                "type": "MEMBERSHIP",
-                "value": "active"
+                "type": "PARTICIPANT_DID",
+                "dids": ["did:web:a.example"]
             }
         """);
         
@@ -311,33 +311,11 @@ public class OdrlPolicyMapperTest {
     @Test
     void policyToOdrl_mapsMultipleConstraintsIntoSingleAndGroup()
             throws Exception {
-        JsonNode membership = objectMapper.readTree("""
-            {
-              "type": "MEMBERSHIP",
-              "value": "active"
-            }
-            """);
-
-        JsonNode frameworkAgreement = objectMapper.readTree("""
-            {
-              "type": "FRAMEWORK_AGREEMENT",
-              "agreement": "DataExchangeGovernance"
-            }
-            """);
-
-        JsonNode dateRange = objectMapper.readTree("""
-            {
-              "type": "DATE_RANGE",
-              "startDate": "2027-01-01",
-              "endDate": "2027-06-30"
-            }
-            """);
-
         Policy policy = createPolicy(
                 List.of(
-                        membership,
-                        frameworkAgreement,
-                        dateRange
+                        participantDid(),
+                        dateRange(),
+                        dataSubset()
                 )
         );
 
@@ -350,45 +328,35 @@ public class OdrlPolicyMapperTest {
                 .path("odrl:constraint")
                 .path("odrl:and");
 
-        // MEMBERSHIP          -> 1
-        // FRAMEWORK_AGREEMENT -> 1
-        // DATE_RANGE          -> 2, DATE_RANGE wird in zwei ODRL-Bedingungen aufgeteilt
+        // PARTICIPANT_DID -> 1
+        // DATE_RANGE      -> 2, DATE_RANGE wird in zwei ODRL-Bedingungen aufgeteilt
+        // DATA_SUBSET     -> 1
         assertEquals(4, and.size());
 
-        assertAtomicConstraint(
-                and.get(0),
-                "Membership",
-                "odrl:eq",
-                "active"
-        );
+        assertParticipantDidConstraint(and.get(0));
 
         assertAtomicConstraint(
                 and.get(1),
-                "FrameworkAgreement",
-                "odrl:eq",
-                "DataExchangeGovernance"
-        );
-
-        assertAtomicConstraint(
-                and.get(2),
                 "DataUsageStartDate",
                 "odrl:gteq",
                 "2027-01-01"
         );
 
         assertAtomicConstraint(
-                and.get(3),
+                and.get(2),
                 "DataUsageEndDate",
                 "odrl:lteq",
                 "2027-06-30"
         );
+
+        assertDataSubsetConstraint(and.get(3));
     }
 
     @Test
     void policyToOdrl_withUnknownConstraintType_failsInsteadOfDroppingIt() throws Exception {
         Policy policy = createPolicy(List.of(
                 objectMapper.readTree("""
-                        { "type": "MEMBERSHIP", "value": "active" }
+                        { "type": "PARTICIPANT_DID", "dids": ["did:web:a.example"] }
                         """),
                 objectMapper.readTree("""
                         { "type": "GIBTS_NICHT", "value": "x" }
@@ -436,24 +404,6 @@ public class OdrlPolicyMapperTest {
                 .path("odrl:constraint");
     }
 
-    private JsonNode membership() throws Exception {
-        return objectMapper.readTree("""
-            {
-              "type": "MEMBERSHIP",
-              "value": "active"
-            }
-            """);
-    }
-
-    private JsonNode frameworkAgreement() throws Exception {
-        return objectMapper.readTree("""
-            {
-              "type": "FRAMEWORK_AGREEMENT",
-              "agreement": "DataExchangeGovernance"
-            }
-            """);
-    }
-
     private JsonNode dateRange() throws Exception {
         return objectMapper.readTree("""
             {
@@ -491,21 +441,20 @@ public class OdrlPolicyMapperTest {
     @Test
     void policyToOdrl_keepsParticipantDidFlatForAnd() throws Exception {
         Policy policy = createPolicy(
-                List.of(participantDid(), membership()),
+                List.of(participantDid()),
                 LogicalOperator.AND
         );
 
         JsonNode and = constraintGroup(policy).path("odrl:and");
 
-        assertEquals(2, and.size());
+        assertEquals(1, and.size());
         assertParticipantDidConstraint(and.get(0));
-        assertAtomicConstraint(and.get(1), "Membership", "odrl:eq", "active");
     }
 
     @Test
     void policyToOdrl_mapsParticipantDidAsSingleOperandForOr() throws Exception {
         Policy policy = createPolicy(
-                List.of(participantDid(), membership()),
+                List.of(participantDid(), dateRange()),
                 LogicalOperator.OR
         );
 
@@ -514,13 +463,12 @@ public class OdrlPolicyMapperTest {
         assertEquals(2, or.size());
         assertFalse(or.get(0).has("odrl:and"));
         assertParticipantDidConstraint(or.get(0));
-        assertAtomicConstraint(or.get(1), "Membership", "odrl:eq", "active");
     }
 
     @Test
     void policyToOdrl_treatsMissingLogicalOperatorAsAnd() throws Exception {
         Policy policy = createPolicy(
-                List.of(membership(), frameworkAgreement()),
+                List.of(participantDid(), dateRange()),
                 null
         );
 
@@ -528,49 +476,28 @@ public class OdrlPolicyMapperTest {
 
         assertTrue(constraint.has("odrl:and"));
         assertFalse(constraint.has("odrl:or"));
-        assertEquals(2, constraint.path("odrl:and").size());
+        assertEquals(3, constraint.path("odrl:and").size());
     }
 
     @Test
     void policyToOdrl_keepsDateRangeFlatForAnd() throws Exception {
         Policy policy = createPolicy(
-                List.of(membership(), dateRange()),
+                List.of(participantDid(), dateRange()),
                 LogicalOperator.AND
         );
 
         JsonNode and = constraintGroup(policy).path("odrl:and");
 
         assertEquals(3, and.size());
-        assertAtomicConstraint(and.get(0), "Membership", "odrl:eq", "active");
+        assertParticipantDidConstraint(and.get(0));
         assertAtomicConstraint(and.get(1), "DataUsageStartDate", "odrl:gteq", "2027-01-01");
         assertAtomicConstraint(and.get(2), "DataUsageEndDate", "odrl:lteq", "2027-06-30");
     }
 
     @Test
-    void policyToOdrl_mapsOrToOdrlOrWithOneOperandPerConstraint() throws Exception {
-        Policy policy = createPolicy(
-                List.of(membership(), frameworkAgreement()),
-                LogicalOperator.OR
-        );
-
-        JsonNode constraint = constraintGroup(policy);
-        JsonNode or = constraint.path("odrl:or");
-
-        assertFalse(constraint.has("odrl:and"));
-        assertEquals(2, or.size());
-        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
-        assertAtomicConstraint(
-                or.get(1),
-                "FrameworkAgreement",
-                "odrl:eq",
-                "DataExchangeGovernance"
-        );
-    }
-
-    @Test
     void policyToOdrl_nestsDateRangeAsAndInsideOr() throws Exception {
         Policy policy = createPolicy(
-                List.of(membership(), dateRange()),
+                List.of(participantDid(), dateRange()),
                 LogicalOperator.OR
         );
 
@@ -578,7 +505,7 @@ public class OdrlPolicyMapperTest {
 
         // DATE_RANGE stays "start AND end"; flat inside odrl:or it would mean "start OR end"
         assertEquals(2, or.size());
-        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
+        assertParticipantDidConstraint(or.get(0));
 
         JsonNode nestedAnd = or.get(1).path("odrl:and");
         assertEquals(2, nestedAnd.size());
@@ -589,19 +516,14 @@ public class OdrlPolicyMapperTest {
     @Test
     void policyToOdrl_wrapsSingleConstraintInOdrlOrForOr() throws Exception {
         Policy policy = createPolicy(
-                List.of(frameworkAgreement()),
+                List.of(participantDid()),
                 LogicalOperator.OR
         );
 
         JsonNode or = constraintGroup(policy).path("odrl:or");
 
         assertEquals(1, or.size());
-        assertAtomicConstraint(
-                or.get(0),
-                "FrameworkAgreement",
-                "odrl:eq",
-                "DataExchangeGovernance"
-        );
+        assertParticipantDidConstraint(or.get(0));
     }
 
     @Test
@@ -619,7 +541,7 @@ public class OdrlPolicyMapperTest {
     @Test
     void policyToOdrl_keepsDataSubsetFlatForAnd() throws Exception {
         Policy policy = createPolicy(
-                List.of(dataSubset(), membership(), frameworkAgreement()),
+                List.of(dataSubset(), participantDid(), dateRange()),
                 LogicalOperator.AND
         );
 
@@ -627,21 +549,17 @@ public class OdrlPolicyMapperTest {
         JsonNode and = constraint.path("odrl:and");
 
         assertFalse(constraint.has("odrl:or"));
-        assertEquals(3, and.size());
+        assertEquals(4, and.size());
         assertDataSubsetConstraint(and.get(0));
-        assertAtomicConstraint(and.get(1), "Membership", "odrl:eq", "active");
-        assertAtomicConstraint(
-                and.get(2),
-                "FrameworkAgreement",
-                "odrl:eq",
-                "DataExchangeGovernance"
-        );
+        assertParticipantDidConstraint(and.get(1));
+        assertAtomicConstraint(and.get(2), "DataUsageStartDate", "odrl:gteq", "2027-01-01");
+        assertAtomicConstraint(and.get(3), "DataUsageEndDate", "odrl:lteq", "2027-06-30");
     }
 
     @Test
     void policyToOdrl_appendsDataSubsetViaOuterAndForOrWithTwoConditions() throws Exception {
         Policy policy = createPolicy(
-                List.of(dataSubset(), membership(), dateRange()),
+                List.of(dataSubset(), participantDid(), dateRange()),
                 LogicalOperator.OR
         );
 
@@ -654,7 +572,7 @@ public class OdrlPolicyMapperTest {
 
         JsonNode or = and.get(0).path("odrl:or");
         assertEquals(2, or.size());
-        assertAtomicConstraint(or.get(0), "Membership", "odrl:eq", "active");
+        assertParticipantDidConstraint(or.get(0));
         assertEquals(2, or.get(1).path("odrl:and").size());
 
         assertDataSubsetConstraint(and.get(1));
@@ -663,7 +581,7 @@ public class OdrlPolicyMapperTest {
     @Test
     void policyToOdrl_keepsDataSubsetFlatAndLastForOrWithOneCondition() throws Exception {
         Policy policy = createPolicy(
-                List.of(dataSubset(), membership()),
+                List.of(dataSubset(), participantDid()),
                 LogicalOperator.OR
         );
 
@@ -672,7 +590,7 @@ public class OdrlPolicyMapperTest {
 
         assertFalse(constraint.has("odrl:or"));
         assertEquals(2, and.size());
-        assertAtomicConstraint(and.get(0), "Membership", "odrl:eq", "active");
+        assertParticipantDidConstraint(and.get(0));
         assertDataSubsetConstraint(and.get(1));
     }
 

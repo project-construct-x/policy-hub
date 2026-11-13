@@ -7,16 +7,16 @@
 const POLICY_ID_PREFIX = 'con-x-ph-';
 
 describe('Policy – Erstellen', () => {
-  it('erstellt eine Policy mit MEMBERSHIP-Bedingung und zeigt sie im Detail', () => {
+  it('erstellt eine Policy mit Teilnehmer-Bedingung und zeigt sie im Detail', () => {
     const newId = 'e2e-neue-policy';
 
     cy.visitWithMode('/policies/new', 'few');
 
     cy.getByCy('policyId-input').type(newId);
     cy.getByCy('category-access').click();
-    // MEMBERSHIP benötigt keine weitere Eingabe → stabiler Kern-Flow.
-    cy.getByCy('palette-MEMBERSHIP').click();
-    cy.getByCy('constraint-card-MEMBERSHIP').should('exist');
+    cy.getByCy('palette-PARTICIPANT_DID').click();
+    cy.getByCy('constraint-card-PARTICIPANT_DID').should('exist');
+    cy.getByCy('participant-did-input').type('did:web:e2e.example{enter}');
 
     cy.getByCy('submit-policy').click();
 

@@ -34,17 +34,18 @@ public record PolicyResponse(
     @Schema(
             description = """
                     Ordered list of structured policy constraints.
-                    Supported types are MEMBERSHIP, DATE_RANGE and FRAMEWORK_AGREEMENT.
+                    Supported types are DATE_RANGE, PARTICIPANT_DID and DATA_SUBSET.
                     """,
             example = """
                     [
                       {
-                        "type": "MEMBERSHIP",
-                        "value": "active"
+                        "type": "PARTICIPANT_DID",
+                        "dids": ["did:web:example.com"]
                       },
                       {
-                        "type": "FRAMEWORK_AGREEMENT",
-                        "agreement": "DataExchangeGovernance"
+                        "type": "DATE_RANGE",
+                        "startDate": "2026-08-01",
+                        "endDate": "2027-12-31"
                       }
                     ]
                     """

@@ -3,7 +3,6 @@ import { describe, expect, it, vi, type MockedFunction } from 'vitest';
 import { TranslocoService } from '@jsverse/transloco';
 import { Constraint } from '@shared/types/constraint.model';
 import { Policy } from '@shared/types/policy.model';
-import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 
 import {
   buildLegalClauses,
@@ -46,7 +45,7 @@ describe('buildLegalDescription', () => {
   describe('Intro nach Kategorie', () => {
     it('ACCESS → introAccess', () => {
       const text = buildLegalDescription(
-        draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]),
+        draft('ACCESS', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }]),
         makeTransloco(),
       );
       expect(text.startsWith('legalDescription.introAccess')).toBe(true);
@@ -54,7 +53,7 @@ describe('buildLegalDescription', () => {
 
     it('CONTRACT → introContract', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'MEMBERSHIP', value: 'active' }]),
+        draft('CONTRACT', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }]),
         makeTransloco(),
       );
       expect(text.startsWith('legalDescription.introContract')).toBe(true);
@@ -62,24 +61,6 @@ describe('buildLegalDescription', () => {
   });
 
   describe('Klausel je Bedingungstyp', () => {
-    it('MEMBERSHIP → nutzt den legalText-Key aus der Metadaten-Registry', () => {
-      const text = buildLegalDescription(
-        draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]),
-        makeTransloco(),
-      );
-      expect(text).toContain('constraint.MEMBERSHIP.legalText');
-    });
-
-    it('FRAMEWORK_AGREEMENT → interpoliert das agreement', () => {
-      const text = buildLegalDescription(
-        draft('ACCESS', [{ type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' }]),
-        makeTransloco(),
-      );
-      expect(text).toContain(
-        'legalDescription.clause.frameworkAgreement[agreement=DataExchangeGovernance]',
-      );
-    });
-
     it('DATE_RANGE → interpoliert Start- und Enddatum formatiert', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [{ type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' }]),
@@ -118,18 +99,18 @@ describe('buildLegalDescription', () => {
     it('rendert je Bedingung einen nummerierten Unterpunkt (Titel) mit Text, in Reihenfolge', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [
-          { type: 'MEMBERSHIP', value: 'active' },
+          { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
           { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
         ]),
         makeTransloco(),
       );
       // Nummer + Constraint-Name als Überschrift, darunter der Beschreibungstext.
-      expect(text).toContain('1. constraint.MEMBERSHIP.label');
+      expect(text).toContain('1. constraint.PARTICIPANT_DID.label');
       expect(text).toContain('2. constraint.DATE_RANGE.label');
-      expect(text).toContain('constraint.MEMBERSHIP.legalText');
+      expect(text).toContain('legalDescription.clause.participantDid');
       expect(text).toContain('legalDescription.clause.dateRange');
       expect(text).not.toContain('legalDescription.and');
-      const clause1Pos = text.indexOf('1. constraint.MEMBERSHIP.label');
+      const clause1Pos = text.indexOf('1. constraint.PARTICIPANT_DID.label');
       const clause2Pos = text.indexOf('2. constraint.DATE_RANGE.label');
       expect(clause1Pos).toBeGreaterThan(-1);
       expect(clause2Pos).toBeGreaterThan(clause1Pos);
@@ -138,19 +119,19 @@ describe('buildLegalDescription', () => {
     it('trennt Einleitung, Titel und Text durch Zeilenumbrüche (kein Block-Text)', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [
-          { type: 'MEMBERSHIP', value: 'active' },
-          { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' },
+          { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
+          { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
         ]),
         makeTransloco(),
       );
       const lines = text.split('\n');
       expect(lines[0]).toBe('legalDescription.introContract');
       expect(lines[1]).toBe(''); // Leerzeile zwischen Intro und erstem Unterpunkt
-      expect(lines[2]).toBe('1. constraint.MEMBERSHIP.label');
-      expect(lines[3]).toBe('constraint.MEMBERSHIP.legalText');
+      expect(lines[2]).toBe('1. constraint.PARTICIPANT_DID.label');
+      expect(lines[3]).toBe('legalDescription.clause.participantDid[dids=did:web:a.example]');
       expect(lines[4]).toBe(''); // Leerzeile zwischen den Unterpunkten
-      expect(lines[5]).toBe('2. constraint.FRAMEWORK_AGREEMENT.label');
-      expect(lines[6].startsWith('legalDescription.clause.frameworkAgreement')).toBe(true);
+      expect(lines[5]).toBe('2. constraint.DATE_RANGE.label');
+      expect(lines[6].startsWith('legalDescription.clause.dateRange')).toBe(true);
     });
   });
 
@@ -158,7 +139,7 @@ describe('buildLegalDescription', () => {
     it('liefert Intro nach Kategorie und je Constraint Titel + Text in Reihenfolge', () => {
       const result = buildLegalClauses(
         draft('ACCESS', [
-          { type: 'MEMBERSHIP', value: 'active' },
+          { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
           { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
         ]),
         makeTransloco(),
@@ -166,8 +147,8 @@ describe('buildLegalDescription', () => {
       expect(result.intro).toBe('legalDescription.introAccess');
       expect(result.clauses).toHaveLength(2);
       expect(result.clauses[0]).toEqual({
-        title: 'constraint.MEMBERSHIP.label',
-        text: 'constraint.MEMBERSHIP.legalText',
+        title: 'constraint.PARTICIPANT_DID.label',
+        text: 'legalDescription.clause.participantDid[dids=did:web:a.example]',
       });
       expect(result.clauses[1].title).toBe('constraint.DATE_RANGE.label');
       expect(result.clauses[1].text).toContain('legalDescription.clause.dateRange');
@@ -181,10 +162,18 @@ describe('buildLegalDescription', () => {
 
     it('reicht den lang-Parameter durch (Titel und Text)', () => {
       const t = makeTransloco();
-      buildLegalClauses(draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]), t, 'de');
+      buildLegalClauses(
+        draft('ACCESS', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }]),
+        t,
+        'de',
+      );
       expect(t.translate).toHaveBeenCalledWith('legalDescription.introAccess', undefined, 'de');
-      expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.label', undefined, 'de');
-      expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.legalText', undefined, 'de');
+      expect(t.translate).toHaveBeenCalledWith('constraint.PARTICIPANT_DID.label', undefined, 'de');
+      expect(t.translate).toHaveBeenCalledWith(
+        'constraint.PARTICIPANT_DID.legalText',
+        undefined,
+        'de',
+      );
     });
   });
 
@@ -218,9 +207,17 @@ describe('buildLegalDescription', () => {
   describe('erzwungene Sprache', () => {
     it('reicht den lang-Parameter an Transloco durch (für den gespeicherten de-Text)', () => {
       const t = makeTransloco();
-      buildLegalDescription(draft('ACCESS', [{ type: 'MEMBERSHIP', value: 'active' }]), t, 'de');
+      buildLegalDescription(
+        draft('ACCESS', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }]),
+        t,
+        'de',
+      );
       expect(t.translate).toHaveBeenCalledWith('legalDescription.introAccess', undefined, 'de');
-      expect(t.translate).toHaveBeenCalledWith('constraint.MEMBERSHIP.legalText', undefined, 'de');
+      expect(t.translate).toHaveBeenCalledWith(
+        'constraint.PARTICIPANT_DID.legalText',
+        undefined,
+        'de',
+      );
     });
   });
 
@@ -230,7 +227,7 @@ describe('buildLegalDescription', () => {
    * ersetzten String, und `interpolationMatcher` ist ein Getter, der jedes Mal ein
    * frisches RegExp mit `lastIndex = 0` liefert. Ein Parameterwert, der selbst
    * `{{…}}` enthält, wird dadurch ein zweites Mal aufgelöst — im Fall
-   * `{{agreement}}` → `{{agreement}}` ändert sich der String nie und die Schleife
+   * `{{start}}` → `{{start}}` ändert sich der String nie und die Schleife
    * terminiert nicht (eingefrorener Browser-Tab).
    *
    * Constraint-Werte stammen nicht nur aus der UI, sondern auch aus
@@ -238,7 +235,7 @@ describe('buildLegalDescription', () => {
    * Key noch als Parameterwert jemals ein Interpolations-Delimiter gelangen.
    */
   describe('Schutz vor Transloco-Parameter-Injection', () => {
-    const HOSTILE = '{{agreement}}';
+    const HOSTILE = '{{start}}';
 
     function argumentsPassedTo(t: TranslocoService): string[] {
       const calls = (t.translate as unknown as MockedFunction<TranslocoService['translate']>).mock
@@ -250,7 +247,6 @@ describe('buildLegalDescription', () => {
     }
 
     const hostileConstraints: [string, Constraint][] = [
-      ['FRAMEWORK_AGREEMENT.agreement', { type: 'FRAMEWORK_AGREEMENT', agreement: HOSTILE }],
       ['DATE_RANGE.startDate', { type: 'DATE_RANGE', startDate: HOSTILE, endDate: '2027-01-01' }],
       ['DATE_RANGE.endDate', { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: HOSTILE }],
       ['PARTICIPANT_DID.dids', { type: 'PARTICIPANT_DID', dids: ['did:web:a.example', HOSTILE] }],
@@ -272,14 +268,6 @@ describe('buildLegalDescription', () => {
       });
     }
 
-    it('ersetzt einen unbekannten Rahmenvertrag durch den Platzhalter "—"', () => {
-      const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'FRAMEWORK_AGREEMENT', agreement: 'FremderVertrag' }]),
-        makeTransloco(),
-      );
-      expect(text).toContain('agreement=—');
-    });
-
     it('ersetzt eine Teilnehmer-Liste mit ungültigem Eintrag durch den Platzhalter "—"', () => {
       const text = buildLegalDescription(
         draft('CONTRACT', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example', 'kaputt'] }]),
@@ -298,10 +286,10 @@ describe('buildLegalDescription', () => {
 
     it('lässt bekannte Werte unverändert', () => {
       const text = buildLegalDescription(
-        draft('CONTRACT', [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }]),
+        draft('CONTRACT', [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }]),
         makeTransloco(),
       );
-      expect(text).toContain(`agreement=${FRAMEWORK_AGREEMENT_VALUE}`);
+      expect(text).toContain('dids=did:web:a.example');
     });
   });
 });
@@ -311,12 +299,15 @@ describe('buildLegalClauses — unbekannter Constraint-Typ aus der API', () => {
 
   it('übergeht den unbekannten Typ, statt beim Metadaten-Zugriff zu werfen', () => {
     const { clauses } = buildLegalClauses(
-      draft('CONTRACT', [unknownConstraint, { type: 'MEMBERSHIP', value: 'active' }]),
+      draft('CONTRACT', [
+        unknownConstraint,
+        { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
+      ]),
       makeTransloco(),
     );
 
     expect(clauses).toHaveLength(1);
-    expect(clauses[0].title).toBe('constraint.MEMBERSHIP.label');
+    expect(clauses[0].title).toBe('constraint.PARTICIPANT_DID.label');
   });
 
   it('fällt auf den "unrestricted"-Text zurück, wenn nur unbekannte Typen übrig bleiben', () => {
@@ -333,7 +324,7 @@ describe('buildLegalClauses — unbekannter Constraint-Typ aus der API', () => {
 describe('hasDivergingLegalText', () => {
   const policy: Pick<Policy, 'category' | 'constraints' | 'legalText'> = {
     category: 'ACCESS',
-    constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
+    constraints: [{ type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] }],
   };
 
   /** Genau der Text, den PolicyBuilderComponent.submit() beim Speichern mitschickt. */
@@ -355,13 +346,13 @@ describe('hasDivergingLegalText', () => {
   });
 
   it('meldet eine Abweichung, wenn die Constraints nachträglich verändert wurden', () => {
-    // Gespeicherter Text passt zur MEMBERSHIP-Policy, die Constraints sagen inzwischen
+    // Gespeicherter Text passt zur Teilnehmer-Policy, die Constraints sagen inzwischen
     // etwas anderes — der Fall, den die Detailseite sonst stillschweigend überschreiben würde.
     expect(
       hasDivergingLegalText(
         {
           category: 'ACCESS',
-          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
+          constraints: [{ type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' }],
           legalText: derived(),
         },
         makeTransloco(),
@@ -381,8 +372,8 @@ describe('hasDivergingLegalText', () => {
 
 describe('buildLegalClauses — logische Verknüpfung (UND/ODER)', () => {
   const two: Constraint[] = [
-    { type: 'MEMBERSHIP', value: 'active' },
-    { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+    { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] },
+    { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
   ];
 
   it('nutzt bei OR mit mehreren Bedingungen den "mindestens eine"-Einleitungssatz (ACCESS)', () => {
@@ -432,10 +423,11 @@ describe('buildLegalClauses — logische Verknüpfung (UND/ODER)', () => {
 });
 
 describe('buildLegalClauses — immer geltender Teildatensatz', () => {
-  const membership: Constraint = { type: 'MEMBERSHIP', value: 'active' };
-  const agreement: Constraint = {
-    type: 'FRAMEWORK_AGREEMENT',
-    agreement: FRAMEWORK_AGREEMENT_VALUE,
+  const participant: Constraint = { type: 'PARTICIPANT_DID', dids: ['did:web:a.example'] };
+  const dateRange: Constraint = {
+    type: 'DATE_RANGE',
+    startDate: '2026-06-01',
+    endDate: '2027-12-31',
   };
   const subset: Constraint = { type: 'DATA_SUBSET', selectors: ['field:a'] };
 
@@ -451,13 +443,17 @@ describe('buildLegalClauses — immer geltender Teildatensatz', () => {
 
   it('bildet bei OR einen eigenen Abschnitt und zählt nicht als ODER-Alternative', () => {
     const result = buildLegalClauses(
-      { category: 'CONTRACT', constraints: [subset, membership, agreement], logicalOperator: 'OR' },
+      {
+        category: 'CONTRACT',
+        constraints: [subset, participant, dateRange],
+        logicalOperator: 'OR',
+      },
       makeTransloco(),
     );
     expect(result.intro).toBe('legalDescription.introContractAnyOf');
     expect(result.clauses.map((clause) => clause.title)).toEqual([
-      'constraint.MEMBERSHIP.label',
-      'constraint.FRAMEWORK_AGREEMENT.label',
+      'constraint.PARTICIPANT_DID.label',
+      'constraint.DATE_RANGE.label',
     ]);
     expect(result.additional?.intro).toBe('legalDescription.introAlwaysApplies');
     expect(result.additional?.clauses.map((clause) => clause.title)).toEqual([
@@ -467,7 +463,7 @@ describe('buildLegalClauses — immer geltender Teildatensatz', () => {
 
   it('nutzt bei OR mit nur einer weiteren Voraussetzung den gewohnten Einleitungssatz', () => {
     const { intro } = buildLegalClauses(
-      { category: 'CONTRACT', constraints: [membership, subset], logicalOperator: 'OR' },
+      { category: 'CONTRACT', constraints: [participant, subset], logicalOperator: 'OR' },
       makeTransloco(),
     );
     expect(intro).toBe('legalDescription.introContract');
@@ -475,11 +471,15 @@ describe('buildLegalClauses — immer geltender Teildatensatz', () => {
 
   it('nummeriert den zusätzlichen Abschnitt im gespeicherten Text fortlaufend', () => {
     const text = buildLegalDescription(
-      { category: 'CONTRACT', constraints: [subset, membership, agreement], logicalOperator: 'OR' },
+      {
+        category: 'CONTRACT',
+        constraints: [subset, participant, dateRange],
+        logicalOperator: 'OR',
+      },
       makeTransloco(),
     );
     const additionalIntro = text.indexOf('legalDescription.introAlwaysApplies');
-    expect(text.indexOf('2. constraint.FRAMEWORK_AGREEMENT.label')).toBeLessThan(additionalIntro);
+    expect(text.indexOf('2. constraint.DATE_RANGE.label')).toBeLessThan(additionalIntro);
     expect(text.indexOf('3. constraint.DATA_SUBSET.label')).toBeGreaterThan(additionalIntro);
   });
 });

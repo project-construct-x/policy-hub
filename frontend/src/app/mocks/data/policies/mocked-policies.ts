@@ -6,7 +6,6 @@ import {
 } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { Page, PageRequest } from '@shared/types/page.model';
-import { FRAMEWORK_AGREEMENT_VALUE } from '@features/policies/builder/metadata/framework-agreement.data';
 import { BehaviorSubject } from 'rxjs';
 
 export type PolicyMockMode = 'empty' | 'few' | 'many';
@@ -80,7 +79,12 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           id: '00000000-0000-0000-0000-000000000002',
           policyId: 'zugriff-konsortium-mitglieder',
           category: 'ACCESS',
-          constraints: [{ type: 'MEMBERSHIP', value: 'active' }],
+          constraints: [
+            {
+              type: 'PARTICIPANT_DID',
+              dids: ['did:web:bauunternehmen-sued.example', 'did:web:planungsbuero-west.example'],
+            },
+          ],
           createdAt: '2026-04-10T08:00:00Z',
           updatedAt: '2026-04-28T16:10:00Z',
         }),
@@ -89,7 +93,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           policyId: 'geodaten-bis-2027',
           category: 'CONTRACT',
           constraints: [
-            { type: 'MEMBERSHIP', value: 'active' },
+            { type: 'PARTICIPANT_DID', dids: ['did:web:vermessung-nord.example'] },
             { type: 'DATE_RANGE', startDate: '2026-06-01', endDate: '2027-12-31' },
           ],
           createdAt: '2026-02-05T13:15:00Z',
@@ -97,9 +101,11 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
         }),
         buildPolicy({
           id: '00000000-0000-0000-0000-000000000005',
-          policyId: 'datenaustausch-deg-rahmenvertrag',
+          policyId: 'vermessungsdaten-teilauszug',
           category: 'CONTRACT',
-          constraints: [{ type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE }],
+          constraints: [
+            { type: 'DATA_SUBSET', selectors: ['submodel:Vermessungspunkt', 'field:koordinaten'] },
+          ],
           createdAt: '2026-01-20T11:00:00Z',
           updatedAt: '2026-04-21T09:30:00Z',
         }),
@@ -110,8 +116,7 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           // Beispiel für eine ODER-Verknüpfung (Zeitraum wird im ODRL als inneres odrl:and ausgegeben).
           logicalOperator: 'OR',
           constraints: [
-            { type: 'MEMBERSHIP', value: 'active' },
-            { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+            { type: 'PARTICIPANT_DID', dids: ['did:web:bim-koordination.example'] },
             { type: 'DATE_RANGE', startDate: '2027-01-01', endDate: '2027-06-30' },
           ],
           createdAt: '2026-04-15T16:00:00Z',
@@ -119,10 +124,10 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
         }),
         buildPolicy({
           id: '00000000-0000-0000-0000-000000000007',
-          policyId: 'materialpruefberichte-mitglieder',
+          policyId: 'materialpruefberichte-pruefstellen',
           category: 'ACCESS',
           constraints: [
-            { type: 'MEMBERSHIP', value: 'active' },
+            { type: 'PARTICIPANT_DID', dids: ['did:web:pruefstelle-mitte.example'] },
             { type: 'DATE_RANGE', startDate: '2026-08-01', endDate: '2027-07-31' },
           ],
           createdAt: '2026-03-01T09:00:00Z',
@@ -137,20 +142,18 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           policyId: 'baustellendoku-alle-bedingungen',
           category: 'CONTRACT',
           constraints: [
-            { type: 'MEMBERSHIP', value: 'active' },
-            { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
+            { type: 'PARTICIPANT_DID', dids: ['did:web:baustelle-ost.example'] },
             { type: 'DATE_RANGE', startDate: '2026-09-01', endDate: '2028-03-31' },
+            { type: 'DATA_SUBSET', selectors: ['record:bautagebuch'] },
           ],
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',
         }),
         buildPolicy({
           id: '00000000-0000-0000-0000-000000000009',
-          policyId: 'geodaten-rahmenvertrag-mitglied',
+          policyId: 'geodaten-flurstuecke-partner',
           category: 'ACCESS',
           constraints: [
-            { type: 'MEMBERSHIP', value: 'active' },
-            { type: 'FRAMEWORK_AGREEMENT', agreement: FRAMEWORK_AGREEMENT_VALUE },
             {
               type: 'PARTICIPANT_DID',
               dids: ['did:web:vermessung-nord.example', 'did:web:stadtwerke.example%3A8443:edc'],

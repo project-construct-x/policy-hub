@@ -17,15 +17,6 @@ export interface ConstraintMetadata {
 }
 
 export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
-  MEMBERSHIP: {
-    type: 'MEMBERSHIP',
-    labelKey: 'constraint.MEMBERSHIP.label',
-    descriptionKey: 'constraint.MEMBERSHIP.description',
-    legalTextKey: 'constraint.MEMBERSHIP.legalText',
-    icon: 'verified_user',
-    defaultOperator: 'eq',
-    allowedIn: ['ACCESS', 'CONTRACT'],
-  },
   DATE_RANGE: {
     type: 'DATE_RANGE',
     labelKey: 'constraint.DATE_RANGE.label',
@@ -33,15 +24,6 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     legalTextKey: 'constraint.DATE_RANGE.legalText',
     icon: 'date_range',
     defaultOperator: 'lteq',
-    allowedIn: ['ACCESS', 'CONTRACT'],
-  },
-  FRAMEWORK_AGREEMENT: {
-    type: 'FRAMEWORK_AGREEMENT',
-    labelKey: 'constraint.FRAMEWORK_AGREEMENT.label',
-    descriptionKey: 'constraint.FRAMEWORK_AGREEMENT.description',
-    legalTextKey: 'constraint.FRAMEWORK_AGREEMENT.legalText',
-    icon: 'assignment_turned_in',
-    defaultOperator: 'eq',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
   PARTICIPANT_DID: {
@@ -65,9 +47,7 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
 };
 
 export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
-  'MEMBERSHIP',
   'DATE_RANGE',
-  'FRAMEWORK_AGREEMENT',
   'PARTICIPANT_DID',
   'DATA_SUBSET',
 ];
@@ -96,12 +76,8 @@ export function keepKnownConstraints(constraints: readonly Constraint[]): Constr
 
 export function buildDefaultConstraint(type: ConstraintType): Constraint {
   switch (type) {
-    case 'MEMBERSHIP':
-      return { type: 'MEMBERSHIP', value: 'active' };
     case 'DATE_RANGE':
       return { type: 'DATE_RANGE', startDate: '', endDate: '' };
-    case 'FRAMEWORK_AGREEMENT':
-      return { type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' };
     case 'PARTICIPANT_DID':
       return { type: 'PARTICIPANT_DID', dids: [] };
     case 'DATA_SUBSET':

@@ -89,7 +89,7 @@ Die Reihenfolge entspricht der Priorität.
 | Randbedingung | Erläuterung |
 |---|---|
 | **Ausgabeformat ODRL/JSON-LD** | Policies müssen als EDC-`PolicyDefinition` (ODRL-Profil des Construct-X EDC) ausgegeben werden, damit die Connectoren sie importieren und auswerten können. |
-| **Connector-Stack** | Die Teilnehmer betreiben den **Construct-X EDC**, einen Fork des Tractus-X EDC (EDC 0.17, Tractus-X EDC 0.13) mit eigenen Extensions für Policy-Validierung, Policy-Auswertung und den Abruf aus dem Policy Hub. Construct-X verwendet einen eigenen Namespace. Ausgegebene Policies müssen die Validierungsregeln des Connectors erfüllen (siehe [8.3](#83-validierung)). |
+| **Connector-Stack** | Die Teilnehmer betreiben den **Construct-X EDC**, einen Fork des Tractus-X EDC (EDC 0.17, Tractus-X EDC 0.13) mit eigenen Extensions für Policy-Validierung, Policy-Auswertung und den Abruf aus dem Policy Hub. Construct-X verwendet einen eigenen Namespace. |
 | **Frontend** | Angular 21 (standalone), Angular Material, Transloco (i18n), TypeScript strict. |
 | **Backend** | Java 21, Spring Boot 3.5, Spring Data JPA, Spring Security, springdoc-openapi. |
 | **Datenbank** | PostgreSQL 16 mit `jsonb`, Schemamigrationen ausschließlich über Flyway (siehe [ADR-01](#adr-01-persistenz-postgresql-mit-jsonb)). |
@@ -371,7 +371,7 @@ flowchart LR
 |---|---|
 | `policy-builder` | Hält den Entwurf als Signal-State, steuert die Abschnitte, löst Validierung beim Absenden aus und fokussiert das erste fehlerhafte Feld. |
 | `constraint-palette` | Zeigt die verfügbaren Constraint-Typen als Toggles; jeder Typ darf höchstens einmal vorkommen. |
-| `constraint-editor-card` | Typspezifische Eingabemaske (Datum, Rahmenvertrag, Teilnehmerliste …). |
+| `constraint-editor-card` | Typspezifische Eingabemaske (Datum, Teilnehmerliste, Teildatensatz …). |
 | `participant-did-input` | Erfasst mehrere `did:web`-Identifier (Einfügen mehrerer Werte, Duplikat- und Formatprüfung). |
 | `metadata` | Zentrale Registry je Constraint-Typ — einzige Stelle, an der ein neuer Typ in der UI registriert wird. |
 | `validators` | Reine Funktionen, liefern `{ field, messageKey }`; spiegeln die Backend-Regeln. |
@@ -495,8 +495,6 @@ Konsequenzen für den Policy Hub:
   gelten für neue Katalog-Anfragen und Verhandlungen; bestehende Contract Agreements bleiben
   unverändert.
 - **Löschen** im Hub wird nicht übertragen: Der Connector behält die zuletzt importierte Fassung.
-- Der Connector **validiert** die Policy beim Import nach eigenen Regeln; eine Policy, die er
-  ablehnt, kann nicht verwendet werden (siehe [8.3](#83-validierung)).
 
 ### 6.5 Fehlerfälle
 
@@ -598,10 +596,9 @@ Aktuell unterstützte Constraint-Typen (Template Catalog):
 
 | Typ | Fachliche Bedeutung | Eingabe |
 |---|---|---|
-| `MEMBERSHIP` | Nur aktive Mitglieder des Datenraums | fester Wert `active` |
 | `DATE_RANGE` | Nur innerhalb eines Zeitraums | Start- und Enddatum |
-| `FRAMEWORK_AGREEMENT` | Rahmenvertrag muss akzeptiert sein | Vertragsbezeichnung |
 | `PARTICIPANT_DID` | Nur bestimmte Teilnehmer | Liste von `did:web`-Identifiern |
+| `DATA_SUBSET` | Nur bestimmte Teile des Datensatzes werden bereitgestellt (gilt immer, auch bei `OR`) | Liste von Selektoren `<art>:<bezeichner>` |
 
 Constraints werden im Domänenmodell als **diskriminierte Union** (Feld `type`) modelliert. Im
 Frontend erzwingt ein exhaustiver `switch` die Behandlung jedes Typs; im Backend weist die
@@ -616,10 +613,9 @@ Die Abbildung erfolgt in `OdrlPolicyMapper`/`OdrlConstraintMapper` (Backend) und
 |---|---|
 | `policyId` | `@id` der `PolicyDefinition` |
 | `ACCESS` / `CONTRACT` | Aktion `access` (Construct-X) bzw. `odrl:use` |
-| `MEMBERSHIP` | `cx:Membership` `odrl:eq` `active` |
 | `DATE_RANGE` | `cx:DataUsageStartDate` `odrl:gteq` Start **und** `cx:DataUsageEndDate` `odrl:lteq` Ende |
-| `FRAMEWORK_AGREEMENT` | `cx:FrameworkAgreement` `odrl:eq` Wert |
 | `PARTICIPANT_DID` | `edc:connector` `odrl:eq` kommaseparierte DID-Liste |
+| `DATA_SUBSET` | Platzhalter `https://w3id.org/construct-x/policy/DataSubset` `odrl:isAnyOf` Selektor-Array |
 
 Regeln für die logische Verknüpfung:
 
@@ -645,9 +641,9 @@ Beispiel (Kategorie `CONTRACT`, Verknüpfung `AND`, `@context` gekürzt):
       "odrl:constraint": {
         "odrl:and": [
           {
-            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/Membership" },
-            "odrl:operator": { "@id": "odrl:eq" },
-            "odrl:rightOperand": "active"
+            "odrl:leftOperand": { "@id": "https://w3id.org/catenax/2025/9/policy/DataUsageEndDate" },
+            "odrl:operator": { "@id": "odrl:lteq" },
+            "odrl:rightOperand": "2027-12-31"
           },
           {
             "odrl:leftOperand": { "@id": "edc:connector" },
@@ -674,18 +670,6 @@ Der vollständige, verbindliche Abbildungsvertrag steht in [`docs/api-contract.m
 
 Die Backend-Validierung ist maßgeblich; die Frontend-Regeln spiegeln sie. Fehlermeldungen nennen
 den exakten Pfad (z.B. `constraints[0].dids[1]`).
-
-**Validierung im Connector:** Beim Import prüft der Construct-X EDC jede Policy erneut (Extension
-`con-x-policy`, in Umsetzung). Seine Regeln gehen teilweise über die des Hubs hinaus:
-
-| Regel im Connector | Bedeutung für den Policy Hub |
-|---|---|
-| Nur bekannte Left-Operands je Policy-Typ (Allowlist) | Ein neuer Constraint-Typ im Hub muss auch im Connector ergänzt werden, sonst wird die Policy abgelehnt. |
-| `edc:connector` (Teilnehmerauswahl) nur in `ACCESS`-Policies | Der Hub erlaubt `PARTICIPANT_DID` derzeit auch in `CONTRACT`. |
-| Eine `CONTRACT`-Policy mit Constraints braucht `FrameworkAgreement` oder `UsagePurpose` | Der Hub erlaubt derzeit z.B. eine `CONTRACT`-Policy nur mit Mitgliedschaft. |
-| Datums-Constraints werden nur beim Transfer und im Policy-Monitoring ausgewertet | In `ACCESS`-Policies wirkt ein Zeitraum nicht; ein `OR`-Zweig nur aus einem Zeitraum gewährt dort nie Zugriff. |
-| `odrl:and` und `odrl:or` (auch verschachtelt) erlaubt, `odrl:xone`/`odrl:andSequence` abgelehnt | Passt zur Ausgabe des Hubs. |
-| `FrameworkAgreement` mit oder ohne Versionsangabe | Passt zur Ausgabe des Hubs. |
 
 ### 8.4 Persistenz
 
@@ -960,7 +944,7 @@ flowchart LR
 | ID | Qualitätsziel | Szenario | Erwartete Reaktion |
 |---|---|---|---|
 | QS-1 | Korrektheit | In der Datenbank liegt eine Policy mit einem Constraint-Typ, den das Backend nicht mehr kennt. Die ODRL-Policy wird abgerufen. | Export wird mit `422` verweigert; es wird keine weniger strenge Policy ausgeliefert. |
-| QS-2 | Korrektheit | Ein Nutzer erstellt eine `OR`-Policy aus Mitgliedschaft und Zeitraum. | Zeitraum bleibt als `odrl:and` aus Start und Ende innerhalb des `odrl:or` erhalten. |
+| QS-2 | Korrektheit | Ein Nutzer erstellt eine `OR`-Policy aus Teilnehmer-Auswahl und Zeitraum. | Zeitraum bleibt als `odrl:and` aus Start und Ende innerhalb des `odrl:or` erhalten. |
 | QS-3 | Änderbarkeit | Ein neuer Constraint-Typ wird eingeführt. | Änderung an Registry, Validatoren, Mapper und Erläuterungs-Helper; keine Datenbankmigration. |
 | QS-4 | Bedienbarkeit | Ein Nutzer ohne ODRL-Kenntnisse erstellt eine Policy mit zwei Constraints. | Gelingt ohne Hilfe; fehlerhafte Eingaben werden direkt am Feld erklärt. |
 | QS-5 | Barrierefreiheit | Ein Nutzer bedient den Policy-Builder ausschließlich per Tastatur und Screenreader. | Alle Funktionen erreichbar; Fehler und Statusänderungen werden angesagt. |
@@ -976,9 +960,6 @@ flowchart LR
 | **Policy-Modell im Umbau** | Das finale Construct-X-Modell wird schrittweise eingeführt; bestehende Constraint-Typen können sich ändern oder entfallen. | Constraint-Wissen gebündelt halten; für jede Änderung einen Migrationspfad für gespeicherte Policies einplanen. |
 | **Authentifizierung offen** | HTTP Basic mit gemeinsamem Benutzer; kein Rollen- oder Tenant-Konzept. | Entscheidung [ADR-08](#adr-08-authentifizierung) herbeiführen; Provisorium entfernen. |
 | **Keine Mandantentrennung** | Alle Nutzer sehen alle Policies. | [ADR-02](#adr-02-multi-tenancy) entscheiden und umsetzen, bevor ein zweiter Tenant produktiv arbeitet. |
-| **Abweichende Validierungsregeln Hub ↔ Connector** | Der Hub lässt Policies zu, die der Connector beim Import ablehnt (z.B. `PARTICIPANT_DID` in `CONTRACT`, `CONTRACT` ohne Rahmenvertrag); neue Constraint-Typen müssen in beiden Systemen ergänzt werden. | Hub-Validierung an die Regeln des Connectors angleichen (siehe [8.3](#83-validierung)); End-to-End-Test des Imports. |
-| **Zeitraum in `ACCESS`-Policies wirkungslos** | Der Connector wertet Datums-Constraints nicht bei Katalog-Anfrage und Verhandlung aus. Ein Nutzer, der die Sichtbarkeit zeitlich begrenzt, erhält eine weniger strenge Policy als erwartet. | Zeitraum in `ACCESS` im Hub nicht anbieten oder die Auswertung im Connector ergänzen. |
-| **Löschen wird nicht übertragen** | Eine im Hub gelöschte Policy bleibt im Connector bestehen und kann weiter verwendet werden. | Verhalten in der Oberfläche beim Löschen erklären; Rückkanal oder Abgleich im Connector prüfen. |
 | **Namespace** | Die Left-Operands stammen überwiegend aus dem Tractus-X-Namespace; Construct-X hat einen eigenen Namespace. | Umstellung in Hub und Connector abstimmen; ADR-05 erlaubt den Wechsel im Hub ohne Datenmigration. |
 | **Doppelte ODRL-Abbildung** | Abbildung in Backend und Frontend-Mock kann auseinanderlaufen. | Paritätstests; Frontend zeigt gegen das echte Backend immer dessen Ausgabe. |
 | **Erläuterung der Constraints ungeprüft** | Das Backend prüft nicht, ob Erläuterung und Constraints zusammenpassen; ein anderer API-Client könnte abweichende Texte speichern. | Bei weiteren API-Clients Erzeugung oder Prüfung serverseitig erwägen. |
@@ -995,14 +976,14 @@ flowchart LR
 |---|---|
 | **Access-Policy** | Policy der Kategorie `ACCESS`; steuert im Connector, welche Teilnehmer ein Datenangebot im Katalog sehen. |
 | **Connector** | Software-Komponente eines Datenraum-Teilnehmers für den souveränen Datenaustausch. Wertet Policies aus. Im Construct-X-Datenraum der Construct-X EDC, ein Fork des Tractus-X EDC. |
-| **Constraint** | Einzelne Bedingung einer Policy (z.B. Mitgliedschaft, Zeitraum). Im Hub fachlich modelliert, in ODRL als atomarer Constraint abgebildet. |
+| **Constraint** | Einzelne Bedingung einer Policy (z.B. Teilnehmer-Auswahl, Zeitraum). Im Hub fachlich modelliert, in ODRL als atomarer Constraint abgebildet. |
 | **Contract-Policy** | Policy der Kategorie `CONTRACT`; legt die Nutzungsbedingungen fest, die bei der Vertragsverhandlung geprüft werden. |
 | **did:web** | Methode für Decentralized Identifiers, die über eine Web-Domain aufgelöst werden; identifiziert Teilnehmer im Constraint `PARTICIPANT_DID`. |
 | **EDC** | Eclipse Dataspace Components — Open-Source-Framework für Datenraum-Connectoren. |
 | **Erläuterung der Constraints** | Deutschsprachige, natürlichsprachliche Beschreibung der Constraints einer Policy (Feld `legalText`). |
 | **JSON-LD** | JSON-basiertes Format für Linked Data; Serialisierung der ODRL-Policies. |
 | **jsonb** | Binäres JSON-Format in PostgreSQL mit Index- und Abfrageunterstützung. |
-| **Left-Operand** | Linke Seite eines ODRL-Constraints — die Eigenschaft, die geprüft wird (z.B. `Membership`). |
+| **Left-Operand** | Linke Seite eines ODRL-Constraints — die Eigenschaft, die geprüft wird (z.B. `edc:connector`). |
 | **Management API** | REST-Schnittstelle eines Connectors zur Verwaltung von Assets, Policies und Contract Definitions. |
 | **ODRL** | Open Digital Rights Language — W3C-Standard zur Beschreibung von Nutzungsrechten und -bedingungen. |
 | **Policy** | Regelwerk, das Zugriff auf bzw. Nutzung von Daten an Bedingungen knüpft. |

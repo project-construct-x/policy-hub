@@ -2,7 +2,7 @@
 
 // Kernablauf: bestehende Policy bearbeiten und die Änderung verifizieren.
 
-// zugriff-konsortium-mitglieder: ACCESS mit einer MEMBERSHIP-Bedingung.
+// zugriff-konsortium-mitglieder: ACCESS mit einer PARTICIPANT_DID-Bedingung.
 const POLICY_ID = '00000000-0000-0000-0000-000000000002';
 const ORIGINAL_SLUG = 'zugriff-konsortium-mitglieder';
 
@@ -24,16 +24,17 @@ describe('Policy – Bearbeiten', () => {
     cy.location('pathname').should('eq', `/policies/${POLICY_ID}`);
   });
 
-  it('fügt eine weitere Bedingung hinzu (FRAMEWORK_AGREEMENT)', () => {
+  it('fügt eine weitere Bedingung hinzu (DATA_SUBSET)', () => {
     cy.visitWithMode(`/policies/${POLICY_ID}/edit`, 'few');
 
-    cy.getByCy('palette-FRAMEWORK_AGREEMENT').click();
-    cy.getByCy('constraint-card-FRAMEWORK_AGREEMENT').should('exist');
+    cy.getByCy('palette-DATA_SUBSET').click();
+    cy.getByCy('constraint-card-DATA_SUBSET').should('exist');
+    cy.getByCy('data-subset-input').type('materialName{enter}');
 
     cy.getByCy('submit-policy').click();
 
     cy.getByCy('policy-title').should('exist');
-    cy.get('app-constraint-card').should('have.length', 2); // MEMBERSHIP + FRAMEWORK_AGREEMENT
+    cy.get('app-constraint-card').should('have.length', 2); // PARTICIPANT_DID + DATA_SUBSET
   });
 
   it('verlängert bei laufendem Zeitraum nur das Enddatum, das Startdatum bleibt erhalten', () => {

@@ -58,16 +58,12 @@ export class ConstraintCardComponent {
 
 function formatSummary(constraint: Constraint, transloco: TranslocoService): string {
   switch (constraint.type) {
-    case 'MEMBERSHIP':
-      return transloco.translate('constraint.MEMBERSHIP.summary');
     case 'DATE_RANGE': {
       if (!constraint.startDate && !constraint.endDate) return '—';
       const start = formatDisplayDate(constraint.startDate);
       const end = formatDisplayDate(constraint.endDate);
       return `${start} – ${end}`;
     }
-    case 'FRAMEWORK_AGREEMENT':
-      return constraint.agreement;
     case 'PARTICIPANT_DID':
       // Nur die Anzahl als Parameter; die DIDs selbst rendert das Template per Interpolation.
       return transloco.translate('constraint.PARTICIPANT_DID.summary', {

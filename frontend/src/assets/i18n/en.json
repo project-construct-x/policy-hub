@@ -220,17 +220,11 @@
     "constraint": {
       "empty": "No constraints added yet. Without constraints this policy allows everything.",
       "remove": "Remove constraint",
-      "MEMBERSHIP": {
-        "hint": "The consumer must be an active member of the dataspace. No further configuration required."
-      },
       "DATE_RANGE": {
         "label": "Time period",
         "startLabel": "Start date",
         "endLabel": "End date",
         "hint": "Choose a start date from today onwards. For a period that is already running, the start date is kept and the end date can be extended."
-      },
-      "FRAMEWORK_AGREEMENT": {
-        "hint": "The consumer must have agreed to this framework agreement:"
       },
       "PARTICIPANT_DID": {
         "label": "Participants (did:web)",
@@ -269,21 +263,10 @@
     }
   },
   "constraint": {
-    "MEMBERSHIP": {
-      "label": "Membership",
-      "description": "Active dataspace membership required.",
-      "legalText": "The data consumer must be an active, verified member of the Construct-X dataspace at the time of data access. Access by non-members or organizations with suspended membership is excluded.",
-      "summary": "active dataspace membership required"
-    },
     "DATE_RANGE": {
       "label": "Time period",
       "description": "Validity limited to a period from start to end date.",
       "legalText": "The usage right applies only within the given time period."
-    },
-    "FRAMEWORK_AGREEMENT": {
-      "label": "Framework agreement",
-      "description": "Agreement to the framework contract required.",
-      "legalText": "The consumer must have agreed to the DataExchangeGovernance framework agreement."
     },
     "PARTICIPANT_DID": {
       "label": "Participant selection",
@@ -314,7 +297,6 @@
     "dataSubsetItem": "{{kind}} \"{{identifier}}\"",
     "clause": {
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
-      "frameworkAgreement": "The data consumer must have explicitly agreed to the framework agreement \"{{agreement}}\" before any data transfer may take place.",
       "participantDid": "The data consumer must be one of the following participants, identified by their did:web identity: {{dids}}. Any usage of the data by other participants is prohibited.",
       "dataSubset": "Only the following parts of the dataset are provided to the data consumer: {{selectors}}. The permission does not extend to any other part of the dataset; their usage is prohibited."
     }

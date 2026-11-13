@@ -227,7 +227,7 @@ class PolicyServiceTest {
 
     @Test
     void createPolicy_validatesAndSavesPolicy() throws Exception {
-        JsonNode constraint = membershipConstraint();
+        JsonNode constraint = participantDidConstraint();
 
         CreatePolicyRequest request =
                 new CreatePolicyRequest(
@@ -283,7 +283,7 @@ class PolicyServiceTest {
                 new CreatePolicyRequest(
                         "duplicate-policy",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         LogicalOperator.AND,
                         "Legal Text"
                 );
@@ -312,7 +312,7 @@ class PolicyServiceTest {
     @Test
     void updatePolicy_validatesAndUpdatesExistingPolicy()
             throws Exception {
-        JsonNode constraint = membershipConstraint();
+        JsonNode constraint = participantDidConstraint();
 
         UpdatePolicyRequest request =
                 new UpdatePolicyRequest(
@@ -378,7 +378,7 @@ class PolicyServiceTest {
                 new UpdatePolicyRequest(
                         "zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         LogicalOperator.AND,
                         "Legal Text"
                 );
@@ -421,7 +421,7 @@ class PolicyServiceTest {
                 new UpdatePolicyRequest(
                         "other-policy",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         LogicalOperator.AND,
                         "Legal Text"
                 );
@@ -456,7 +456,7 @@ class PolicyServiceTest {
                 new UpdatePolicyRequest(
                         "updated-policy",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         LogicalOperator.AND,
                         "Legal Text"
                 );
@@ -536,7 +536,7 @@ class PolicyServiceTest {
                 ID,
                 "zugriff-konsortium-mitglieder",
                 PolicyCategory.ACCESS,
-                List.of(membershipConstraint()),
+                List.of(participantDidConstraint()),
                 LogicalOperator.AND,
                 "Legal Text",
                 CREATED_AT,
@@ -553,7 +553,7 @@ class PolicyServiceTest {
         );
         entity.setCategory(PolicyCategory.ACCESS);
         entity.setConstraints(
-                List.of(membershipConstraint())
+                List.of(participantDidConstraint())
         );
         entity.setLegalText("Legal Text");
         entity.setCreatedAt(CREATED_AT);
@@ -562,12 +562,12 @@ class PolicyServiceTest {
         return entity;
     }
 
-    private JsonNode membershipConstraint()
+    private JsonNode participantDidConstraint()
             throws Exception {
         return objectMapper.readTree("""
                 {
-                  "type": "MEMBERSHIP",
-                  "value": "active"
+                  "type": "PARTICIPANT_DID",
+                  "dids": ["did:web:example.com"]
                 }
                 """);
     }
@@ -578,7 +578,7 @@ class PolicyServiceTest {
                 new CreatePolicyRequest(
                         "zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         null,
                         "Legal Text"
                 );
@@ -607,7 +607,7 @@ class PolicyServiceTest {
                 new CreatePolicyRequest(
                         "zugriff-konsortium-mitglieder",
                         PolicyCategory.ACCESS,
-                        List.of(membershipConstraint()),
+                        List.of(participantDidConstraint()),
                         LogicalOperator.OR,
                         "Legal Text"
                 );

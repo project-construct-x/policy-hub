@@ -108,18 +108,6 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
     });
   });
 
-  describe('MEMBERSHIP & FRAMEWORK_AGREEMENT — immer gültig', () => {
-    it('MEMBERSHIP liefert keine Fehler', () => {
-      expect(validateConstraint({ type: 'MEMBERSHIP', value: 'active' })).toEqual([]);
-    });
-
-    it('FRAMEWORK_AGREEMENT liefert keine Fehler', () => {
-      expect(
-        validateConstraint({ type: 'FRAMEWORK_AGREEMENT', agreement: 'DataExchangeGovernance' }),
-      ).toEqual([]);
-    });
-  });
-
   describe('PARTICIPANT_DID', () => {
     it('meldet participantDidRequired bei leerer Liste', () => {
       expect(validateConstraint({ type: 'PARTICIPANT_DID', dids: [] }, 2)).toEqual([

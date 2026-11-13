@@ -50,10 +50,10 @@ class PolicyRepositoryIT {
     void save_roundTripsConstraintsThroughJsonb() throws Exception {
         List<JsonNode> constraints = List.of(
                 objectMapper.readTree("""
-                    { "type": "MEMBERSHIP", "value": "active" }
+                    { "type": "PARTICIPANT_DID", "dids": ["did:web:a.example"] }
                     """),
                 objectMapper.readTree("""
-                    { "type": "FRAMEWORK_AGREEMENT", "agreement": "DataExchangeGovernance" }
+                    { "type": "DATA_SUBSET", "selectors": ["field:materialName"] }
                     """),
                 objectMapper.readTree("""
                     { "type": "DATE_RANGE", "startDate": "2027-01-01", "endDate": "2027-06-30" }

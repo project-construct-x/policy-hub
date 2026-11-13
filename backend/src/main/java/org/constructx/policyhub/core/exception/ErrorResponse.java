@@ -20,7 +20,7 @@ public class ErrorResponse {
     @Schema(example = "Bad Request")
     String error;
 
-    @Schema(example = "constraints[0].agreement is required")
+    @Schema(example = "constraints[0].startDate is required")
     String message;
 
     @Schema(example = "/api/v1/policies")
