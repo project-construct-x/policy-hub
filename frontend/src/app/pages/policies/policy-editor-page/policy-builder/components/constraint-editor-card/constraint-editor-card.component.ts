@@ -8,6 +8,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ErrorStateMatcher, MatNativeDateModule } from '@angular/material/core';
 import {
   Constraint,
+  CredentialAttributeConstraint,
+  CredentialRule,
   DataSubsetConstraint,
   DateRangeConstraint,
   ParticipantDidConstraint,
@@ -19,6 +21,7 @@ import {
 } from '@features/policies/builder/validators/constraint-validators';
 import { ParticipantDidInputComponent } from '@features/policies/builder/components/participant-did-input/participant-did-input.component';
 import { DataSubsetInputComponent } from '@features/policies/builder/components/data-subset-input/data-subset-input.component';
+import { CredentialRulesInputComponent } from '@features/policies/builder/components/credential-rules-input/credential-rules-input.component';
 
 @Component({
   selector: 'app-constraint-editor-card',
@@ -32,6 +35,7 @@ import { DataSubsetInputComponent } from '@features/policies/builder/components/
     MatNativeDateModule,
     ParticipantDidInputComponent,
     DataSubsetInputComponent,
+    CredentialRulesInputComponent,
   ],
   templateUrl: './constraint-editor-card.component.html',
   styleUrl: './constraint-editor-card.component.scss',
@@ -115,6 +119,9 @@ export class ConstraintEditorCardComponent {
   asDataSubset(constraint: Constraint): DataSubsetConstraint {
     return constraint as DataSubsetConstraint;
   }
+  asCredentialAttribute(constraint: Constraint): CredentialAttributeConstraint {
+    return constraint as CredentialAttributeConstraint;
+  }
 
   onDidsChange(dids: string[]): void {
     this.constraintChange.emit({ ...this.asParticipantDid(this.constraint()), dids });
@@ -122,6 +129,10 @@ export class ConstraintEditorCardComponent {
 
   onSelectorsChange(selectors: string[]): void {
     this.constraintChange.emit({ ...this.asDataSubset(this.constraint()), selectors });
+  }
+
+  onRulesChange(rules: CredentialRule[]): void {
+    this.constraintChange.emit({ ...this.asCredentialAttribute(this.constraint()), rules });
   }
 
   onStartDateChange(value: Date | null): void {

@@ -19,6 +19,12 @@ class OdrlConstraintMapperTest {
     private static final String CX_POLICY_NS =
             "https://w3id.org/catenax/2025/9/policy/";
 
+    private static final String MEMBERSHIP =
+            "https://w3id.org/constructx/credentials/v0.1/MembershipCredential";
+
+    private static final String SITE_ACCESS =
+            "https://example.com/credentials/SiteAccessCredential";
+
     @Test
     void mapDateRange_mapsStartAndEndDateConstraints() throws Exception {
         JsonNode constraint = createConstraint(
@@ -125,6 +131,75 @@ class OdrlConstraintMapperTest {
                 "https://w3id.org/construct-x/policy/DataSubset",
                 "odrl:isAnyOf",
                 "[\"field:materialName\", \"submodel:urn:samm:com.example.material:1.0.0#Material\"]"
+        );
+
+        assertSingleMapping(constraint, expected);
+    }
+
+    @Test
+    void mapCredentialAttribute_mapsEachRuleToAbacConstraint() throws Exception {
+        JsonNode constraint = createConstraint(
+                "CREDENTIAL_ATTRIBUTE",
+                """
+                "rules": [
+                  { "credentialType": "https://w3id.org/constructx/credentials/v0.1/MembershipCredential", "attributePath": "isMember",
+                    "operator": "eq", "value": "true", "values": ["ignored"] },
+                  { "credentialType": "https://example.com/credentials/SiteAccessCredential", "attributePath": "site.accessLevel",
+                    "operator": "gteq", "value": "4", "values": [] },
+                  { "credentialType": "https://example.com/credentials/SiteAccessCredential", "attributePath": "roles",
+                    "operator": "isNoneOf", "value": "ignored", "values": ["Gast", "Site Visitor"] }
+                ]
+                """
+        );
+
+        List<OdrlAtomicConstraintResponse> results =
+                OdrlConstraintMapper.constraintToOdrl(constraint);
+
+        assertEquals(3, results.size());
+        assertEquals(
+                createExpectedWithLeftOperand(
+                        MEMBERSHIP + ".credentialSubject.isMember",
+                        "odrl:eq",
+                        "\"true\""
+                ),
+                objectMapper.valueToTree(results.get(0))
+        );
+        assertEquals(
+                createExpectedWithLeftOperand(
+                        SITE_ACCESS + ".credentialSubject.site.accessLevel",
+                        "odrl:gteq",
+                        "\"4\""
+                ),
+                objectMapper.valueToTree(results.get(1))
+        );
+        // A value list is a JSON string, not an array: that is what the ABAC extension evaluates.
+        assertEquals(
+                createExpectedWithLeftOperand(
+                        SITE_ACCESS + ".credentialSubject.roles",
+                        "odrl:isNoneOf",
+                        "\"[\\\"Gast\\\",\\\"Site Visitor\\\"]\""
+                ),
+                objectMapper.valueToTree(results.get(2))
+        );
+    }
+
+    @Test
+    void mapCredentialAttribute_writesNumericValueListAsNumbersLikeReferencePolicy()
+            throws Exception {
+        JsonNode constraint = createConstraint(
+                "CREDENTIAL_ATTRIBUTE",
+                """
+                "rules": [
+                  { "credentialType": "%s", "attributePath": "workpackages",
+                    "operator": "isAnyOf", "value": "", "values": ["7", "8"] }
+                ]
+                """.formatted(MEMBERSHIP)
+        );
+
+        JsonNode expected = createExpectedWithLeftOperand(
+                MEMBERSHIP + ".credentialSubject.workpackages",
+                "odrl:isAnyOf",
+                "\"[7,8]\""
         );
 
         assertSingleMapping(constraint, expected);

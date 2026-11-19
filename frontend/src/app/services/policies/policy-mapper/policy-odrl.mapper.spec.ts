@@ -77,6 +77,80 @@ describe('constraintToOdrl — alle Bedingungstypen', () => {
     ]);
   });
 
+  describe('CREDENTIAL_ATTRIBUTE', () => {
+    const membership = 'https://w3id.org/constructx/credentials/v0.1/MembershipCredential';
+    const siteAccess = 'https://example.com/credentials/SiteAccessCredential';
+
+    it('erzeugt die Arbeitspaket-Regel exakt wie die Referenz-Policy (Zahlenliste als JSON-String)', () => {
+      const constraint: Constraint = {
+        type: 'CREDENTIAL_ATTRIBUTE',
+        rules: [
+          {
+            credentialType: membership,
+            attributePath: 'workpackages',
+            operator: 'isAnyOf',
+            value: 'bleibt-unbeachtet',
+            values: ['7', '8'],
+          },
+        ],
+      };
+      expect(constraintToOdrl(constraint)).toEqual([
+        {
+          'odrl:leftOperand': { '@id': `${membership}.credentialSubject.workpackages` },
+          'odrl:operator': { '@id': 'odrl:isAnyOf' },
+          'odrl:rightOperand': '[7,8]',
+        },
+      ]);
+    });
+
+    it('erzeugt je Regel ein Atomic; Texte als String-Liste, Einzelwerte unverändert', () => {
+      const constraint: Constraint = {
+        type: 'CREDENTIAL_ATTRIBUTE',
+        rules: [
+          {
+            credentialType: membership,
+            attributePath: 'memberType',
+            operator: 'isNoneOf',
+            value: '',
+            values: ['external'],
+          },
+          {
+            credentialType: siteAccess,
+            attributePath: 'site.accessLevel',
+            operator: 'gteq',
+            value: '4',
+            values: ['bleibt-unbeachtet'],
+          },
+          {
+            credentialType: siteAccess,
+            attributePath: 'roles',
+            operator: 'isAnyOf',
+            value: '',
+            values: ['Gast', 'Site Visitor', '7'],
+          },
+        ],
+      };
+      expect(constraintToOdrl(constraint)).toEqual([
+        {
+          'odrl:leftOperand': { '@id': `${membership}.credentialSubject.memberType` },
+          'odrl:operator': { '@id': 'odrl:isNoneOf' },
+          'odrl:rightOperand': '["external"]',
+        },
+        {
+          'odrl:leftOperand': { '@id': `${siteAccess}.credentialSubject.site.accessLevel` },
+          'odrl:operator': { '@id': 'odrl:gteq' },
+          'odrl:rightOperand': '4',
+        },
+        {
+          'odrl:leftOperand': { '@id': `${siteAccess}.credentialSubject.roles` },
+          'odrl:operator': { '@id': 'odrl:isAnyOf' },
+          // Gemischte Liste bleibt komplett String-Liste.
+          'odrl:rightOperand': '["Gast","Site Visitor","7"]',
+        },
+      ]);
+    });
+  });
+
   it('DATA_SUBSET → Platzhalter-Operand / odrl:isAnyOf / Selektoren als Array', () => {
     const constraint: Constraint = {
       type: 'DATA_SUBSET',
@@ -203,6 +277,38 @@ describe('policyToOdrl — logische Verknüpfung (UND/ODER)', () => {
   it('lässt odrl:constraint bei OR ohne Bedingungen komplett weg', () => {
     const policy = buildPolicy({ logicalOperator: 'OR', constraints: [] });
     expect(constraintGroup(policy)).toBeUndefined();
+  });
+
+  it('OR → mehrere Credential-Regeln bleiben als inneres odrl:and zusammen', () => {
+    const credentialRules: Constraint = {
+      type: 'CREDENTIAL_ATTRIBUTE',
+      rules: [
+        {
+          credentialType: 'https://w3id.org/constructx/credentials/v0.1/MembershipCredential',
+          attributePath: 'isMember',
+          operator: 'eq',
+          value: 'true',
+          values: [],
+        },
+        {
+          credentialType: 'https://example.com/credentials/SiteAccessCredential',
+          attributePath: 'accessLevel',
+          operator: 'gt',
+          value: '2',
+          values: [],
+        },
+      ],
+    };
+    const policy = buildPolicy({
+      logicalOperator: 'OR',
+      constraints: [participant, credentialRules],
+    });
+    expect(constraintGroup(policy)).toEqual({
+      'odrl:or': [
+        constraintToOdrl(participant)[0],
+        { 'odrl:and': constraintToOdrl(credentialRules) },
+      ],
+    });
   });
 
   describe('DATA_SUBSET gilt immer (auch bei OR)', () => {

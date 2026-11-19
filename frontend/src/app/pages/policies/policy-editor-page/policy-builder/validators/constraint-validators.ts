@@ -1,9 +1,18 @@
-import { Constraint } from '@shared/types/constraint.model';
+import {
+  Constraint,
+  CREDENTIAL_RULE_OPERATORS,
+  credentialValueKind,
+  CredentialRuleOperator,
+} from '@shared/types/constraint.model';
 import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 import {
   CONSTRAINT_METADATA,
   isKnownConstraintType,
 } from '@features/policies/builder/metadata/constraint-metadata';
+import {
+  knownPropertyOf,
+  knownPropertyOption,
+} from '@features/policies/builder/metadata/credential-attribute.data';
 
 export interface ValidationError {
   field: string;
@@ -85,6 +94,50 @@ export function parseDataSubsetSelector(
   if (typeof value !== 'string') return null;
   const match = DATA_SUBSET_SELECTOR_PATTERN.exec(value);
   return match ? { kind: match[1] as DataSubsetSelectorKind, identifier: match[2] } : null;
+}
+
+/**
+ * Vollständige Typ-IRI eines Credentials, z.B.
+ * `https://w3id.org/constructx/credentials/v0.1/MembershipCredential`. Wie in der ABAC-Extension
+ * des Connectors: https, das letzte Segment beginnt mit einem Großbuchstaben und enthält keinen
+ * Punkt (der Punkt trennt Typ und `.credentialSubject`). Der Zeichensatz schließt `{}` aus.
+ */
+export const CREDENTIAL_TYPE_PATTERN =
+  /^https:\/\/[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+(?::\d{1,5})?(?:\/[A-Za-z0-9._~-]+)*\/[A-Z][A-Za-z0-9_-]*$/;
+
+/**
+ * Pfad im `credentialSubject`: Feldnamen getrennt durch `.`, optional mit Array-Index, z.B.
+ * `isMember`, `roles[0]` oder `site.accessLevel`.
+ */
+export const CREDENTIAL_ATTRIBUTE_PATH_PATTERN =
+  /^[A-Za-z0-9_-]+(?:\[\d+\])*(?:\.[A-Za-z0-9_-]+(?:\[\d+\])*)*$/;
+
+/** Vergleichswert für `gt`/`gteq`/`lt`/`lteq`. */
+export const CREDENTIAL_NUMBER_PATTERN = /^-?\d+(?:\.\d+)?$/;
+
+/**
+ * Vergleichswert für `eq`/`neq` und Eintrag einer Werteliste: 1–200 Zeichen, kein Leerraum am
+ * Rand, ohne `{ } [ ] " \`. Ohne `[` und `"` deutet die ABAC-Extension einen Einzelwert nicht
+ * als JSON-Liste; ohne `{}` ist der Wert als Transloco-Parameter unbedenklich
+ * (`legal-description.helper.ts`).
+ */
+export const CREDENTIAL_VALUE_PATTERN =
+  /^(?=[^\r\n\t]{1,200}$)[^\s{}[\]"\\](?:[^{}[\]"\\]*[^\s{}[\]"\\])?$/;
+
+export function isCredentialRuleOperator(value: unknown): value is CredentialRuleOperator {
+  return (CREDENTIAL_RULE_OPERATORS as readonly unknown[]).includes(value);
+}
+
+export function isValidCredentialValue(value: unknown): value is string {
+  return typeof value === 'string' && CREDENTIAL_VALUE_PATTERN.test(value);
+}
+
+/** Zerlegt die Eingabe einer Werteliste an Komma und Zeilenumbruch (Werte dürfen Leerzeichen enthalten). */
+export function splitCredentialValues(raw: string): string[] {
+  return raw
+    .split(/[,\r\n]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
 }
 
 /**
@@ -273,9 +326,109 @@ export function validateConstraint(constraint: Constraint, index = 0): Validatio
       }
       break;
     }
+    case 'CREDENTIAL_ATTRIBUTE': {
+      // `rules` kann aus einem HTTP-Response stammen (siehe PARTICIPANT_DID).
+      const rules: unknown[] = Array.isArray(constraint.rules) ? constraint.rules : [];
+      if (!rules.length) {
+        errors.push({ field: `${prefix}.rules`, messageKey: 'validation.credentialRulesRequired' });
+      }
+      rules.forEach((rule, ruleIndex) =>
+        errors.push(...validateCredentialRule(rule, `${prefix}.rules[${ruleIndex}]`)),
+      );
+      break;
+    }
   }
 
   return errors;
+}
+
+/** Prüft eine einzelne Credential-Regel; Fehler je Feld unter `<path>.<feld>`. */
+function validateCredentialRule(rule: unknown, path: string): ValidationError[] {
+  if (typeof rule !== 'object' || rule === null) {
+    return [{ field: `${path}.credentialType`, messageKey: 'validation.credentialTypeRequired' }];
+  }
+  const { credentialType, attributePath, operator, value, values } = rule as Record<
+    string,
+    unknown
+  >;
+  const errors: ValidationError[] = [];
+
+  if (typeof credentialType !== 'string' || !credentialType) {
+    errors.push({
+      field: `${path}.credentialType`,
+      messageKey: 'validation.credentialTypeRequired',
+    });
+  } else if (!CREDENTIAL_TYPE_PATTERN.test(credentialType)) {
+    errors.push({
+      field: `${path}.credentialType`,
+      messageKey: 'validation.credentialTypeInvalid',
+    });
+  }
+
+  if (typeof attributePath !== 'string' || !attributePath) {
+    errors.push({
+      field: `${path}.attributePath`,
+      messageKey: 'validation.credentialAttributePathRequired',
+    });
+  } else if (!CREDENTIAL_ATTRIBUTE_PATH_PATTERN.test(attributePath)) {
+    errors.push({
+      field: `${path}.attributePath`,
+      messageKey: 'validation.credentialAttributePathInvalid',
+    });
+  }
+
+  if (!isCredentialRuleOperator(operator)) {
+    errors.push({ field: `${path}.operator`, messageKey: 'validation.credentialOperatorInvalid' });
+    return errors;
+  }
+
+  switch (credentialValueKind(operator)) {
+    case 'number':
+      if (typeof value !== 'string' || !value) {
+        errors.push({ field: `${path}.value`, messageKey: 'validation.credentialValueRequired' });
+      } else if (!CREDENTIAL_NUMBER_PATTERN.test(value)) {
+        errors.push({ field: `${path}.value`, messageKey: 'validation.credentialValueNumber' });
+      }
+      break;
+    case 'text':
+      if (typeof value !== 'string' || !value) {
+        errors.push({ field: `${path}.value`, messageKey: 'validation.credentialValueRequired' });
+      } else if (!isValidCredentialValue(value)) {
+        errors.push({ field: `${path}.value`, messageKey: 'validation.credentialValueInvalid' });
+      }
+      break;
+    case 'list': {
+      const entries: unknown[] = Array.isArray(values) ? values : [];
+      if (!entries.length) {
+        errors.push({ field: `${path}.values`, messageKey: 'validation.credentialValuesRequired' });
+      } else if (!entries.every(isValidCredentialValue)) {
+        errors.push({ field: `${path}.values`, messageKey: 'validation.credentialValueInvalid' });
+      } else if (new Set(entries).size !== entries.length) {
+        errors.push({
+          field: `${path}.values`,
+          messageKey: 'validation.credentialValuesDuplicate',
+        });
+      } else {
+        const knownError = validateKnownPropertyValues(rule, entries as string[]);
+        if (knownError) errors.push({ field: `${path}.values`, messageKey: knownError });
+      }
+      break;
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Zusätzliche Prüfung für bekannte Merkmale (Registry): nur Werte aus der Auswahl. Liefert den
+ * i18n-Key des Fehlers oder `null`.
+ */
+function validateKnownPropertyValues(rule: unknown, values: readonly string[]): string | null {
+  const property = knownPropertyOf(rule);
+  if (!property) return null;
+  return values.every((value) => knownPropertyOption(property, value))
+    ? null
+    : 'validation.credentialValueNotAllowed';
 }
 
 /**

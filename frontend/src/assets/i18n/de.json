@@ -54,6 +54,12 @@
       "removed": "Teildatensatz entfernt",
       "added": "Teildatensätze hinzugefügt: {{count}}"
     },
+    "credentialRules": {
+      "list": "Liste der Credential-Regeln",
+      "remove": "Regel {{number}} entfernen",
+      "removed": "Regel entfernt",
+      "added": "Regel hinzugefügt"
+    },
     "severity": {
       "success": "Erfolg",
       "error": "Fehler",
@@ -243,6 +249,24 @@
           "record": "Kennung des Datensatzes, z. B. 2027-Q1"
         },
         "alwaysApplies": "Dieser Constraint gilt immer zusätzlich, auch bei ODER-Verknüpfung. Gefiltert wird im ausliefernden Dienst."
+      },
+      "CREDENTIAL_ATTRIBUTE": {
+        "propertyLabel": "Merkmal",
+        "expertProperty": "Eigenes Merkmal",
+        "expertHint": "Für Merkmale, die oben nicht angeboten werden. Erfordert die vollständige Typ-IRI des Credentials und den Pfad im credentialSubject.",
+        "ruleLegend": "Regel {{number}}",
+        "credentialTypeLabel": "Credential-Typ",
+        "credentialTypeHint": "Vollständige Typ-IRI, z. B. https://w3id.org/constructx/credentials/v0.1/MembershipCredential",
+        "attributePathLabel": "Attribut",
+        "attributePathHint": "Pfad im credentialSubject, z. B. roles[0] oder site.accessLevel",
+        "operatorLabel": "Vergleich",
+        "valueLabel": "Wert",
+        "valueHintText": "z. B. true oder Bauleitung",
+        "valueHintNumber": "Zahl, z. B. 4",
+        "valuesLabel": "Werte",
+        "valuesHint": "Mehrere Werte durch Komma getrennt",
+        "addRule": "Regel hinzufügen",
+        "workpackagesHint": "AP-Nummern, durch Komma getrennt, z. B. 7, 8"
       }
     },
     "actions": {
@@ -285,6 +309,62 @@
         "submodel": "Submodell",
         "record": "Record"
       }
+    },
+    "CREDENTIAL_ATTRIBUTE": {
+      "label": "Mitgliedschaft & Credentials",
+      "description": "Nur Teilnehmer mit bestimmten Merkmalen ihrer Mitgliedschaft, z. B. Partnerart oder Arbeitspakete.",
+      "legalText": "Der Datenkonsument muss über Verifiable Credentials verfügen, die die angegebenen Regeln erfüllen.",
+      "summary": "Regeln: {{count}}",
+      "operator": {
+        "eq": "gleich",
+        "neq": "ungleich",
+        "gt": "größer als",
+        "gteq": "größer oder gleich",
+        "lt": "kleiner als",
+        "lteq": "kleiner oder gleich",
+        "isAnyOf": "ist einer von",
+        "isNoneOf": "ist keiner von"
+      },
+      "symbol": {
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gteq": "≥",
+        "lt": "<",
+        "lteq": "≤",
+        "isAnyOf": "∈",
+        "isNoneOf": "∉"
+      },
+      "membership": {
+        "label": "Mitgliedschaft",
+        "memberType": {
+          "label": "Partnerart",
+          "option": {
+            "consortium": "Konsortialpartner",
+            "associated": "Assoziierter Partner",
+            "external": "Externer Partner"
+          },
+          "operator": {
+            "isAnyOf": "ist eine der ausgewählten",
+            "isNoneOf": "ist keine der ausgewählten"
+          },
+          "summary": {
+            "isAnyOf": "Partnerart: {{values}}",
+            "isNoneOf": "Partnerart nicht: {{values}}"
+          }
+        },
+        "workpackages": {
+          "label": "Arbeitspakete",
+          "operator": {
+            "isAnyOf": "an mindestens einem beteiligt",
+            "isNoneOf": "an keinem beteiligt"
+          },
+          "summary": {
+            "isAnyOf": "Arbeitspakete: mind. eines von {{values}}",
+            "isNoneOf": "Arbeitspakete: keines von {{values}}"
+          }
+        }
+      }
     }
   },
   "legalDescription": {
@@ -295,10 +375,24 @@
     "introContractAnyOf": "Die Nutzung der bereitgestellten Daten ist gestattet, sofern mindestens eine der folgenden Voraussetzungen erfüllt ist:",
     "introAlwaysApplies": "Unabhängig von den vorstehenden Voraussetzungen gilt in jedem Fall:",
     "dataSubsetItem": "{{kind}} „{{identifier}}“",
+    "credentialRuleItem": "Credential {{credential}}, Attribut „{{attribute}}“ {{operator}} {{value}}",
+    "credentialValue": "„{{value}}“",
+    "knownCredentialRuleItem": "{{credential}}: {{rule}}",
+    "membership": {
+      "memberType": {
+        "isAnyOf": "Partnerart ist eine der folgenden: {{values}}",
+        "isNoneOf": "Partnerart ist keine der folgenden: {{values}}"
+      },
+      "workpackages": {
+        "isAnyOf": "beteiligt an mindestens einem der Arbeitspakete {{values}}",
+        "isNoneOf": "an keinem der Arbeitspakete {{values}} beteiligt"
+      }
+    },
     "clause": {
       "dateRange": "Die erteilte Berechtigung ist zeitlich befristet und gilt ausschließlich im Zeitraum vom {{start}} bis zum {{end}}. Vor Beginn und nach Ablauf dieses Zeitraums ist jegliche Nutzung der Daten unzulässig.",
       "participantDid": "Der Datenkonsument muss einer der folgenden, über ihre did:web-Identität benannten Teilnehmer sein: {{dids}}. Allen übrigen Teilnehmern ist jegliche Nutzung der Daten untersagt.",
-      "dataSubset": "Dem Datenkonsumenten werden ausschließlich die folgenden Teile des Datensatzes bereitgestellt: {{selectors}}. Auf alle übrigen Bestandteile des Datensatzes erstreckt sich die Berechtigung nicht; ihre Nutzung ist untersagt."
+      "dataSubset": "Dem Datenkonsumenten werden ausschließlich die folgenden Teile des Datensatzes bereitgestellt: {{selectors}}. Auf alle übrigen Bestandteile des Datensatzes erstreckt sich die Berechtigung nicht; ihre Nutzung ist untersagt.",
+      "credentialAttribute": "Der Datenkonsument muss über von vertrauenswürdigen Ausstellern ausgestellte Verifiable Credentials verfügen, die alle folgenden Regeln erfüllen: {{rules}}. Fehlt ein Credential oder ein Attribut, ist die Nutzung der Daten untersagt."
     }
   },
   "validation": {
@@ -320,6 +414,19 @@
     "dataSubsetSelectorRequired": "Bitte mindestens einen Teildatensatz hinzufügen",
     "dataSubsetSelectorInvalid": "Der Name darf nur Buchstaben, Ziffern und . _ ~ : / # - enthalten (keine Leerzeichen, keine Kommas)",
     "dataSubsetSelectorDuplicate": "Dieser Teildatensatz ist bereits in der Liste",
+    "credentialRulesRequired": "Bitte mindestens eine Regel anlegen",
+    "credentialTypeRequired": "Bitte den Credential-Typ angeben",
+    "credentialTypeInvalid": "Bitte die vollständige Typ-IRI angeben (https://…), das letzte Segment beginnt mit einem Großbuchstaben",
+    "credentialAttributePathRequired": "Bitte das Attribut angeben",
+    "credentialAttributePathInvalid": "Feldnamen aus Buchstaben, Ziffern, _ und -, getrennt durch Punkt, optional mit Index wie [0]",
+    "credentialOperatorInvalid": "Bitte einen Vergleich auswählen",
+    "credentialValueRequired": "Bitte einen Wert angeben",
+    "credentialValueNumber": "Bitte eine Zahl angeben, z. B. 4 oder 2.5",
+    "credentialValueInvalid": "Werte dürfen keine Klammern, Anführungszeichen oder Backslashes enthalten und nicht mit Leerzeichen beginnen oder enden",
+    "credentialValueNotAllowed": "Bitte nur Werte aus der Auswahl verwenden",
+    "credentialValueInteger": "Bitte nur ganze Zahlen ab 1 angeben, z. B. 7, 8",
+    "credentialValuesRequired": "Bitte mindestens einen Wert auswählen oder angeben",
+    "credentialValuesDuplicate": "Jeder Wert darf nur einmal vorkommen",
     "policyIdInvalidChars": "Nur Buchstaben, Ziffern, Punkt, Unterstrich und Bindestrich erlaubt (Beginn mit Buchstabe oder Ziffer)"
   },
   "deleteDialog": {

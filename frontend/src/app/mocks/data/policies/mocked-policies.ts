@@ -6,6 +6,7 @@ import {
 } from '@shared/types/policy.model';
 import { Constraint } from '@shared/types/constraint.model';
 import { Page, PageRequest } from '@shared/types/page.model';
+import { MEMBERSHIP_CREDENTIAL_TYPE } from '@features/policies/builder/metadata/credential-attribute.data';
 import { BehaviorSubject } from 'rxjs';
 
 export type PolicyMockMode = 'empty' | 'few' | 'many';
@@ -129,6 +130,25 @@ function generatePolicies(mode: PolicyMockMode): Policy[] {
           constraints: [
             { type: 'PARTICIPANT_DID', dids: ['did:web:pruefstelle-mitte.example'] },
             { type: 'DATE_RANGE', startDate: '2026-08-01', endDate: '2027-07-31' },
+            {
+              type: 'CREDENTIAL_ATTRIBUTE',
+              rules: [
+                {
+                  credentialType: MEMBERSHIP_CREDENTIAL_TYPE,
+                  attributePath: 'memberType',
+                  operator: 'isAnyOf',
+                  value: '',
+                  values: ['consortium'],
+                },
+                {
+                  credentialType: MEMBERSHIP_CREDENTIAL_TYPE,
+                  attributePath: 'workpackages',
+                  operator: 'isAnyOf',
+                  value: '',
+                  values: ['7', '8'],
+                },
+              ],
+            },
           ],
           createdAt: '2026-03-01T09:00:00Z',
           updatedAt: '2026-04-20T14:30:00Z',

@@ -68,6 +68,11 @@
     font-family: 'Source Code Pro', monospace;
     font-size: 0.8125rem;
     overflow-wrap: anywhere;
+
+    // Fachlicher Text (z.B. „Partnerart: Konsortialpartner“) ist keine technische Kennung.
+    &--plain {
+      font-family: 'Montserrat', sans-serif;
+    }
   }
 
   // Art eines Teildatensatzes ("Feld:") in der Fließtextschrift, der Name bleibt monospace.

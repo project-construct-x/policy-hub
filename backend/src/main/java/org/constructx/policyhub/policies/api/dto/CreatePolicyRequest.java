@@ -36,7 +36,8 @@ public record CreatePolicyRequest(
         @Schema(
                 description = """
                 Ordered list of policy constraints. Supported types are
-                DATE_RANGE, PARTICIPANT_DID and DATA_SUBSET.
+                DATE_RANGE, PARTICIPANT_DID, DATA_SUBSET and
+                CREDENTIAL_ATTRIBUTE.
                 DATE_RANGE defines a start and end date in ISO-8601 format.
                 """,
                 example = """

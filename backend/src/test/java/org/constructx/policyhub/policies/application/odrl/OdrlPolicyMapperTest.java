@@ -624,6 +624,38 @@ public class OdrlPolicyMapperTest {
         assertDataSubsetConstraint(and.get(0));
     }
 
+    @Test
+    void policyToOdrl_nestsCredentialRulesAsAndInsideOr() throws Exception {
+        JsonNode credentialAttribute = objectMapper.readTree("""
+            {
+              "type": "CREDENTIAL_ATTRIBUTE",
+              "rules": [
+                { "credentialType": "https://w3id.org/constructx/credentials/v0.1/MembershipCredential", "attributePath": "isMember",
+                  "operator": "eq", "value": "true", "values": [] },
+                { "credentialType": "https://example.com/credentials/SiteAccessCredential", "attributePath": "accessLevel",
+                  "operator": "gt", "value": "2", "values": [] }
+              ]
+            }
+            """);
+        Policy policy = createPolicy(
+                List.of(participantDid(), credentialAttribute),
+                LogicalOperator.OR
+        );
+
+        JsonNode or = constraintGroup(policy).path("odrl:or");
+
+        // The rules stay "rule 1 AND rule 2"; flat inside odrl:or they would mean "rule 1 OR rule 2"
+        assertEquals(2, or.size());
+        assertParticipantDidConstraint(or.get(0));
+        JsonNode nestedAnd = or.get(1).path("odrl:and");
+        assertEquals(2, nestedAnd.size());
+        assertEquals(
+                "https://example.com/credentials/SiteAccessCredential"
+                        + ".credentialSubject.accessLevel",
+                nestedAnd.get(1).path("odrl:leftOperand").path("@id").asText()
+        );
+    }
+
     private JsonNode dataSubset() throws Exception {
         return objectMapper.readTree("""
             {

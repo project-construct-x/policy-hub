@@ -34,7 +34,7 @@ public record PolicyResponse(
     @Schema(
             description = """
                     Ordered list of structured policy constraints.
-                    Supported types are DATE_RANGE, PARTICIPANT_DID and DATA_SUBSET.
+                    Supported types are DATE_RANGE, PARTICIPANT_DID, DATA_SUBSET and CREDENTIAL_ATTRIBUTE.
                     """,
             example = """
                     [

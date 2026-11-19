@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Constraint } from '@shared/types/constraint.model';
+import { Constraint, CredentialRule } from '@shared/types/constraint.model';
 import { Policy, POLICY_ID_PREFIX } from '@shared/types/policy.model';
 
 import {
+  isValidCredentialValue,
   isValidDataSubsetSelector,
   isValidDidWeb,
+  splitCredentialValues,
   parseDataSubsetSelector,
   partitionCandidates,
   splitDataSubsetInput,
@@ -198,6 +200,173 @@ describe('validateConstraint — Bedingungs-Prüfung', () => {
   it('interpoliert den Index in das field-Präfix', () => {
     const errors = validateConstraint({ type: 'DATE_RANGE', startDate: '', endDate: '' }, 3);
     expect(errors[0].field).toBe('constraint[3].startDate');
+  });
+
+  describe('CREDENTIAL_ATTRIBUTE', () => {
+    const validRule: CredentialRule = {
+      credentialType: 'https://w3id.org/constructx/credentials/v0.1/MembershipCredential',
+      attributePath: 'isMember',
+      operator: 'eq',
+      value: 'true',
+      values: [],
+    };
+
+    function validate(...rules: Partial<CredentialRule>[]) {
+      return validateConstraint(
+        {
+          type: 'CREDENTIAL_ATTRIBUTE',
+          rules: rules.map((rule) => ({ ...validRule, ...rule })),
+        },
+        2,
+      );
+    }
+
+    it('akzeptiert gültige Regeln aller Wertarten', () => {
+      expect(
+        validate(
+          {},
+          { attributePath: 'site.accessLevel', operator: 'gteq', value: '4' },
+          { attributePath: 'roles[0]', operator: 'isNoneOf', value: '', values: ['Gast'] },
+          { operator: 'neq', value: 'Site Manager' },
+          { operator: 'lt', value: '-2.5' },
+        ),
+      ).toEqual([]);
+    });
+
+    it('meldet credentialRulesRequired ohne Regel (auch wenn rules kein Array ist)', () => {
+      expect(validateConstraint({ type: 'CREDENTIAL_ATTRIBUTE', rules: [] }, 2)).toEqual([
+        { field: 'constraint[2].rules', messageKey: 'validation.credentialRulesRequired' },
+      ]);
+      const constraint = { type: 'CREDENTIAL_ATTRIBUTE', rules: 'x' } as unknown as Constraint;
+      expect(validateConstraint(constraint)[0].messageKey).toBe(
+        'validation.credentialRulesRequired',
+      );
+    });
+
+    it('prüft den Credential-Typ (Pflicht, vollständige https-IRI)', () => {
+      const field = 'constraint[2].rules[0].credentialType';
+      expect(validate({ credentialType: '' })).toEqual([
+        { field, messageKey: 'validation.credentialTypeRequired' },
+      ]);
+      for (const credentialType of [
+        'MembershipCredential',
+        'http://w3id.org/constructx/credentials/v0.1/MembershipCredential',
+        'https://w3id.org/constructx/credentials/v0.1/membershipCredential',
+        'https://w3id.org/constructx/credentials/v0.1/Foo.Bar',
+        'https://w3id.org/{{x}}/Foo',
+        'https://localhost/Foo',
+      ]) {
+        expect(validate({ credentialType })).toEqual([
+          { field, messageKey: 'validation.credentialTypeInvalid' },
+        ]);
+      }
+    });
+
+    it('prüft den Attribut-Pfad', () => {
+      const field = 'constraint[2].rules[0].attributePath';
+      expect(validate({ attributePath: '' })).toEqual([
+        { field, messageKey: 'validation.credentialAttributePathRequired' },
+      ]);
+      for (const attributePath of ['a..b', '.a', 'a.', 'a[x]', 'a b', 'credentialSubject/a']) {
+        expect(validate({ attributePath })).toEqual([
+          { field, messageKey: 'validation.credentialAttributePathInvalid' },
+        ]);
+      }
+    });
+
+    it('meldet credentialOperatorInvalid bei unbekanntem Operator', () => {
+      const rule = { operator: 'isPartOf' } as unknown as Partial<CredentialRule>;
+      expect(validate(rule)).toEqual([
+        {
+          field: 'constraint[2].rules[0].operator',
+          messageKey: 'validation.credentialOperatorInvalid',
+        },
+      ]);
+    });
+
+    it('verlangt bei Vergleichen eine Zahl', () => {
+      const field = 'constraint[2].rules[0].value';
+      expect(validate({ operator: 'gt', value: '' })).toEqual([
+        { field, messageKey: 'validation.credentialValueRequired' },
+      ]);
+      expect(validate({ operator: 'gt', value: 'vier' })).toEqual([
+        { field, messageKey: 'validation.credentialValueNumber' },
+      ]);
+    });
+
+    it('lehnt Einzelwerte ab, die die Extension als Liste deuten würde oder die {} enthalten', () => {
+      for (const value of ['[1]', 'a"b', '{{x}}', ' x', 'x ', 'a\\b']) {
+        expect(validate({ value })).toEqual([
+          {
+            field: 'constraint[2].rules[0].value',
+            messageKey: 'validation.credentialValueInvalid',
+          },
+        ]);
+      }
+    });
+
+    it('prüft Wertelisten (Pflicht, Format, Duplikate) und ignoriert dabei value', () => {
+      const field = 'constraint[2].rules[0].values';
+      expect(validate({ operator: 'isAnyOf', value: '', values: [] })).toEqual([
+        { field, messageKey: 'validation.credentialValuesRequired' },
+      ]);
+      expect(validate({ operator: 'isAnyOf', values: ['a', '[b]'] })).toEqual([
+        { field, messageKey: 'validation.credentialValueInvalid' },
+      ]);
+      expect(validate({ operator: 'isAnyOf', values: ['a', 'a'] })).toEqual([
+        { field, messageKey: 'validation.credentialValuesDuplicate' },
+      ]);
+    });
+
+    it('erlaubt bei bekannten Merkmalen nur Werte aus der Auswahl (Arbeitspakete 1–9)', () => {
+      const field = 'constraint[2].rules[0].values';
+      const memberType = { attributePath: 'memberType', operator: 'isAnyOf' as const, value: '' };
+      const workpackages = {
+        attributePath: 'workpackages',
+        operator: 'isNoneOf' as const,
+        value: '',
+      };
+      expect(validate({ ...memberType, values: ['consortium', 'external'] })).toEqual([]);
+      expect(validate({ ...memberType, values: ['consortium', 'partner'] })).toEqual([
+        { field, messageKey: 'validation.credentialValueNotAllowed' },
+      ]);
+      expect(validate({ ...workpackages, values: ['1', '7', '9'] })).toEqual([]);
+      for (const value of ['0', '10', '1.5', '-3', '07', 'sieben']) {
+        expect(validate({ ...workpackages, values: ['7', value] })).toEqual([
+          { field, messageKey: 'validation.credentialValueNotAllowed' },
+        ]);
+      }
+    });
+
+    it('prüft im Expertenmodus ohne Registry (anderer Vergleich als angeboten)', () => {
+      expect(validate({ attributePath: 'memberType', operator: 'eq', value: 'partner' })).toEqual(
+        [],
+      );
+    });
+
+    it('nennt die Regel im Fehlerpfad', () => {
+      expect(validate({}, { credentialType: '' })[0].field).toBe(
+        'constraint[2].rules[1].credentialType',
+      );
+    });
+  });
+});
+
+describe('isValidCredentialValue / splitCredentialValues', () => {
+  it('erlaubt Leerzeichen im Wert und begrenzt die Länge auf 200 Zeichen', () => {
+    expect(isValidCredentialValue('Site Manager')).toBe(true);
+    expect(isValidCredentialValue('x'.repeat(200))).toBe(true);
+    expect(isValidCredentialValue('x'.repeat(201))).toBe(false);
+    expect(isValidCredentialValue('a\nb')).toBe(false);
+    expect(isValidCredentialValue(4)).toBe(false);
+  });
+
+  it('trennt an Komma und Zeilenumbruch, nicht an Leerzeichen', () => {
+    expect(splitCredentialValues(' Bauleitung, Site Manager\nPolier,, ')).toEqual([
+      'Bauleitung',
+      'Site Manager',
+      'Polier',
+    ]);
   });
 });
 

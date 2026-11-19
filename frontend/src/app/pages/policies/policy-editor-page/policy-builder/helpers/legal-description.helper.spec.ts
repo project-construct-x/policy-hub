@@ -29,6 +29,9 @@ function makeTransloco(): TranslocoService {
 
 type Draft = Pick<Policy, 'category' | 'constraints'>;
 
+const MEMBERSHIP = 'https://w3id.org/constructx/credentials/v0.1/MembershipCredential';
+const SITE_ACCESS = 'https://example.com/credentials/SiteAccessCredential';
+
 function draft(category: Policy['category'], constraints: Constraint[]): Draft {
   return { category, constraints };
 }
@@ -92,6 +95,139 @@ describe('buildLegalDescription', () => {
           'legalDescription.dataSubsetItem[kind=constraint.DATA_SUBSET.kind.submodel;' +
           'identifier=urn:x#Y]]',
       );
+    });
+  });
+
+  describe('CREDENTIAL_ATTRIBUTE', () => {
+    it('beschreibt bekannte Merkmale fachlich über die Registry', () => {
+      const text = buildLegalDescription(
+        draft('ACCESS', [
+          {
+            type: 'CREDENTIAL_ATTRIBUTE',
+            rules: [
+              {
+                credentialType: MEMBERSHIP,
+                attributePath: 'memberType',
+                operator: 'isAnyOf',
+                value: '',
+                values: ['consortium', 'associated'],
+              },
+              {
+                credentialType: MEMBERSHIP,
+                attributePath: 'workpackages',
+                operator: 'isNoneOf',
+                value: '',
+                values: ['7', '8'],
+              },
+            ],
+          },
+        ]),
+        makeTransloco(),
+      );
+      const known = (rule: string) =>
+        'legalDescription.knownCredentialRuleItem[' +
+        `credential=constraint.CREDENTIAL_ATTRIBUTE.membership.label;rule=${rule}]`;
+      expect(text).toContain(
+        'legalDescription.clause.credentialAttribute[rules=' +
+          known(
+            'legalDescription.membership.memberType.isAnyOf[values=' +
+              'constraint.CREDENTIAL_ATTRIBUTE.membership.memberType.option.consortium, ' +
+              'constraint.CREDENTIAL_ATTRIBUTE.membership.memberType.option.associated]',
+          ) +
+          '; ' +
+          known('legalDescription.membership.workpackages.isNoneOf[values=7, 8]') +
+          ']',
+      );
+    });
+
+    it('ersetzt die Regeln durch "—", wenn ein bekanntes Merkmal einen unerlaubten Wert hat', () => {
+      const text = buildLegalDescription(
+        draft('ACCESS', [
+          {
+            type: 'CREDENTIAL_ATTRIBUTE',
+            rules: [
+              {
+                credentialType: MEMBERSHIP,
+                attributePath: 'memberType',
+                operator: 'isAnyOf',
+                value: '',
+                values: ['partner'],
+              },
+            ],
+          },
+        ]),
+        makeTransloco(),
+      );
+      expect(text).toContain('legalDescription.clause.credentialAttribute[rules=—]');
+    });
+
+    it('listet je Regel Credential, Attribut, übersetzten Vergleich und Wert auf', () => {
+      const text = buildLegalDescription(
+        draft('ACCESS', [
+          {
+            type: 'CREDENTIAL_ATTRIBUTE',
+            rules: [
+              {
+                credentialType: MEMBERSHIP,
+                attributePath: 'isMember',
+                operator: 'eq',
+                value: 'true',
+                values: [],
+              },
+              {
+                credentialType: SITE_ACCESS,
+                attributePath: 'accessLevel',
+                operator: 'gteq',
+                value: '4',
+                values: [],
+              },
+              {
+                credentialType: SITE_ACCESS,
+                attributePath: 'roles',
+                operator: 'isAnyOf',
+                value: '',
+                values: ['A', 'B'],
+              },
+            ],
+          },
+        ]),
+        makeTransloco(),
+      );
+      const item = (credential: string, attribute: string, operator: string, value: string) =>
+        'legalDescription.credentialRuleItem[' +
+        `credential=${credential};attribute=${attribute};` +
+        `operator=constraint.CREDENTIAL_ATTRIBUTE.operator.${operator};value=${value}]`;
+      const quoted = (value: string) => `legalDescription.credentialValue[value=${value}]`;
+      expect(text).toContain(
+        'legalDescription.clause.credentialAttribute[rules=' +
+          item(MEMBERSHIP, 'isMember', 'eq', quoted('true')) +
+          '; ' +
+          item(SITE_ACCESS, 'accessLevel', 'gteq', '4') +
+          '; ' +
+          item(SITE_ACCESS, 'roles', 'isAnyOf', `${quoted('A')}, ${quoted('B')}`) +
+          ']',
+      );
+    });
+
+    it('ersetzt die Regeln durch "—", wenn eine Regel ungültig ist', () => {
+      const text = buildLegalDescription(
+        draft('ACCESS', [
+          {
+            type: 'CREDENTIAL_ATTRIBUTE',
+            rules: [
+              {
+                credentialType: SITE_ACCESS,
+                attributePath: 'accessLevel',
+                operator: 'gteq',
+                value: 'vier',
+                values: [],
+              },
+            ],
+          },
+        ]),
+        makeTransloco(),
+      );
+      expect(text).toContain('legalDescription.clause.credentialAttribute[rules=—]');
     });
   });
 
@@ -253,6 +389,39 @@ describe('buildLegalDescription', () => {
       [
         'DATA_SUBSET.selectors',
         { type: 'DATA_SUBSET', selectors: ['field:a', `field:${HOSTILE}`] },
+      ],
+      ...(['credentialType', 'attributePath', 'value'] as const).map(
+        (field): [string, Constraint] => [
+          `CREDENTIAL_ATTRIBUTE.rules[0].${field}`,
+          {
+            type: 'CREDENTIAL_ATTRIBUTE',
+            rules: [
+              {
+                credentialType: SITE_ACCESS,
+                attributePath: 'roles',
+                operator: 'eq',
+                value: 'Bauleitung',
+                values: [],
+                [field]: HOSTILE,
+              },
+            ],
+          },
+        ],
+      ),
+      [
+        'CREDENTIAL_ATTRIBUTE.rules[0].values',
+        {
+          type: 'CREDENTIAL_ATTRIBUTE',
+          rules: [
+            {
+              credentialType: SITE_ACCESS,
+              attributePath: 'roles',
+              operator: 'isAnyOf',
+              value: '',
+              values: ['Bauleitung', HOSTILE],
+            },
+          ],
+        },
       ],
     ];
 

@@ -70,7 +70,7 @@ The backend controls `id`, `createdAt`, and `updatedAt`.
 ## Constraint contract
 
 Each constraint is a JSON object with a supported `type`. A constraint type may occur at most once
-in a policy. The current backend accepts all three types in both categories (`ACCESS` and
+in a policy. The current backend accepts all four types in both categories (`ACCESS` and
 `CONTRACT`). Constraint order is retained and determines ODRL operand order.
 
 | Type | Required fields | Current validation |
@@ -78,6 +78,7 @@ in a policy. The current backend accepts all three types in both categories (`AC
 | `DATE_RANGE` | `startDate`, `endDate` | ISO calendar dates in `YYYY-MM-DD`; neither date may be before the backend's current local date, except that on update an unchanged `startDate` already stored in the policy stays valid (a running period remains editable); `startDate` must not be after `endDate`. |
 | `PARTICIPANT_DID` | `dids` | Non-empty array of strings; each entry must be a valid `did:web` identifier (host, optional port as `%3A<port>`, optional `:`-separated path segments; no surrounding whitespace, no commas) and entries must be unique, compared case-insensitively. Entries are stored as sent. Errors name the entry, e.g. `constraints[0].dids[1]`. |
 | `DATA_SUBSET` | `selectors` | Non-empty array of strings; each entry must match `^(field\|attribute\|submodel\|record):[A-Za-z0-9._~:/#-]+$` (no whitespace, no commas; colons are allowed for submodel URNs) and entries must be unique, compared exactly (case-sensitive: `materialName` and `MaterialName` may be different fields). Errors name the entry, e.g. `constraints[0].selectors[1]`. |
+| `CREDENTIAL_ATTRIBUTE` | `rules` | Non-empty array of rule objects `{ credentialType, attributePath, operator, value, values }`, combined with AND. `credentialType`: full https type IRI whose last segment starts with an uppercase letter, `^https://[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)+(:\d{1,5})?(/[A-Za-z0-9._~-]+)*/[A-Z][A-Za-z0-9_-]*$` (e.g. `https://w3id.org/constructx/credentials/v0.1/MembershipCredential`). `attributePath`: path in the `credentialSubject`, `^[A-Za-z0-9_-]+(\[\d+\])*(\.[A-Za-z0-9_-]+(\[\d+\])*)*$` (e.g. `site.accessLevel`, `roles[0]`). `operator`: one of `eq`, `neq`, `gt`, `gteq`, `lt`, `lteq`, `isAnyOf`, `isNoneOf`. `gt`/`gteq`/`lt`/`lteq` need a number in `value` (`^-?\d+(\.\d+)?$`); `eq`/`neq` need `value` with 1–200 characters, no surrounding whitespace and none of `{ } [ ] " \`; `isAnyOf`/`isNoneOf` need a non-empty `values` array of such strings without duplicates. The field not used by the operator is ignored. Errors name the rule and field, e.g. `constraints[0].rules[1].attributePath`. |
 
 Unknown constraint types are rejected. Constraints are provisional domain concepts and may change
 when the Construct-X policy model is finalized; coordinate such changes across both applications.
@@ -121,6 +122,7 @@ Current constraint mappings:
 | `DATE_RANGE` end | `cx:DataUsageEndDate` | `odrl:lteq` | `endDate` |
 | `PARTICIPANT_DID` | `edc:connector` (EDC namespace, not `cx:`) | `odrl:eq` | `dids` joined with `,` |
 | `DATA_SUBSET` | `https://w3id.org/construct-x/policy/DataSubset` | `odrl:isAnyOf` | `selectors` as JSON array |
+| `CREDENTIAL_ATTRIBUTE` (one per rule) | `<credentialType>.credentialSubject.<attributePath>` | `odrl:<operator>` | `value`, or `values` as a **JSON string** |
 
 `PARTICIPANT_DID` is emitted as a single comma-separated string (no spaces), not as an array, which
 is the format the connector expects. A comma must therefore never occur inside a DID.
@@ -128,6 +130,15 @@ is the format the connector expects. A comma must therefore never occur inside a
 `DATA_SUBSET` is emitted with the selectors as a JSON array. The left operand is a provisional
 placeholder until the Construct-X vocabulary defines it. The Policy Hub only expresses the filter
 criteria; evaluating them is the job of the connector or the service delivering the data.
+
+`CREDENTIAL_ATTRIBUTE` follows the format of the ABAC extension of the Construct-X connector: the
+left operand names the credential type and the attribute in its `credentialSubject`. A value list
+(`isAnyOf`, `isNoneOf`) is emitted as a JSON-encoded string, not as a JSON array, because that is
+the form the extension evaluates. If every value is a number, the list holds numbers (e.g. work
+packages `"[7,8]"`), otherwise strings (e.g. `"[\"consortium\",\"associated\"]"`). Each rule becomes one
+atomic constraint; like `DATE_RANGE`, several rules are wrapped in a nested `odrl:and` with `OR`.
+The frontend offers known attributes of the membership credential (`memberType`, `workpackages`)
+in business terms; this is presentation only, the backend accepts any credential type IRI.
 
 The constraints are combined below `odrl:permission[0]."odrl:constraint"` according to
 `logicalOperator`:

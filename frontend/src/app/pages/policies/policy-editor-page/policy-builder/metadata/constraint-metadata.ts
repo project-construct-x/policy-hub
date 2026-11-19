@@ -2,8 +2,13 @@ import {
   alwaysApplies,
   Constraint,
   ConstraintType,
+  CredentialRule,
   Operator,
 } from '@shared/types/constraint.model';
+import {
+  buildKnownPropertyRule,
+  KNOWN_CREDENTIAL_PROPERTIES,
+} from '@features/policies/builder/metadata/credential-attribute.data';
 import { LogicalOperator, PolicyCategory } from '@shared/types/policy.model';
 
 export interface ConstraintMetadata {
@@ -44,12 +49,22 @@ export const CONSTRAINT_METADATA: Record<ConstraintType, ConstraintMetadata> = {
     defaultOperator: 'isAnyOf',
     allowedIn: ['ACCESS', 'CONTRACT'],
   },
+  CREDENTIAL_ATTRIBUTE: {
+    type: 'CREDENTIAL_ATTRIBUTE',
+    labelKey: 'constraint.CREDENTIAL_ATTRIBUTE.label',
+    descriptionKey: 'constraint.CREDENTIAL_ATTRIBUTE.description',
+    legalTextKey: 'constraint.CREDENTIAL_ATTRIBUTE.legalText',
+    icon: 'verified_user',
+    defaultOperator: 'eq',
+    allowedIn: ['ACCESS', 'CONTRACT'],
+  },
 };
 
 export const ALL_CONSTRAINT_TYPES: ConstraintType[] = [
   'DATE_RANGE',
   'PARTICIPANT_DID',
   'DATA_SUBSET',
+  'CREDENTIAL_ATTRIBUTE',
 ];
 
 export function getAllowedConstraintTypes(category: PolicyCategory): ConstraintType[] {
@@ -82,7 +97,17 @@ export function buildDefaultConstraint(type: ConstraintType): Constraint {
       return { type: 'PARTICIPANT_DID', dids: [] };
     case 'DATA_SUBSET':
       return { type: 'DATA_SUBSET', selectors: [] };
+    case 'CREDENTIAL_ATTRIBUTE':
+      return { type: 'CREDENTIAL_ATTRIBUTE', rules: [buildDefaultCredentialRule()] };
   }
+}
+
+/**
+ * Neue Regel: das erste bekannte Merkmal (Partnerart der Mitgliedschaft), noch ohne Auswahl
+ * (per Validator ungültig, bis der Nutzer Werte wählt).
+ */
+export function buildDefaultCredentialRule(): CredentialRule {
+  return buildKnownPropertyRule(KNOWN_CREDENTIAL_PROPERTIES[0]);
 }
 
 /**

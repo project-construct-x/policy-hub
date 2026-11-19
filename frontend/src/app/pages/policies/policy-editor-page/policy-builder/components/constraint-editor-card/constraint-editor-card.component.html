@@ -97,6 +97,15 @@
           {{ t('policyBuilder.constraint.DATA_SUBSET.alwaysApplies') }}
         </p>
       }
+
+      @case ('CREDENTIAL_ATTRIBUTE') {
+        <app-credential-rules-input
+          [rules]="asCredentialAttribute(constraint()).rules"
+          [constraintIndex]="index()"
+          [errors]="errors()"
+          (rulesChange)="onRulesChange($event)"
+        />
+      }
     }
   </div>
 </article>

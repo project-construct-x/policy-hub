@@ -54,6 +54,12 @@
       "removed": "Data subset removed",
       "added": "Data subsets added: {{count}}"
     },
+    "credentialRules": {
+      "list": "List of credential rules",
+      "remove": "Remove rule {{number}}",
+      "removed": "Rule removed",
+      "added": "Rule added"
+    },
     "severity": {
       "success": "Success",
       "error": "Error",
@@ -243,6 +249,24 @@
           "record": "Identifier of the record, e.g., 2027-Q1"
         },
         "alwaysApplies": "This constraint always applies in addition, even with OR combination. Filtering is done by the delivering service."
+      },
+      "CREDENTIAL_ATTRIBUTE": {
+        "propertyLabel": "Attribute",
+        "expertGroup": "Advanced",
+        "expertProperty": "Custom attribute",
+        "expertHint": "For attributes not offered above. Requires the full type IRI of the credential and the path in the credentialSubject.",
+        "ruleLegend": "Rule {{number}}",
+        "credentialTypeLabel": "Credential type",
+        "credentialTypeHint": "Full type IRI, e.g. https://w3id.org/constructx/credentials/v0.1/MembershipCredential",
+        "attributePathLabel": "Attribute",
+        "attributePathHint": "Path in the credentialSubject, e.g. roles[0] or site.accessLevel",
+        "operatorLabel": "Comparison",
+        "valueLabel": "Value",
+        "valueHintText": "e.g. true or site-management",
+        "valueHintNumber": "Number, e.g. 4",
+        "valuesLabel": "Values",
+        "valuesHint": "Separate multiple values with commas",
+        "addRule": "Add rule"
       }
     },
     "actions": {
@@ -285,6 +309,65 @@
         "submodel": "Submodel",
         "record": "Record"
       }
+    },
+    "CREDENTIAL_ATTRIBUTE": {
+      "label": "Membership & credentials",
+      "description": "Only participants with certain membership attributes, e.g. partner type or work packages.",
+      "legalText": "The data consumer must hold verifiable credentials that satisfy the given rules.",
+      "summary": "Rules: {{count}}",
+      "operator": {
+        "eq": "equals",
+        "neq": "does not equal",
+        "gt": "greater than",
+        "gteq": "greater than or equal to",
+        "lt": "less than",
+        "lteq": "less than or equal to",
+        "isAnyOf": "is one of",
+        "isNoneOf": "is none of"
+      },
+      "symbol": {
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gteq": "≥",
+        "lt": "<",
+        "lteq": "≤",
+        "isAnyOf": "∈",
+        "isNoneOf": "∉"
+      },
+      "membership": {
+        "label": "Membership",
+        "memberType": {
+          "label": "Partner type",
+          "selectLabel": "Select partner type",
+          "option": {
+            "consortium": "Consortium partner",
+            "associated": "Associated partner",
+            "external": "External partner"
+          },
+          "operator": {
+            "isAnyOf": "is one of the selected",
+            "isNoneOf": "is none of the selected"
+          },
+          "summary": {
+            "isAnyOf": "Partner type: {{values}}",
+            "isNoneOf": "Partner type not: {{values}}"
+          }
+        },
+        "workpackages": {
+          "label": "Work packages",
+          "selectLabel": "Select work packages",
+          "option": "WP {{number}}",
+          "operator": {
+            "isAnyOf": "involved in at least one",
+            "isNoneOf": "involved in none"
+          },
+          "summary": {
+            "isAnyOf": "Work packages: at least one of {{values}}",
+            "isNoneOf": "Work packages: none of {{values}}"
+          }
+        }
+      }
     }
   },
   "legalDescription": {
@@ -295,10 +378,24 @@
     "introContractAnyOf": "Usage of the provided data is permitted if at least one of the following conditions is met:",
     "introAlwaysApplies": "Irrespective of the above conditions, the following applies in all cases:",
     "dataSubsetItem": "{{kind}} \"{{identifier}}\"",
+    "credentialRuleItem": "credential {{credential}}, attribute \"{{attribute}}\" {{operator}} {{value}}",
+    "credentialValue": "\"{{value}}\"",
+    "knownCredentialRuleItem": "{{credential}}: {{rule}}",
+    "membership": {
+      "memberType": {
+        "isAnyOf": "partner type is one of the following: {{values}}",
+        "isNoneOf": "partner type is none of the following: {{values}}"
+      },
+      "workpackages": {
+        "isAnyOf": "involved in at least one of the work packages {{values}}",
+        "isNoneOf": "involved in none of the work packages {{values}}"
+      }
+    },
     "clause": {
       "dateRange": "The granted permission is time-limited and applies exclusively within the period from {{start}} to {{end}}. Before the start and after the end of this period, any usage of the data is prohibited.",
       "participantDid": "The data consumer must be one of the following participants, identified by their did:web identity: {{dids}}. Any usage of the data by other participants is prohibited.",
-      "dataSubset": "Only the following parts of the dataset are provided to the data consumer: {{selectors}}. The permission does not extend to any other part of the dataset; their usage is prohibited."
+      "dataSubset": "Only the following parts of the dataset are provided to the data consumer: {{selectors}}. The permission does not extend to any other part of the dataset; their usage is prohibited.",
+      "credentialAttribute": "The data consumer must hold verifiable credentials issued by trusted issuers that satisfy all of the following rules: {{rules}}. If a credential or attribute is missing, any usage of the data is prohibited."
     }
   },
   "validation": {
@@ -320,6 +417,18 @@
     "dataSubsetSelectorRequired": "Please add at least one data subset",
     "dataSubsetSelectorInvalid": "The name may only contain letters, digits and . _ ~ : / # - (no spaces, no commas)",
     "dataSubsetSelectorDuplicate": "This data subset is already in the list",
+    "credentialRulesRequired": "Please add at least one rule",
+    "credentialTypeRequired": "Please enter the credential type",
+    "credentialTypeInvalid": "Please enter the full type IRI (https://…); the last segment starts with an uppercase letter",
+    "credentialAttributePathRequired": "Please enter the attribute",
+    "credentialAttributePathInvalid": "Field names made of letters, digits, _ and -, separated by dots, optionally with an index like [0]",
+    "credentialOperatorInvalid": "Please select a comparison",
+    "credentialValueRequired": "Please enter a value",
+    "credentialValueNumber": "Please enter a number, e.g. 4 or 2.5",
+    "credentialValueInvalid": "Values must not contain brackets, quotes or backslashes and must not start or end with spaces",
+    "credentialValueNotAllowed": "Please only use values from the selection",
+    "credentialValuesRequired": "Please select or enter at least one value",
+    "credentialValuesDuplicate": "Each value may only appear once",
     "policyIdInvalidChars": "Only letters, digits, dot, underscore and hyphen are allowed (must start with a letter or digit)"
   },
   "deleteDialog": {

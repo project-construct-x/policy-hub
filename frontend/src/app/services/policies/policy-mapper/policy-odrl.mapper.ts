@@ -1,4 +1,10 @@
-import { alwaysApplies, Constraint } from '@shared/types/constraint.model';
+import {
+  alwaysApplies,
+  Constraint,
+  CredentialRule,
+  credentialValuesToJson,
+  credentialValueKind,
+} from '@shared/types/constraint.model';
 import { logicalOperatorOf, Policy, PolicyCategory } from '@shared/types/policy.model';
 
 const CX_POLICY_NS = 'https://w3id.org/catenax/2025/9/policy/';
@@ -70,7 +76,8 @@ export function actionForCategory(category: PolicyCategory): string {
 /**
  * Übersetzt einen fachlichen Constraint in ein oder mehrere atomare ODRL-Constraints.
  * Die meisten Typen liefern genau eines; ein `DATE_RANGE` liefert zwei (Start via `gteq`,
- * Ende via `lteq`), die in `odrlConstraintGroup` gruppiert werden.
+ * Ende via `lteq`) und ein `CREDENTIAL_ATTRIBUTE` eines je Regel. Mehrere atomare Constraints
+ * eines Typs werden in `odrlConstraintGroup` gruppiert.
  */
 export function constraintToOdrl(constraint: Constraint): OdrlAtomicConstraint[] {
   switch (constraint.type) {
@@ -105,7 +112,28 @@ export function constraintToOdrl(constraint: Constraint): OdrlAtomicConstraint[]
           'odrl:rightOperand': [...constraint.selectors],
         },
       ];
+    case 'CREDENTIAL_ATTRIBUTE':
+      return constraint.rules.map(credentialRuleToOdrl);
   }
+}
+
+/**
+ * Eine Regel im Format der ABAC-Extension des Connectors:
+ * `<Credential-Typ-URL>.credentialSubject.<pfad>`. Listen stehen als JSON-String im
+ * rightOperand (z.B. `"[7,8]"` oder `"[\"A\",\"B\"]"`) — ein echtes JSON-Array wertet die Extension
+ * nicht aus.
+ */
+function credentialRuleToOdrl(rule: CredentialRule): OdrlAtomicConstraint {
+  return {
+    'odrl:leftOperand': {
+      '@id': `${rule.credentialType}.credentialSubject.${rule.attributePath}`,
+    },
+    'odrl:operator': { '@id': `odrl:${rule.operator}` },
+    'odrl:rightOperand':
+      credentialValueKind(rule.operator) === 'list'
+        ? credentialValuesToJson(rule.values)
+        : rule.value,
+  };
 }
 
 /**

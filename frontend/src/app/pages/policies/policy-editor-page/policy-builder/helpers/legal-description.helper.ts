@@ -1,5 +1,5 @@
 import { TranslocoService } from '@jsverse/transloco';
-import { alwaysApplies, Constraint } from '@shared/types/constraint.model';
+import { alwaysApplies, Constraint, credentialValueKind } from '@shared/types/constraint.model';
 import { logicalOperatorOf, Policy } from '@shared/types/policy.model';
 import {
   CONSTRAINT_METADATA,
@@ -8,6 +8,17 @@ import {
 } from '@features/policies/builder/metadata/constraint-metadata';
 import { dataSubsetKindOption } from '@features/policies/builder/metadata/data-subset.data';
 import {
+  credentialOperatorOption,
+  knownCredentialFor,
+  knownPropertyDisplayValues,
+  knownPropertyOf,
+  knownPropertyOperator,
+} from '@features/policies/builder/metadata/credential-attribute.data';
+import {
+  CREDENTIAL_ATTRIBUTE_PATH_PATTERN,
+  CREDENTIAL_NUMBER_PATTERN,
+  CREDENTIAL_TYPE_PATTERN,
+  isValidCredentialValue,
   isValidDidWeb,
   parseDataSubsetSelector,
 } from '@features/policies/builder/validators/constraint-validators';
@@ -210,6 +221,14 @@ function buildClause(constraint: Constraint, transloco: TranslocoService, lang?:
         { selectors: formatSelectors(constraint.selectors, transloco, lang) },
         lang,
       );
+    case 'CREDENTIAL_ATTRIBUTE':
+      // Typnamen, Pfade und Werte sind Freitext: nur Werte im strikten Format der Validierung
+      // (kein `{}`), der Operator wird über die Registry übersetzt.
+      return transloco.translate(
+        'legalDescription.clause.credentialAttribute',
+        { rules: formatCredentialRules(constraint.rules, transloco, lang) },
+        lang,
+      );
     default:
       return base;
   }
@@ -232,6 +251,110 @@ function formatSelectors(selectors: unknown, transloco: TranslocoService, lang?:
     );
   }
   return items.join(', ');
+}
+
+/** Regeln durch Semikolon getrennt; ist eine Regel ungültig, insgesamt `UNKNOWN_VALUE`. */
+function formatCredentialRules(rules: unknown, transloco: TranslocoService, lang?: string): string {
+  if (!Array.isArray(rules) || !rules.length) return UNKNOWN_VALUE;
+  const items: string[] = [];
+  for (const rule of rules) {
+    const item = formatCredentialRule(rule, transloco, lang);
+    if (item === null) return UNKNOWN_VALUE;
+    items.push(item);
+  }
+  return items.join('; ');
+}
+
+/** z.B. `Credential SiteAccessCredential, Attribut „accessLevel“ größer oder gleich 4`. */
+function formatCredentialRule(
+  rule: unknown,
+  transloco: TranslocoService,
+  lang?: string,
+): string | null {
+  if (typeof rule !== 'object' || rule === null) return null;
+  const knownItem = formatKnownCredentialRule(rule, transloco, lang);
+  if (knownItem !== undefined) return knownItem;
+
+  const { credentialType, attributePath, operator, value, values } = rule as Record<
+    string,
+    unknown
+  >;
+  const option = credentialOperatorOption(operator);
+  if (
+    !option ||
+    typeof credentialType !== 'string' ||
+    !CREDENTIAL_TYPE_PATTERN.test(credentialType) ||
+    typeof attributePath !== 'string' ||
+    !CREDENTIAL_ATTRIBUTE_PATH_PATTERN.test(attributePath)
+  ) {
+    return null;
+  }
+
+  const quote = (text: string) =>
+    transloco.translate('legalDescription.credentialValue', { value: text }, lang);
+  let formattedValue: string;
+  switch (credentialValueKind(option.operator)) {
+    case 'number':
+      if (typeof value !== 'string' || !CREDENTIAL_NUMBER_PATTERN.test(value)) return null;
+      formattedValue = value;
+      break;
+    case 'text':
+      if (!isValidCredentialValue(value)) return null;
+      formattedValue = quote(value);
+      break;
+    case 'list':
+      if (!Array.isArray(values) || !values.length || !values.every(isValidCredentialValue)) {
+        return null;
+      }
+      formattedValue = values.map(quote).join(', ');
+      break;
+  }
+
+  return transloco.translate(
+    'legalDescription.credentialRuleItem',
+    {
+      credential: credentialType,
+      attribute: attributePath,
+      operator: transloco.translate(option.labelKey, undefined, lang),
+      value: formattedValue,
+    },
+    lang,
+  );
+}
+
+/**
+ * Regel auf ein bekanntes Merkmal in fachlicher Sprache, z.B. `Mitgliedschaft: an mindestens einem
+ * der Arbeitspakete 7, 8 beteiligt`. `undefined`, wenn die Regel kein bekanntes Merkmal betrifft;
+ * `null`, wenn ein Wert nicht erlaubt ist.
+ */
+function formatKnownCredentialRule(
+  rule: object,
+  transloco: TranslocoService,
+  lang?: string,
+): string | null | undefined {
+  const property = knownPropertyOf(rule);
+  if (!property) return undefined;
+  const operator = knownPropertyOperator(property, (rule as Record<string, unknown>)['operator']);
+  const credential = knownCredentialFor(property);
+  const displayValues = knownPropertyDisplayValues(
+    property,
+    (rule as Record<string, unknown>)['values'],
+  );
+  if (!operator || !credential || !displayValues) return null;
+
+  const values = displayValues
+    .map((item) =>
+      'labelKey' in item ? transloco.translate(item.labelKey, undefined, lang) : item.text,
+    )
+    .join(', ');
+  return transloco.translate(
+    'legalDescription.knownCredentialRuleItem',
+    {
+      credential: transloco.translate(credential.labelKey, undefined, lang),
+      rule: transloco.translate(operator.legalKey, { values }, lang),
+    },
+    lang,
+  );
 }
 
 function formatDids(dids: unknown): string {

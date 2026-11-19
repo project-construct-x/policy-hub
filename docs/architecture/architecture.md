@@ -599,6 +599,7 @@ Aktuell unterstützte Constraint-Typen (Template Catalog):
 | `DATE_RANGE` | Nur innerhalb eines Zeitraums | Start- und Enddatum |
 | `PARTICIPANT_DID` | Nur bestimmte Teilnehmer | Liste von `did:web`-Identifiern |
 | `DATA_SUBSET` | Nur bestimmte Teile des Datensatzes werden bereitgestellt (gilt immer, auch bei `OR`) | Liste von Selektoren `<art>:<bezeichner>` |
+| `CREDENTIAL_ATTRIBUTE` | Nur Konsumenten, deren Verifiable Credentials alle Regeln erfüllen (ABAC) | Regeln auf bekannte Merkmale der Mitgliedschaft (Partnerart, Arbeitspakete) per Auswahl; im Expertenmodus Typ-IRI, Attribut, Vergleich und Wert |
 
 Constraints werden im Domänenmodell als **diskriminierte Union** (Feld `type`) modelliert. Im
 Frontend erzwingt ein exhaustiver `switch` die Behandlung jedes Typs; im Backend weist die
@@ -616,6 +617,7 @@ Die Abbildung erfolgt in `OdrlPolicyMapper`/`OdrlConstraintMapper` (Backend) und
 | `DATE_RANGE` | `cx:DataUsageStartDate` `odrl:gteq` Start **und** `cx:DataUsageEndDate` `odrl:lteq` Ende |
 | `PARTICIPANT_DID` | `edc:connector` `odrl:eq` kommaseparierte DID-Liste |
 | `DATA_SUBSET` | Platzhalter `https://w3id.org/construct-x/policy/DataSubset` `odrl:isAnyOf` Selektor-Array |
+| `CREDENTIAL_ATTRIBUTE` | je Regel `<Typ-IRI>.credentialSubject.<Pfad>` `odrl:<Vergleich>` Wert (Wertelisten als JSON-String, Zahlenlisten als Zahlen) |
 
 Regeln für die logische Verknüpfung:
 

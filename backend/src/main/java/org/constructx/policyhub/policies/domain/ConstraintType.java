@@ -27,5 +27,12 @@ public enum ConstraintType {
      * attributes, submodels or records). Unlike the other types it is not a
      * condition on the consumer and therefore always applies, also with OR.
      */
-    DATA_SUBSET
+    DATA_SUBSET,
+
+    /**
+     * Restricts access or usage to consumers whose verifiable credentials
+     * satisfy all listed rules (attribute-based access control, evaluated by
+     * the ABAC extension of the Construct-X connector).
+     */
+    CREDENTIAL_ATTRIBUTE
 }

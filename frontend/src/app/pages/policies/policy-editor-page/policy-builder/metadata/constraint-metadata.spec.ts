@@ -18,6 +18,7 @@ describe('getAllowedConstraintTypes', () => {
       'DATE_RANGE',
       'PARTICIPANT_DID',
       'DATA_SUBSET',
+      'CREDENTIAL_ATTRIBUTE',
     ]);
   });
 
@@ -26,6 +27,7 @@ describe('getAllowedConstraintTypes', () => {
       'DATE_RANGE',
       'PARTICIPANT_DID',
       'DATA_SUBSET',
+      'CREDENTIAL_ATTRIBUTE',
     ]);
   });
 });
@@ -48,6 +50,21 @@ describe('buildDefaultConstraint', () => {
 
   it('DATA_SUBSET → leere Liste (per Validator ungültig, bis Nutzer Selektoren ergänzt)', () => {
     expect(buildDefaultConstraint('DATA_SUBSET')).toEqual({ type: 'DATA_SUBSET', selectors: [] });
+  });
+
+  it('CREDENTIAL_ATTRIBUTE → eine Regel auf die Partnerart, noch ohne Auswahl', () => {
+    expect(buildDefaultConstraint('CREDENTIAL_ATTRIBUTE')).toEqual({
+      type: 'CREDENTIAL_ATTRIBUTE',
+      rules: [
+        {
+          credentialType: 'https://w3id.org/constructx/credentials/v0.1/MembershipCredential',
+          attributePath: 'memberType',
+          operator: 'isAnyOf',
+          value: '',
+          values: [],
+        },
+      ],
+    });
   });
 });
 

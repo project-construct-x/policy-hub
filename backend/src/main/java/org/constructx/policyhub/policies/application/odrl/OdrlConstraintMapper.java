@@ -1,12 +1,17 @@
 package org.constructx.policyhub.policies.application.odrl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlAtomicConstraintResponse;
 import org.constructx.policyhub.policies.api.dto.odrl.OdrlIdResponse;
 import org.constructx.policyhub.policies.domain.ConstraintType;
+import org.constructx.policyhub.policies.domain.CredentialRuleOperator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class OdrlConstraintMapper {
 
@@ -19,6 +24,9 @@ public class OdrlConstraintMapper {
     /** Provisional left operand for the data subset; placeholder until defined. */
     private static final String CON_X_DATA_SUBSET =
             "https://w3id.org/construct-x/policy/DataSubset";
+
+    /** A value of a credential rule that is a number, e.g. a work package number. */
+    private static final Pattern NUMBER = Pattern.compile("-?\\d+(?:\\.\\d+)?");
 
     private OdrlConstraintMapper() {
     }
@@ -37,6 +45,9 @@ public class OdrlConstraintMapper {
 
             case DATA_SUBSET ->
                     List.of(mapDataSubset(constraint));
+
+            case CREDENTIAL_ATTRIBUTE ->
+                    mapCredentialAttribute(constraint);
         };
     }
 
@@ -117,6 +128,58 @@ public class OdrlConstraintMapper {
                 new OdrlIdResponse(OdrlOperator.IS_ANY_OF.value()),
                 constraint.get("selectors")
         );
+    }
+
+    /** One atomic constraint per rule; the rules are combined with AND by the caller. */
+    private static List<OdrlAtomicConstraintResponse> mapCredentialAttribute(
+            JsonNode constraint
+    ) {
+        List<OdrlAtomicConstraintResponse> atomics = new ArrayList<>();
+        constraint.get("rules").forEach(rule -> atomics.add(mapCredentialRule(rule)));
+        return atomics;
+    }
+
+    /**
+     * Left operand in the format of the ABAC extension:
+     * {@code <credential type IRI>.credentialSubject.<path>}. A value list is emitted as a JSON
+     * string (e.g. {@code "[7,8]"} or {@code "[\"A\",\"B\"]"}), because the extension does not
+     * evaluate a real JSON array.
+     */
+    private static OdrlAtomicConstraintResponse mapCredentialRule(JsonNode rule) {
+        CredentialRuleOperator operator = CredentialRuleOperator
+                .fromValue(rule.path("operator").asText())
+                .orElseThrow(() -> new UnsupportedConstraintException(
+                        ConstraintType.CREDENTIAL_ATTRIBUTE.name()
+                ));
+
+        Object rightOperand = operator.valueKind() == CredentialRuleOperator.ValueKind.LIST
+                ? credentialValuesToJson(rule.path("values"))
+                : rule.path("value");
+
+        return new OdrlAtomicConstraintResponse(
+                new OdrlIdResponse(rule.path("credentialType").asText()
+                        + ".credentialSubject."
+                        + rule.path("attributePath").asText()),
+                new OdrlIdResponse("odrl:" + operator.value()),
+                rightOperand
+        );
+    }
+
+    /**
+     * Value list as JSON string: numbers only are written as numbers ({@code [7,8]}), anything
+     * else as strings. Must stay identical to {@code credentialValuesToJson} in the frontend.
+     */
+    private static String credentialValuesToJson(JsonNode values) {
+        boolean allNumbers = true;
+        for (JsonNode value : values) {
+            allNumbers &= NUMBER.matcher(value.asText()).matches();
+        }
+        if (!allNumbers) {
+            return values.toString();
+        }
+        ArrayNode numbers = JsonNodeFactory.instance.arrayNode();
+        values.forEach(value -> numbers.add(new BigDecimal(value.asText())));
+        return numbers.toString();
     }
 
     private enum OdrlOperator {

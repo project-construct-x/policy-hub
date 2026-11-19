@@ -18,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PolicyValidatorTest {
 
+    private static final String MEMBERSHIP =
+            "https://w3id.org/constructx/credentials/v0.1/MembershipCredential";
+
+    private static final String SITE_ACCESS =
+            "https://example.com/credentials/SiteAccessCredential";
+
     private PolicyValidator policyValidator;
     private ObjectMapper objectMapper;
 
@@ -540,6 +546,183 @@ class PolicyValidatorTest {
                 "Constraint type may only occur once: DATA_SUBSET",
                 exception.getMessage()
         );
+    }
+
+    @Test
+    void validate_credentialAttribute_isValid() {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(MEMBERSHIP, "isMember", "eq", "true"),
+                credentialRule(SITE_ACCESS, "site.accessLevel", "gteq", "4"),
+                credentialRule(SITE_ACCESS, "roles[0]", "neq", "Site Visitor"),
+                credentialListRule("isAnyOf", "Bauleitung", "Polier")
+        );
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(constraint))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "{ \"type\": \"CREDENTIAL_ATTRIBUTE\" }",
+            "{ \"type\": \"CREDENTIAL_ATTRIBUTE\", \"rules\": {} }",
+            "{ \"type\": \"CREDENTIAL_ATTRIBUTE\", \"rules\": [] }"
+    })
+    void validate_credentialAttributeWithoutRules_throwsException(String json)
+            throws Exception {
+        JsonNode constraint = objectMapper.readTree(json);
+
+        assertInvalid(constraint, "constraints[0].rules must contain at least one rule");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "MembershipCredential",
+            "http://w3id.org/constructx/credentials/v0.1/MembershipCredential",
+            "https://w3id.org/constructx/credentials/v0.1/membershipCredential",
+            "https://w3id.org/constructx/credentials/v0.1/Foo.Bar",
+            "https://localhost/Foo",
+            "{{x}}"
+    })
+    void validate_credentialAttributeWithInvalidType_throwsException(String credentialType) {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(credentialType, "isMember", "eq", "true")
+        );
+
+        assertInvalid(
+                constraint,
+                "constraints[0].rules[0].credentialType must be a full https type IRI "
+                        + "whose last segment starts with an uppercase letter"
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"a..b", ".a", "a.", "a[x]", "a b", "credentialSubject/a"})
+    void validate_credentialAttributeWithInvalidPath_throwsException(String attributePath) {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(SITE_ACCESS, attributePath, "eq", "x")
+        );
+
+        assertInvalid(
+                constraint,
+                "constraints[0].rules[0].attributePath must be dot-separated field names "
+                        + "with an optional [index]"
+        );
+    }
+
+    @Test
+    void validate_credentialAttributeWithMissingField_namesRuleAndField() {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(MEMBERSHIP, "isMember", "eq", "true"),
+                credentialRule(SITE_ACCESS, "", "eq", "x")
+        );
+
+        assertInvalid(constraint, "constraints[0].rules[1].attributePath is required");
+    }
+
+    @Test
+    void validate_credentialAttributeWithUnknownOperator_throwsException() {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(SITE_ACCESS, "roles", "isPartOf", "x")
+        );
+
+        assertInvalid(
+                constraint,
+                "constraints[0].rules[0].operator must be one of "
+                        + "eq, neq, gt, gteq, lt, lteq, isAnyOf, isNoneOf"
+        );
+    }
+
+    @Test
+    void validate_credentialAttributeComparisonWithText_throwsException() {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(SITE_ACCESS, "accessLevel", "gt", "vier")
+        );
+
+        assertInvalid(constraint, "constraints[0].rules[0].value must be a number");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"[1]", "a\"b", "{{x}}", " x", "x ", "a\\b"})
+    void validate_credentialAttributeWithInvalidValue_throwsException(String value) {
+        JsonNode constraint = credentialAttribute(
+                credentialRule(SITE_ACCESS, "role", "eq", value)
+        );
+
+        assertInvalid(
+                constraint,
+                "constraints[0].rules[0].value must be 1-200 characters "
+                        + "without { } [ ] \" \\ and without surrounding whitespace"
+        );
+    }
+
+    @Test
+    void validate_credentialAttributeListWithoutValues_throwsException() {
+        JsonNode constraint = credentialAttribute(credentialListRule("isAnyOf"));
+
+        assertInvalid(constraint, "constraints[0].rules[0].values must contain at least one entry");
+    }
+
+    @Test
+    void validate_credentialAttributeListWithDuplicate_throwsException() {
+        JsonNode constraint = credentialAttribute(
+                credentialListRule("isNoneOf", "Gast", "Gast")
+        );
+
+        assertInvalid(constraint, "constraints[0].rules[0].values[1] is a duplicate");
+    }
+
+    @Test
+    void validate_credentialAttributeListIgnoresValue() {
+        ObjectNode rule = credentialListRule("isAnyOf", "Bauleitung");
+        rule.put("value", "[ungueltig]");
+
+        assertDoesNotThrow(() ->
+                policyValidator.validate(List.of(credentialAttribute(rule)))
+        );
+    }
+
+    private void assertInvalid(JsonNode constraint, String expectedMessage) {
+        InvalidPolicyException exception = assertThrows(
+                InvalidPolicyException.class,
+                () -> policyValidator.validate(List.of(constraint))
+        );
+
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    private JsonNode credentialAttribute(ObjectNode... rules) {
+        ObjectNode constraint = objectMapper.createObjectNode();
+        constraint.put("type", "CREDENTIAL_ATTRIBUTE");
+        ArrayNode ruleArray = constraint.putArray("rules");
+        for (ObjectNode rule : rules) {
+            ruleArray.add(rule);
+        }
+        return constraint;
+    }
+
+    private ObjectNode credentialRule(
+            String credentialType,
+            String attributePath,
+            String operator,
+            String value
+    ) {
+        ObjectNode rule = objectMapper.createObjectNode();
+        rule.put("credentialType", credentialType);
+        rule.put("attributePath", attributePath);
+        rule.put("operator", operator);
+        rule.put("value", value);
+        rule.putArray("values");
+        return rule;
+    }
+
+    private ObjectNode credentialListRule(String operator, String... values) {
+        ObjectNode rule = credentialRule(SITE_ACCESS, "roles", operator, "");
+        ArrayNode valueArray = rule.putArray("values");
+        for (String value : values) {
+            valueArray.add(value);
+        }
+        return rule;
     }
 
     private JsonNode dataSubset(String... selectors) {

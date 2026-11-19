@@ -2,6 +2,7 @@ package org.constructx.policyhub.policies.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.constructx.policyhub.policies.domain.ConstraintType;
+import org.constructx.policyhub.policies.domain.CredentialRuleOperator;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -37,6 +39,46 @@ public class PolicyValidator {
     private static final Pattern DATA_SUBSET_SELECTOR = Pattern.compile(
             "(field|attribute|submodel|record):[A-Za-z0-9._~:/#-]+"
     );
+
+    /**
+     * Full credential type IRI, e.g.
+     * {@code https://w3id.org/constructx/credentials/v0.1/MembershipCredential}. Like in the ABAC
+     * extension: https, and the last segment starts with an uppercase letter and contains no dot.
+     * Must stay identical to {@code CREDENTIAL_TYPE_PATTERN} in the frontend constraint
+     * validators.
+     */
+    private static final Pattern CREDENTIAL_TYPE = Pattern.compile(
+            "https://[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)+(?::\\d{1,5})?"
+                    + "(?:/[A-Za-z0-9._~-]+)*/[A-Z][A-Za-z0-9_-]*"
+    );
+
+    /**
+     * Path in the credentialSubject: dot-separated field names with optional array index,
+     * e.g. {@code site.accessLevel} or {@code roles[0]}. Must stay identical to
+     * {@code CREDENTIAL_ATTRIBUTE_PATH_PATTERN} in the frontend constraint validators.
+     */
+    private static final Pattern CREDENTIAL_ATTRIBUTE_PATH = Pattern.compile(
+            "[A-Za-z0-9_-]+(?:\\[\\d+])*(?:\\.[A-Za-z0-9_-]+(?:\\[\\d+])*)*"
+    );
+
+    /** Comparison value of gt/gteq/lt/lteq. */
+    private static final Pattern CREDENTIAL_NUMBER = Pattern.compile(
+            "-?\\d+(?:\\.\\d+)?"
+    );
+
+    /**
+     * Comparison value of eq/neq and entry of a value list: 1-200 characters, no surrounding
+     * whitespace, without { } [ ] " \. Without [ and " the ABAC extension never reads a single
+     * value as a JSON list. Must stay identical to {@code CREDENTIAL_VALUE_PATTERN} in the
+     * frontend constraint validators.
+     */
+    private static final Pattern CREDENTIAL_VALUE = Pattern.compile(
+            "(?=[^\\r\\n\\t]{1,200}\\z)[^\\s{}\\[\\]\"\\\\]"
+                    + "(?:[^{}\\[\\]\"\\\\]*[^\\s{}\\[\\]\"\\\\])?"
+    );
+
+    private static final String CREDENTIAL_VALUE_RULE =
+            "must be 1-200 characters without { } [ ] \" \\ and without surrounding whitespace";
 
     public void validate(List<JsonNode> constraints) {
         // New policy: no stored constraints, so a DATE_RANGE start date must not be in the past.
@@ -201,6 +243,8 @@ public class PolicyValidator {
                     validateParticipantDid(constraint, index);
             case DATA_SUBSET ->
                     validateDataSubset(constraint, index);
+            case CREDENTIAL_ATTRIBUTE ->
+                    validateCredentialAttribute(constraint, index);
         }
     }
 
@@ -283,5 +327,117 @@ public class PolicyValidator {
                 );
             }
         }
+    }
+
+    private void validateCredentialAttribute(
+            JsonNode constraint,
+            int index
+    ) {
+        JsonNode rules = constraint.get("rules");
+
+        if (rules == null || !rules.isArray() || rules.isEmpty()) {
+            throw new InvalidPolicyException(
+                    "constraints[" + index
+                            + "].rules must contain at least one rule"
+            );
+        }
+
+        for (int ruleIndex = 0; ruleIndex < rules.size(); ruleIndex++) {
+            validateCredentialRule(
+                    rules.get(ruleIndex),
+                    "constraints[" + index + "].rules[" + ruleIndex + "]"
+            );
+        }
+    }
+
+    private void validateCredentialRule(JsonNode rule, String path) {
+        if (rule == null || !rule.isObject()) {
+            throw new InvalidPolicyException(path + " must be an object");
+        }
+
+        String credentialType = readRequiredText(rule, "credentialType", path);
+        if (!CREDENTIAL_TYPE.matcher(credentialType).matches()) {
+            throw new InvalidPolicyException(
+                    path + ".credentialType must be a full https type IRI "
+                            + "whose last segment starts with an uppercase letter"
+            );
+        }
+
+        String attributePath = readRequiredText(rule, "attributePath", path);
+        if (!CREDENTIAL_ATTRIBUTE_PATH.matcher(attributePath).matches()) {
+            throw new InvalidPolicyException(
+                    path + ".attributePath must be dot-separated field names "
+                            + "with an optional [index]"
+            );
+        }
+
+        CredentialRuleOperator operator = Optional.ofNullable(rule.get("operator"))
+                .filter(JsonNode::isTextual)
+                .flatMap(operatorNode -> CredentialRuleOperator.fromValue(operatorNode.asText()))
+                .orElseThrow(() -> new InvalidPolicyException(
+                        path + ".operator must be one of "
+                                + "eq, neq, gt, gteq, lt, lteq, isAnyOf, isNoneOf"
+                ));
+
+        switch (operator.valueKind()) {
+            case NUMBER -> {
+                String value = readRequiredText(rule, "value", path);
+                if (!CREDENTIAL_NUMBER.matcher(value).matches()) {
+                    throw new InvalidPolicyException(
+                            path + ".value must be a number"
+                    );
+                }
+            }
+            case TEXT -> {
+                String value = readRequiredText(rule, "value", path);
+                if (!CREDENTIAL_VALUE.matcher(value).matches()) {
+                    throw new InvalidPolicyException(
+                            path + ".value " + CREDENTIAL_VALUE_RULE
+                    );
+                }
+            }
+            case LIST -> validateCredentialValues(rule.get("values"), path);
+        }
+    }
+
+    private void validateCredentialValues(JsonNode values, String path) {
+        if (values == null || !values.isArray() || values.isEmpty()) {
+            throw new InvalidPolicyException(
+                    path + ".values must contain at least one entry"
+            );
+        }
+
+        Set<String> seen = new HashSet<>();
+
+        for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+            JsonNode value = values.get(valueIndex);
+            String valuePath = path + ".values[" + valueIndex + "]";
+
+            if (!value.isTextual()) {
+                throw new InvalidPolicyException(valuePath + " must be a string");
+            }
+
+            if (!CREDENTIAL_VALUE.matcher(value.asText()).matches()) {
+                throw new InvalidPolicyException(
+                        valuePath + " " + CREDENTIAL_VALUE_RULE
+                );
+            }
+
+            if (!seen.add(value.asText())) {
+                throw new InvalidPolicyException(valuePath + " is a duplicate");
+            }
+        }
+    }
+
+    private String readRequiredText(JsonNode node, String fieldName, String path) {
+        JsonNode value = node.get(fieldName);
+
+        if (value == null || !value.isTextual() || value.asText().isEmpty()) {
+            throw new InvalidPolicyException(
+                    path + "." + fieldName + " is required"
+            );
+        }
+
+        return value.asText();
     }
 }

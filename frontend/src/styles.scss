@@ -204,3 +204,13 @@ b {
     color: var(--con-x-text-primary, #111111) !important;
   }
 }
+
+// Auswahllisten mit Gruppen (`mat-optgroup`): Die Gruppenüberschrift ist fett und genauso groß wie
+// die Einträge darunter, damit die Hierarchie (Gruppe > Eintrag) erkennbar bleibt. Der Standard
+// setzt sie kleiner und blass als die Einträge.
+.con-x-select-panel {
+  --mat-optgroup-label-text-size: 1rem;
+  --mat-optgroup-label-text-weight: 700;
+  --mat-optgroup-label-text-color: var(--con-x-text-primary, #111111);
+  --mat-option-label-text-size: 1rem;
+}

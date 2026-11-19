@@ -7,7 +7,7 @@
     @if (list(); as chipList) {
       <ul class="cc__list" [attr.aria-label]="t(chipList.labelKey)" [attr.data-cy]="chipList.cy">
         @for (item of chipList.items; track $index) {
-          <li class="cc__chip">
+          <li class="cc__chip" [class.cc__chip--plain]="item.plain">
             @if (item.kindKey) {
               <span class="cc__chip-kind">{{ t(item.kindKey) }}:</span>
             }
